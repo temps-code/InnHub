@@ -1,6 +1,7 @@
 # Local Pi runtime state
 .atl/
 .pi/
+.pi-lens/
 
 # Dependencies
 node_modules/
