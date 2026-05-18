@@ -154,6 +154,11 @@ Rules:
 
 - Every meaningful task should start from an issue.
 - PRs should reference their issue.
+- Do not create per-issue or short-lived feature branches for this individual project.
+- Implement approved work directly on `features`.
+- Promote completed work from `features` to `qa` for validation.
+- If validation fails in `qa`, move the fix work to `refactor`, then return it to `qa`.
+- Promote to `main` only after the work is validated and ready.
 - Keep changes reviewable and avoid unrelated mixes.
 - Do not commit, push, merge, or publish unless the user explicitly asks.
 
