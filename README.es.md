@@ -49,6 +49,7 @@
 - [Flujo de negocio](#flujo-de-negocio)
 - [Funcionalidades clave](#funcionalidades-clave)
 - [Stack](#stack)
+- [Primeros pasos](#primeros-pasos)
 - [Arquitectura](#arquitectura)
 - [Documentación](#documentación)
 - [Estado del proyecto](#estado-del-proyecto)
@@ -143,6 +144,21 @@ Consulta del huésped → Reserva → Check-in → Gestión de estadía
 | Auth / Storage / Realtime | Servicios de InsForge       |
 | Deploy                    | Vercel o Netlify + InsForge |
 
+## Primeros pasos
+
+```bash
+npm install
+npm run dev
+```
+
+Checks útiles:
+
+```bash
+npm run build
+npm run lint
+npm run test:run
+```
+
 ## Arquitectura
 
 <div align="center">
@@ -169,7 +185,7 @@ Regla central: los componentes de UI no deben hablar directamente con InsForge. 
 
 ## Estado del proyecto
 
-InnHub está en fase de planificación y documentación. El siguiente paso de implementación es inicializar la aplicación web y empezar a construir los módulos del MVP en unidades pequeñas y revisables.
+InnHub ya tiene su documentación de planificación, scaffold Vite React TypeScript, licencia MIT y estructura base de repositorio preparada para revisión académica. El siguiente paso de implementación es construir los módulos del MVP en unidades pequeñas y revisables.
 
 ## Autor
 

@@ -49,6 +49,7 @@
 - [Business Workflow](#business-workflow)
 - [Key Features](#key-features)
 - [Stack](#stack)
+- [Getting Started](#getting-started)
 - [Architecture](#architecture)
 - [Documentation](#documentation)
 - [Project Status](#project-status)
@@ -143,6 +144,21 @@ Guest inquiry → Reservation → Check-in → Stay management
 | Auth / Storage / Realtime | InsForge services            |
 | Deployment                | Vercel or Netlify + InsForge |
 
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Useful checks:
+
+```bash
+npm run build
+npm run lint
+npm run test:run
+```
+
 ## Architecture
 
 <div align="center">
@@ -169,7 +185,7 @@ Core rule: UI components should not talk directly to InsForge. Data access and b
 
 ## Project Status
 
-InnHub is currently in the planning and documentation phase. The next implementation step is to initialize the web application and start building the MVP modules in small, reviewable work units.
+InnHub currently has its planning documentation, Vite React TypeScript scaffold, MIT license, and baseline repository structure prepared for academic review. The next implementation step is to build MVP modules in small, reviewable work units.
 
 ## Author
 

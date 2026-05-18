@@ -1,7 +1,9 @@
 {
   "name": "innhub-app",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Academic MVP for managing accommodation businesses such as hotels, hostels, residences, and inns.",
+  "author": "Diego Vargas",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
