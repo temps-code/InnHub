@@ -73,6 +73,42 @@ src/
 
 Atomic Design se aplica solo a UI compartida: botones, badges, inputs, cards, modales, tablas y primitivas de layout. Componentes específicos quedan dentro de su feature.
 
+## Estrategia de reutilización y refactorización
+
+InnHub priorizará componentes reutilizables antes de hacer crecer la UI específica de cada feature. Los diagramas de arquitectura y componentes existentes en este documento son la referencia para esta estrategia; no se requiere un diagrama nuevo salvo que la implementación introduzca un nuevo límite arquitectónico.
+
+### Componentes candidatos a reutilización
+
+| Componente                  | Objetivo de reutilización                                                                                          | Justificación técnica                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `Button`                    | Acciones primarias y secundarias en reservas, check-in/check-out, facturación y configuración                      | Centraliza estados de interacción, comportamiento accesible y consistencia visual para acciones repetidas               |
+| `StatusBadge`               | Estados de habitaciones, reservas, tareas de limpieza, tickets de mantenimiento, facturas y pagos                  | Mantiene consistente la presentación de estados y evita duplicar estilos específicos de dominio en pantallas de feature |
+| `MetricCard`                | Indicadores de dashboard, reportes de ocupación, resúmenes de ingresos y alertas operativas                        | Define un patrón reutilizable para modelos derivados como `DashboardSummary`, `OccupancyReport` y `RevenueReport`       |
+| `ModuleCard`                | Navegación o resúmenes para habitaciones, reservas, huéspedes, facturación, housekeeping, mantenimiento y reportes | Permite exponer distintos módulos de la línea de producto con un patrón de tarjeta consistente y reutilizable           |
+| `AppLayout` / `PageSection` | Estructura de página, espaciado, encabezados y secciones responsive                                                | Separa la estructura de layout del contenido de negocio y evita repetir scaffolding en cada feature                     |
+
+Estos componentes deben mantenerse genéricos. Las etiquetas específicas de habitaciones, reglas de reservas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
+
+### Técnicas de refactorización
+
+| Técnica                                   | Problema detectado                                                                                      | Estrategia del proyecto                                                                                                                                                                | Mejora esperada                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Extract Component                         | Las pantallas grandes pueden mezclar JSX, layout, estilos y fragmentos de UI repetidos                  | Mover UI repetida a componentes compartidos solo cuando al menos dos módulos puedan reutilizarla o cuando tenga un rol genérico claro                                                  | Mejora la cohesión, reduce duplicación y sostiene el objetivo de componentes reutilizables en la línea de producto |
+| Extract Constants / Replace Magic Strings | Nombres de estados, labels, módulos, rutas y mensajes pueden quedar dispersos como valores hardcodeados | Definir constantes tipadas u objetos de configuración para estados, labels, métricas de dashboard y metadatos de módulos repetidos                                                     | Mejora la consistencia, reduce errores por tipeo y facilita variaciones futuras entre módulos                      |
+| Extract Pure Function                     | Las reglas de negocio pueden terminar accidentalmente dentro de JSX o handlers                          | Mover cálculos y decisiones reutilizables, como mapeo de estado a tono visual o validaciones de disponibilidad, a utilidades de feature o compartidas cuando sean neutrales al dominio | Hace las reglas testeables, más fáciles de revisar e independientes del renderizado de UI                          |
+
+La refactorización debe ser incremental. El objetivo no es construir un design system grande de forma temprana, sino extraer patrones estables a medida que crece el MVP.
+
+### Criterios para la presentación académica
+
+Para el entregable de refactorización, el proyecto presentará al menos dos técnicas con evidencia explícita:
+
+1. **Extract Component** se demostrará mediante patrones repetidos de UI como botones, indicadores de estado, cards y secciones de layout.
+2. **Extract Constants / Replace Magic Strings** se demostrará mediante configuración compartida para nombres de estado, labels de rutas, metadatos de módulos o métricas de dashboard repetidas.
+3. **Extract Pure Function** podrá agregarse cuando las reglas de negocio o los mapeos visuales necesiten lógica testeable fuera del JSX.
+
+La fase de implementación solo debe extraer un componente o regla cuando la duplicación sea visible o el rol reutilizable sea claro. Esto mantiene la documentación alineada con el código y evita refactorizaciones artificiales.
+
 ## Documentos relacionados
 
 - [Stack tecnológico](04-tech-stack.es.md)

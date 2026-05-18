@@ -73,6 +73,42 @@ src/
 
 Use Atomic Design for shared UI only: buttons, badges, inputs, cards, modals, tables, layout primitives. Feature-specific components stay inside their feature folders.
 
+## Reuse and Refactoring Strategy
+
+InnHub will prioritize reusable components before feature-specific UI growth. The existing architecture and component diagrams above are the reference views for this strategy; a new diagram is not required unless the implementation introduces a new architectural boundary.
+
+### Reusable Component Candidates
+
+| Component                   | Reuse target                                                                                             | Technical justification                                                                                                |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Button`                    | Primary and secondary actions across reservations, check-in/check-out, billing, and settings             | Centralizes interaction states, accessibility behavior, and visual consistency for repeated user actions               |
+| `StatusBadge`               | Room states, reservation states, cleaning tasks, maintenance tickets, invoices, and payments             | Keeps status presentation consistent while preventing domain-specific styling from being duplicated in feature screens |
+| `MetricCard`                | Dashboard indicators, occupancy reports, revenue summaries, and operational alerts                       | Provides a reusable pattern for derived read models such as `DashboardSummary`, `OccupancyReport`, and `RevenueReport` |
+| `ModuleCard`                | Navigation or summaries for rooms, reservations, guests, billing, housekeeping, maintenance, and reports | Lets the product line expose different modules with a consistent reusable card pattern                                 |
+| `AppLayout` / `PageSection` | Shared page shell, spacing, headings, and responsive sections                                            | Separates layout structure from business content and avoids repeating page scaffolding in every feature                |
+
+These components should remain generic. Room-specific labels, reservation rules, and business decisions belong in feature code, schemas, services, or utility functions.
+
+### Refactoring Techniques
+
+| Technique                                 | Problem detected                                                                                   | Project strategy                                                                                                                                                | Expected improvement                                                                                   |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Extract Component                         | Large screens can mix JSX, layout, styling, and repeated UI fragments                              | Move repeated UI into shared components only when at least two modules can reuse it or when a component has a clear generic role                                | Improves cohesion, reduces duplication, and supports the product-line goal of reusable building blocks |
+| Extract Constants / Replace Magic Strings | Status names, labels, module names, routes, and UI messages can become scattered hard-coded values | Define typed constants or configuration objects for repeated states, labels, dashboard metrics, and module metadata                                             | Improves consistency, reduces typo-prone changes, and makes future module variation easier             |
+| Extract Pure Function                     | Business rules can accidentally move into JSX or event handlers                                    | Move reusable calculations and decisions, such as status-to-tone mapping or availability checks, into feature utilities or shared utilities when domain-neutral | Makes rules testable, easier to review, and independent from UI rendering                              |
+
+Refactoring should be incremental. The goal is not to build a large design system early, but to extract stable patterns as the MVP grows.
+
+### Academic Presentation Criteria
+
+For the refactoring assignment, the project will present at least two techniques with explicit evidence:
+
+1. **Extract Component** will be demonstrated through repeated UI patterns such as buttons, status indicators, cards, and layout sections.
+2. **Extract Constants / Replace Magic Strings** will be demonstrated through shared configuration for repeated status names, route labels, module metadata, or dashboard metrics.
+3. **Extract Pure Function** may be added when business rules or UI mappings need testable logic outside JSX.
+
+The implementation phase should only extract a component or rule when the duplication is visible or the reusable role is clear. This keeps the documentation aligned with the code and avoids artificial refactoring.
+
 ## Related Documents
 
 - [Tech Stack](04-tech-stack.md)
