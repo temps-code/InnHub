@@ -1,0 +1,58 @@
+strict_tdd: true
+context: |
+  innhub-app is a Node.js/TypeScript ESM, React project.
+  Detected markers: package.json, tsconfig.json, npm package manager.
+  Package managers: npm.
+  Primary test command: npm run test:run.
+  Unit tests: Vitest (npm run test:run).
+  Integration tests: Testing Library (npm run test:run).
+  E2E tests: none.
+rules:
+  proposal:
+    require_problem_statement: true
+  spec:
+    require_acceptance_criteria: true
+  design:
+    require_tradeoffs: true
+  tasks:
+    protect_review_workload: true
+  apply:
+    test_command: "npm run test:run"
+  verify:
+    test_command: "npm run test:run"
+testing:
+  detected: "2026-05-18"
+  runner:
+    command: "npm run test:run"
+    framework: "Vitest"
+  layers:
+    unit: "Vitest"
+    integration: "Testing Library"
+    e2e: ""
+  commands:
+    unit:
+      - scope: "."
+        command: "npm run test:run"
+        framework: "Vitest"
+    integration:
+      - scope: "."
+        command: "npm run test:run"
+        framework: "Testing Library"
+    e2e:
+      []
+  coverage:
+    command: ""
+    commands:
+      []
+quality:
+  lint: "npm run lint"
+  lint_commands:
+    - scope: "."
+      command: "npm run lint"
+      framework: "linter"
+  typecheck: ""
+  typecheck_commands:
+    []
+  format: ""
+  format_commands:
+    []
