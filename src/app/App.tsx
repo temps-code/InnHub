@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
 
+import { ModuleCard, PageSection } from "../shared/components";
+
 const foundationModuleKeys = [
 	"properties",
 	"rooms",
@@ -39,39 +41,24 @@ export function App() {
 				</p>
 			</section>
 
-			<section
-				className="grid grid-cols-[minmax(0,1fr)_minmax(280px,420px)] items-start gap-12 rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-panel)] max-[760px]:grid-cols-1 max-[760px]:gap-8 max-[760px]:p-6"
-				aria-labelledby="foundation-title"
+			<PageSection
+				className="max-[760px]:p-6"
+				description={t("foundation.description")}
+				eyebrow={t("foundation.eyebrow")}
+				title={t("foundation.title")}
+				titleId="foundation-title"
 			>
-				<div>
-					<p className="m-0 text-[0.85rem] font-bold tracking-[0.16em] text-[var(--color-primary)] uppercase">
-						{t("foundation.eyebrow")}
-					</p>
-					<h2
-						id="foundation-title"
-						className="mt-2 mb-4 text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.05] font-bold tracking-[-0.04em] text-[var(--color-heading)]"
-					>
-						{t("foundation.title")}
-					</h2>
-					<p className="m-0 text-[var(--color-muted)]">
-						{t("foundation.description")}
-					</p>
-				</div>
-
 				<ul
 					className="m-0 grid list-none gap-3 p-0"
 					aria-label={t("modules.ariaLabel")}
 				>
 					{foundationModuleKeys.map((moduleKey) => (
-						<li
-							className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3.5 font-bold text-[var(--color-heading)]"
-							key={moduleKey}
-						>
-							{t(`modules.items.${moduleKey}`)}
+						<li key={moduleKey}>
+							<ModuleCard title={t(`modules.items.${moduleKey}`)} />
 						</li>
 					))}
 				</ul>
-			</section>
+			</PageSection>
 		</main>
 	);
 }
