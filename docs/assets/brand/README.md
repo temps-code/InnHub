@@ -1,8 +1,19 @@
 # InnHub Brand Assets
 
-This folder contains the organized InnHub logo assets generated for the project documentation, README, favicons, and future application shell.
+This folder contains InnHub logo assets for project documentation, README surfaces, favicons, and the application shell.
 
-## Usable Assets
+## SVG Assets
+
+| File                              | Use                                            | Status                                 |
+| --------------------------------- | ---------------------------------------------- | -------------------------------------- |
+| `innhub-app-icon.svg`             | App icon and favicon-style runtime usage       | Preferred for app shell/favicon        |
+| `innhub-icon.svg`                 | Gradient icon-only mark                        | Usable                                 |
+| `innhub-logo-horizontal.svg`      | Gradient horizontal logo for light backgrounds | Draft: wordmark uses live SVG `<text>` |
+| `innhub-logo-horizontal-dark.svg` | Gradient horizontal logo for dark backgrounds  | Draft: wordmark uses live SVG `<text>` |
+
+The horizontal SVG logos are kept as draft assets because their wordmark depends on font rendering (`Inter` or fallbacks). Convert the wordmark to paths before treating them as canonical production logos.
+
+## PNG Assets
 
 | File                                           | Use                                                                             |
 | ---------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -24,9 +35,9 @@ This folder contains the organized InnHub logo assets generated for the project 
 
 ## Generated Attempts
 
-The folder `generated-attempts/` keeps the original generator outputs for traceability.
+The folder `generated-attempts/` keeps original generator outputs for traceability.
 
-The latest files placed there do include real PNG transparency (`PaletteAlpha` with alpha channel), so copies were promoted into this folder with production-oriented names:
+The latest PNG files placed there include real PNG transparency (`PaletteAlpha` with alpha channel), so copies were promoted into this folder with production-oriented names:
 
 | Source file                                               | Promoted file                                  |
 | --------------------------------------------------------- | ---------------------------------------------- |
@@ -35,18 +46,8 @@ The latest files placed there do include real PNG transparency (`PaletteAlpha` w
 | `generated-attempts/innhub-logo-monochrome-dark.png`      | `innhub-logo-monochrome-dark-transparent.png`  |
 | `generated-attempts/innhub-logo-monochrome-light.png`     | `innhub-logo-monochrome-light-transparent.png` |
 
-## Current Limitation
+## Runtime Copy Policy
 
-There is still no SVG/vector source yet.
+Keep canonical/documentation assets in this folder. Copy only the SVGs required by the running app into `public/` to avoid drift and unused runtime assets.
 
-Recommended next step if production-grade brand assets are needed:
-
-1. Recreate/vectorize the mark manually in Figma, Illustrator, Inkscape, or Penpot.
-2. Export from the vector source as:
-   - SVG horizontal logo;
-   - SVG icon-only mark;
-   - transparent PNG horizontal logo;
-   - transparent PNG icon;
-   - favicon set.
-
-Until then, use the transparent PNG assets above for documentation and README surfaces.
+For the current Tailwind foundation slice, the app uses only `public/innhub-app-icon.svg`; horizontal SVG logos are not copied to runtime and remain documentation/draft assets until the wordmark is converted to paths.
