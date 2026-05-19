@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">InnHub app icon</title>
+  <desc id="desc">InnHub app icon with rounded background.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F3ECFF"/>
+    </linearGradient>
+    <linearGradient id="innhub-gradient" x1="30" y1="30" x2="226" y2="226" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#B982FF"/>
+      <stop offset="0.45" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#4F16E8"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)"/>
+  <g transform="translate(18 18) scale(.86)"><g fill="none" stroke="url(#innhub-gradient)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M104 128 C82 128 74 116 74 94"/>
+  <path d="M152 128 C174 128 182 116 182 94"/>
+  <path d="M104 128 C82 128 74 140 74 162"/>
+  <path d="M152 128 C174 128 182 140 182 162"/>
+</g>
+<g fill="url(#innhub-gradient)">
+  <rect x="102" y="102" width="52" height="52" rx="14"/>
+  <rect x="42" y="36" width="56" height="56" rx="14"/>
+  <rect x="158" y="36" width="56" height="56" rx="14"/>
+  <rect x="42" y="164" width="56" height="56" rx="14"/>
+  <rect x="158" y="164" width="56" height="56" rx="14"/>
+</g></g>
+</svg>

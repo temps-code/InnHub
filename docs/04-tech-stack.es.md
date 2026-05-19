@@ -24,6 +24,12 @@
 
 El proyecto tiene tiempo limitado y debe priorizar un MVP funcional y desplegable. InsForge reduce trabajo backend repetitivo sin perder PostgreSQL. React/TypeScript/Tailwind coinciden con experiencia previa y permiten una UI pulida.
 
+## Estrategia de estilos
+
+Tailwind CSS está configurado mediante el plugin de Vite e importado desde `src/index.css`. El CSS global debe limitarse a valores base del documento, variables semánticas de color y resets mínimos; los estilos de features y UI compartida deben usar utilidades de Tailwind.
+
+Los modos claro y oscuro quedan preparados para un cambio manual futuro mediante el atributo `data-theme` en el elemento raíz `<html>`. Usar `data-theme="light"` o `data-theme="dark"` en lugar de depender solo de la preferencia del sistema operativo.
+
 ## Estrategia realtime
 
 Realtime es selectivo, no global. Usarlo donde aporte visibilidad operativa:
