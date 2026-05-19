@@ -75,19 +75,21 @@ Use Atomic Design for shared UI only: buttons, badges, inputs, cards, modals, ta
 
 ## Reuse and Refactoring Strategy
 
-InnHub will prioritize reusable components before feature-specific UI growth. The existing architecture and component diagrams above are the reference views for this strategy; a new diagram is not required unless the implementation introduces a new architectural boundary.
+InnHub prioritizes reusable components before feature-specific UI growth. The existing architecture and component diagrams above are the reference views for this strategy; a new diagram is not required unless the implementation introduces a new architectural boundary.
 
-### Reusable Component Candidates
+### Implemented Shared UI Primitives
 
-| Component                   | Reuse target                                                                                             | Technical justification                                                                                                |
-| --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `Button`                    | Primary and secondary actions across reservations, check-in/check-out, billing, and settings             | Centralizes interaction states, accessibility behavior, and visual consistency for repeated user actions               |
-| `StatusBadge`               | Room states, reservation states, cleaning tasks, maintenance tickets, invoices, and payments             | Keeps status presentation consistent while preventing domain-specific styling from being duplicated in feature screens |
-| `MetricCard`                | Dashboard indicators, occupancy reports, revenue summaries, and operational alerts                       | Provides a reusable pattern for derived read models such as `DashboardSummary`, `OccupancyReport`, and `RevenueReport` |
-| `ModuleCard`                | Navigation or summaries for rooms, reservations, guests, billing, housekeeping, maintenance, and reports | Lets the product line expose different modules with a consistent reusable card pattern                                 |
-| `AppLayout` / `PageSection` | Shared page shell, spacing, headings, and responsive sections                                            | Separates layout structure from business content and avoids repeating page scaffolding in every feature                |
+The first reusable shared UI primitives are implemented under `src/shared/components` and specified in `openspec/specs/shared-ui/spec.md`. They are intentionally small, domain-neutral, and presentation-only.
 
-These components should remain generic. Room-specific labels, reservation rules, and business decisions belong in feature code, schemas, services, or utility functions.
+| Component     | Current status | Reuse target                                                                                             | Technical justification                                                                                                |
+| ------------- | -------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Button`      | Implemented    | Primary and secondary actions across reservations, check-in/check-out, billing, and settings             | Centralizes interaction states, accessibility behavior, and visual consistency for repeated user actions               |
+| `StatusBadge` | Implemented    | Room states, reservation states, cleaning tasks, maintenance tickets, invoices, and payments             | Keeps status presentation consistent while preventing domain-specific styling from being duplicated in feature screens |
+| `MetricCard`  | Implemented    | Dashboard indicators, occupancy reports, revenue summaries, and operational alerts                       | Provides a reusable display pattern for caller-provided metrics without calculating business values                    |
+| `ModuleCard`  | Implemented    | Navigation or summaries for rooms, reservations, guests, billing, housekeeping, maintenance, and reports | Lets the product line expose different modules with a consistent reusable card pattern                                 |
+| `PageSection` | Implemented    | Shared page spacing, headings, descriptions, actions, and responsive sections                            | Separates section structure from business content and avoids repeating page scaffolding in every feature               |
+
+`PageSection` was implemented instead of a full `AppLayout` for this stage because routing, authentication, navigation, and protected layout decisions belong to later work. These primitives should remain generic: room-specific labels, reservation rules, metric calculations, and business decisions belong in feature code, schemas, services, or utility functions.
 
 ### Refactoring Techniques
 

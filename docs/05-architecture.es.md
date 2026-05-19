@@ -75,19 +75,21 @@ Atomic Design se aplica solo a UI compartida: botones, badges, inputs, cards, mo
 
 ## Estrategia de reutilización y refactorización
 
-InnHub priorizará componentes reutilizables antes de hacer crecer la UI específica de cada feature. Los diagramas de arquitectura y componentes existentes en este documento son la referencia para esta estrategia; no se requiere un diagrama nuevo salvo que la implementación introduzca un nuevo límite arquitectónico.
+InnHub prioriza componentes reutilizables antes de hacer crecer la UI específica de cada feature. Los diagramas de arquitectura y componentes existentes en este documento son la referencia para esta estrategia; no se requiere un diagrama nuevo salvo que la implementación introduzca un nuevo límite arquitectónico.
 
-### Componentes candidatos a reutilización
+### Primitivas de UI compartida implementadas
 
-| Componente                  | Objetivo de reutilización                                                                                          | Justificación técnica                                                                                                   |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `Button`                    | Acciones primarias y secundarias en reservas, check-in/check-out, facturación y configuración                      | Centraliza estados de interacción, comportamiento accesible y consistencia visual para acciones repetidas               |
-| `StatusBadge`               | Estados de habitaciones, reservas, tareas de limpieza, tickets de mantenimiento, facturas y pagos                  | Mantiene consistente la presentación de estados y evita duplicar estilos específicos de dominio en pantallas de feature |
-| `MetricCard`                | Indicadores de dashboard, reportes de ocupación, resúmenes de ingresos y alertas operativas                        | Define un patrón reutilizable para modelos derivados como `DashboardSummary`, `OccupancyReport` y `RevenueReport`       |
-| `ModuleCard`                | Navegación o resúmenes para habitaciones, reservas, huéspedes, facturación, housekeeping, mantenimiento y reportes | Permite exponer distintos módulos de la línea de producto con un patrón de tarjeta consistente y reutilizable           |
-| `AppLayout` / `PageSection` | Estructura de página, espaciado, encabezados y secciones responsive                                                | Separa la estructura de layout del contenido de negocio y evita repetir scaffolding en cada feature                     |
+Las primeras primitivas reutilizables de UI compartida ya están implementadas bajo `src/shared/components` y especificadas en `openspec/specs/shared-ui/spec.md`. Son deliberadamente pequeñas, neutrales al dominio y solo de presentación.
 
-Estos componentes deben mantenerse genéricos. Las etiquetas específicas de habitaciones, reglas de reservas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
+| Componente    | Estado actual | Objetivo de reutilización                                                                                          | Justificación técnica                                                                                                   |
+| ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `Button`      | Implementado  | Acciones primarias y secundarias en reservas, check-in/check-out, facturación y configuración                      | Centraliza estados de interacción, comportamiento accesible y consistencia visual para acciones repetidas               |
+| `StatusBadge` | Implementado  | Estados de habitaciones, reservas, tareas de limpieza, tickets de mantenimiento, facturas y pagos                  | Mantiene consistente la presentación de estados y evita duplicar estilos específicos de dominio en pantallas de feature |
+| `MetricCard`  | Implementado  | Indicadores de dashboard, reportes de ocupación, resúmenes de ingresos y alertas operativas                        | Define un patrón visual reutilizable para métricas provistas por quien llama, sin calcular valores de negocio           |
+| `ModuleCard`  | Implementado  | Navegación o resúmenes para habitaciones, reservas, huéspedes, facturación, housekeeping, mantenimiento y reportes | Permite exponer distintos módulos de la línea de producto con un patrón de tarjeta consistente y reutilizable           |
+| `PageSection` | Implementado  | Espaciado de página, encabezados, descripciones, acciones y secciones responsive compartidas                       | Separa la estructura de sección del contenido de negocio y evita repetir scaffolding en cada feature                    |
+
+`PageSection` se implementó en lugar de un `AppLayout` completo en esta etapa porque las decisiones de routing, autenticación, navegación y layouts protegidos pertenecen a trabajo posterior. Estas primitivas deben mantenerse genéricas: etiquetas específicas de habitaciones, reglas de reservas, cálculos de métricas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
 
 ### Técnicas de refactorización
 
