@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InnHub Room Status Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c44",
+                        "surface-container": "#e5eeff",
+                        "background": "#f8f9ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#6c3d00",
+                        "primary-fixed-dim": "#cabeff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#005232",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c9c3d9",
+                        "surface-bright": "#f8f9ff",
+                        "surface-tint": "#6135ef",
+                        "on-primary-fixed": "#1c0062",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ffd4ad",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#693c00",
+                        "surface": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#002112",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb870",
+                        "inverse-primary": "#cabeff",
+                        "primary-container": "#6338f1",
+                        "tertiary-container": "#8e5200",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#4800d6",
+                        "primary": "#4a05da",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed": "#ffdcbe",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-fixed-dim": "#4fdf9b",
+                        "on-surface-variant": "#484456",
+                        "on-primary-container": "#e0d7ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#797488",
+                        "secondary-fixed": "#6ffcb5",
+                        "on-secondary-container": "#007349",
+                        "primary-fixed": "#e6deff",
+                        "secondary-container": "#6ffcb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-md-mobile": ["Hanken Grotesk"],
+                        "stat-value": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "stat-value": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #f8f9ff; color: #0b1c30; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom Shadows for Elevational Depth */
+        .elevation-1 { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); }
+        .elevation-2 { box-shadow: 0px 8px 30px rgba(99, 56, 241, 0.1); }
+        
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c9c3d9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #797488; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-[260px] flex flex-col bg-surface border-r border-outline-variant z-20">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-xl shadow-md">IH</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">InnHub</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Internal Management</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2">
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-md text-label-md">Reservations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-primary font-bold border-r-4 border-primary bg-primary-container/10 rounded-l-lg -mr-[1px]" href="#">
+<span class="material-symbols-outlined icon-fill">bed</span>
+<span class="font-label-md text-label-md">Rooms</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Guests</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">cleaning_services</span>
+<span class="font-label-md text-label-md">Housekeeping</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-label-md text-label-md">Maintenance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto p-6">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Add New Booking
+            </button>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-[260px] h-20 flex justify-between items-center w-[calc(100%-260px)] px-8 gap-6 border-b border-outline-variant bg-surface-bright z-10">
+<div class="flex items-center gap-6 flex-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface whitespace-nowrap">InnHub Demo Residence</h2>
+<div class="relative w-full max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md text-on-surface placeholder:text-outline-variant" placeholder="Search rooms, guests, or reservations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-on-surface-variant hidden lg:block pr-4 border-r border-outline-variant">Nov 15, 2023</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20"><span class="material-symbols-outlined">settings</span></button>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20"><span class="material-symbols-outlined">help</span></button>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden cursor-pointer">
+<img alt="Manager Avatar" class="w-full h-full object-cover" data-alt="Close up headshot of a professional hotel manager in a well-lit office, wearing a crisp suit, looking confident and approachable. Subtle background blur." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVRNvSX1JHY_HhpXsvCu3PT7_SqMHopvX6ZBBuA8_fZbQaDuIgBWz_0r5KftgtSZ65JXNGEAMTSFcUndtLg72NQUX05qBu7OqkzmEDxUDx3q-WiXOEddtOye6HvW_C5uaxCHLqj24NWcaR1PCEd3cMIZSCVM7h2sXIjZTTMY_cs4kmxXanyos_LYua4g8J0tnlFXN-hCLWmnWR_gazjMhJCJ-2ueVCVdNiSiv61-s0dXek_JvFNC0EojGe1DFNS8NGtnGgPQL18VU"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[260px] mt-20 p-margin-desktop w-full h-[calc(100vh-80px)] overflow-y-auto bg-background">
+<!-- Header Controls -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-background">Room Status</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Real-time overview of all operational units.</p>
+</div>
+<div class="flex items-center gap-3 bg-surface p-1 rounded-lg border border-outline-variant">
+<button class="px-3 py-1.5 bg-primary-container/20 text-primary rounded-md flex items-center gap-2 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+                    Grid
+                </button>
+<button class="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-md flex items-center gap-2 font-label-md text-label-md transition-colors">
+<span class="material-symbols-outlined text-[18px]">list</span>
+                    List
+                </button>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap gap-3 mb-8">
+<button class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm">All Rooms (124)</button>
+<button class="px-4 py-2 rounded-full bg-surface border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Available (42)
+            </button>
+<button class="px-4 py-2 rounded-full bg-surface border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span> Occupied (68)
+            </button>
+<button class="px-4 py-2 rounded-full bg-surface border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Cleaning (10)
+            </button>
+<button class="px-4 py-2 rounded-full bg-surface border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span> Maintenance (4)
+            </button>
+</div>
+<!-- Grid of Room Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter pb-12">
+<!-- Card 1: Available -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-secondary flex flex-col h-[200px] group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">101</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Standard King</p>
+</div>
+<div class="bg-surface-container text-secondary-fixed-dim px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-secondary">Available</span>
+</div>
+</div>
+<div class="mt-auto mb-4">
+<p class="font-body-sm text-body-sm text-outline italic">Ready for check-in</p>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Occupied -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-error flex flex-col h-[200px] group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">102</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Deluxe Double</p>
+</div>
+<div class="bg-error-container text-on-error-container px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="font-label-md text-label-md text-on-error-container">Occupied</span>
+</div>
+</div>
+<div class="mt-auto mb-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant font-bold text-xs">JS</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">John Smith</p>
+<p class="font-body-sm text-body-sm text-outline">Checkout: Tomorrow</p>
+</div>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Cleaning -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-tertiary flex flex-col h-[200px] group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">105</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Executive Suite</p>
+</div>
+<div class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md text-on-tertiary-container">Cleaning</span>
+</div>
+</div>
+<div class="mt-auto mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<p class="font-body-sm text-body-sm text-outline">In progress (Est. 15m)</p>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Maintenance -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-outline flex flex-col h-[200px] group cursor-pointer bg-surface-container-low/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">210</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Standard King</p>
+</div>
+<div class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-label-md text-label-md text-on-surface-variant">Maintenance</span>
+</div>
+</div>
+<div class="mt-auto mb-4 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">plumbing</span>
+<p class="font-body-sm text-body-sm">Plumbing issue reported</p>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Card 5: Available -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-secondary flex flex-col h-[200px] group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">212</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Standard Double</p>
+</div>
+<div class="bg-surface-container text-secondary-fixed-dim px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-secondary">Available</span>
+</div>
+</div>
+<div class="mt-auto mb-4">
+<p class="font-body-sm text-body-sm text-outline italic">Ready for check-in</p>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Card 6: Occupied -->
+<div class="bg-surface-container-lowest rounded-xl p-4 elevation-1 hover:elevation-2 transition-all duration-300 border-l-4 border-error flex flex-col h-[200px] group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-stat-value text-stat-value text-on-surface">301</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Penthouse Suite</p>
+</div>
+<div class="bg-error-container text-on-error-container px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="font-label-md text-label-md text-on-error-container">Occupied</span>
+</div>
+</div>
+<div class="mt-auto mb-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs overflow-hidden">
+<img alt="Guest" class="w-full h-full object-cover" data-alt="Portrait of a relaxed hotel guest smiling softly, natural daylight illuminating their face against a blurred modern hotel room background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf-BKi3nhO-BhO2XxWIdNmhio3oazo1B08kwWPsMbQS12ebyTc1XrtfaC4xH4abaLb-lFeAOce2LbhhKNGclT1TPUouq7f66cmWMAS5m0QJe83qIxq4y70WnDJbF3hTvnM9exaNHpI6_OcAvVUfHXP5tiUqyRlyDeM75sD51Hxr21gVidad_TfIa968NvWwRTEcmrd8aFBwAQW08JCNmonwdF_clPGrMA8bb3G84tZAJoZtH9sQvQj8rV4QitDqKMn1--jJufjh2Y"/>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">VIP Guest</p>
+<p class="font-body-sm text-body-sm text-outline">Checkout: Nov 20</p>
+</div>
+</div>
+<div class="flex items-center gap-2 border-t border-outline-variant/30 pt-3">
+<button class="flex-1 text-primary font-label-md text-label-md py-1.5 hover:bg-primary-container/10 rounded transition-colors text-center">View Details</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

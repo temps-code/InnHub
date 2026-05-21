@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InnHub Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c44",
+                        "surface-container": "#e5eeff",
+                        "background": "#f8f9ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#6c3d00",
+                        "primary-fixed-dim": "#cabeff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#005232",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c9c3d9",
+                        "surface-bright": "#f8f9ff",
+                        "surface-tint": "#6135ef",
+                        "on-primary-fixed": "#1c0062",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ffd4ad",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#693c00",
+                        "surface": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#002112",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb870",
+                        "inverse-primary": "#cabeff",
+                        "primary-container": "#6338f1",
+                        "tertiary-container": "#8e5200",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#4800d6",
+                        "primary": "#4a05da",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed": "#ffdcbe",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-fixed-dim": "#4fdf9b",
+                        "on-surface-variant": "#484456",
+                        "on-primary-container": "#e0d7ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#797488",
+                        "secondary-fixed": "#6ffcb5",
+                        "on-secondary-container": "#007349",
+                        "primary-fixed": "#e6deff",
+                        "secondary-container": "#6ffcb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-md-mobile": ["Hanken Grotesk"],
+                        "stat-value": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "stat-value": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        .shadow-level-1 { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); }
+        .shadow-level-2 { box-shadow: 0px 8px 30px rgba(99, 56, 241, 0.1); }
+        .shadow-level-3 { box-shadow: 0px 16px 40px rgba(0, 0, 0, 0.1); }
+        
+        /* Custom scrollbar for tables/lists */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.outline-variant'); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+    </style>
+</head>
+<body class="text-on-background font-body-md bg-background flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-screen w-[260px] bg-surface border-r border-outline-variant py-8 z-20">
+<div class="px-6 mb-8 flex flex-col gap-2">
+<h1 class="text-headline-md font-headline-md font-bold text-primary">InnHub</h1>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Internal Management</p>
+</div>
+<button class="mx-6 mb-8 bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Add New Booking
+        </button>
+<div class="flex flex-col flex-grow">
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-6 py-4 text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-transform duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined fill">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-md text-label-md">Reservations</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">bed</span>
+<span class="font-label-md text-label-md">Rooms</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Guests</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">cleaning_services</span>
+<span class="font-label-md text-label-md">Housekeeping</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-label-md text-label-md">Maintenance</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+</div>
+<div class="mt-auto px-6 pt-4 border-t border-outline-variant/50">
+<div class="flex items-center gap-3">
+<img alt="Hotel Staff User" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A close-up portrait of a professional hotel staff member in a modern, well-lit environment. The lighting is soft and natural, emphasizing a clean, corporate aesthetic. The color palette is neutral with subtle cool tones, aligning with a professional software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS_UV2b8PRwaLHSRODkYfcaqqBHTWXqomUrKnKlW3CV2RVU400qPqA717pFHHij48qbdii2KF4vIcnu6PPMQp9NgGmVD2U63cAg6vOW8X8EyFqg9JNVKskB1pCVbuW_pHFtFaWnpuQnoFlqY9HndXefzuQsmMMDg7KoiCfYmJlR2wIVb18bbksvv-1hkSMudSYE8RVhuPr37UJRwYZ_ZcAq4MEX8FAHBBfisEzqK9bwVUuQeOT58j2H1Y0MNj5kylooj4xcywQLrM"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Alex Manager</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Admin</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Mobile BottomNavBar (Simplified for this task, usually handled dynamically) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface border-t border-outline-variant flex justify-around py-3 z-50">
+<a class="flex flex-col items-center text-primary" href="#">
+<span class="material-symbols-outlined fill">dashboard</span>
+<span class="font-body-sm text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-body-sm text-[10px] mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">bed</span>
+<span class="font-body-sm text-[10px] mt-1">Rooms</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-body-sm text-[10px] mt-1">More</span>
+</a>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-[260px] flex flex-col min-h-screen mb-[70px] md:mb-0">
+<!-- TopNavBar -->
+<header class="hidden md:flex fixed top-0 right-0 left-[260px] h-20 bg-surface-bright border-b border-outline-variant justify-between items-center px-8 z-10 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">InnHub Demo Residence</span>
+</div>
+<div class="flex flex-1 max-w-md mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Search guests, rooms, bookings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="font-label-md text-label-md text-on-surface-variant bg-surface-container py-1.5 px-3 rounded-md">Nov 15, 2023</span>
+<div class="flex gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Canvas -->
+<main class="flex-1 p-4 md:p-margin-desktop md:mt-20 overflow-x-hidden">
+<!-- Welcome Row -->
+<div class="mb-8">
+<h2 class="font-display-lg text-display-lg text-on-surface">Overview</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1">Here's what's happening at InnHub Demo Residence today.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- KPI Cards Row (Spans all 12 columns, grid inside) -->
+<div class="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-2">
+<!-- KPI 1: Occupancy -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Occupancy</p>
+<h3 class="font-stat-value text-stat-value text-on-surface mt-1">84%</h3>
+</div>
+<div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-auto">
+<span class="flex items-center text-secondary-container bg-secondary-container/10 px-2 py-0.5 rounded text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5%
+                            </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">vs last week</span>
+</div>
+</div>
+<!-- KPI 2: Active Reservations -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Bookings</p>
+<h3 class="font-stat-value text-stat-value text-on-surface mt-1">142</h3>
+</div>
+<div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">book_online</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-auto">
+<span class="flex items-center text-error bg-error/10 px-2 py-0.5 rounded text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_down</span> -2
+                            </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">vs yesterday</span>
+</div>
+</div>
+<!-- KPI 3: Available Rooms -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Available Rooms</p>
+<h3 class="font-stat-value text-stat-value text-on-surface mt-1">24</h3>
+</div>
+<div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">key</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-4">
+<div class="bg-primary h-1.5 rounded-full" style="width: 15%"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 text-right">Out of 150 total</p>
+</div>
+<!-- KPI 4: Monthly Revenue -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 hover:shadow-level-2 transition-shadow duration-300 border border-outline-variant/30 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Est. Revenue</p>
+<h3 class="font-stat-value text-stat-value text-on-surface mt-1">$45.2k</h3>
+</div>
+<div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+</div>
+<div class="h-10 mt-2">
+<canvas id="revenueSparkline"></canvas>
+</div>
+</div>
+</div>
+<!-- Main Charts Section -->
+<div class="md:col-span-8 grid grid-rows-[auto_1fr] gap-gutter">
+<!-- Occupancy Chart -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-outline-variant/30">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Occupancy &amp; Bookings</h3>
+<select class="bg-surface border border-outline-variant rounded-md text-body-sm py-1 px-2 text-on-surface-variant focus:ring-primary focus:border-primary outline-none">
+<option>Last 7 Days</option>
+<option>Last 30 Days</option>
+</select>
+</div>
+<div class="relative h-64 w-full">
+<canvas id="occupancyChart"></canvas>
+</div>
+</div>
+<!-- Recent Reservations Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/30 flex flex-col overflow-hidden">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-surface-bright/50">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recent Reservations</h3>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant/50">
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant font-semibold">Guest</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant font-semibold">Room</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant font-semibold">Dates</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant font-semibold">Status</th>
+<th class="py-3 px-6 font-label-md text-label-md text-on-surface-variant font-semibold text-right">Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors h-[56px]">
+<td class="py-3 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-primary font-bold text-sm">SJ</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-md text-body-md">204 - Deluxe</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-sm text-body-sm">Nov 15 - Nov 18</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary-container font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> Confirmed
+                                            </span>
+</td>
+<td class="py-3 px-6 text-right font-body-md text-body-md text-on-surface font-medium">$450</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors h-[56px]">
+<td class="py-3 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-primary font-bold text-sm">MR</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Michael Ross</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-md text-body-md">102 - Standard</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-sm text-body-sm">Nov 15 - Nov 16</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/20 text-primary font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Checked In
+                                            </span>
+</td>
+<td class="py-3 px-6 text-right font-body-md text-body-md text-on-surface font-medium">$120</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors h-[56px]">
+<td class="py-3 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-primary font-bold text-sm">EL</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Emma Lawson</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-md text-body-md">305 - Suite</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-sm text-body-sm">Nov 16 - Nov 20</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-outline-variant/30 text-on-surface-variant font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Pending
+                                            </span>
+</td>
+<td class="py-3 px-6 text-right font-body-md text-body-md text-on-surface font-medium">$1,200</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors h-[56px]">
+<td class="py-3 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-primary font-bold text-sm">DT</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">David Thompson</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-md text-body-md">108 - Standard</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-sm text-body-sm">Nov 14 - Nov 15</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error/10 text-error font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Checked Out
+                                            </span>
+</td>
+<td class="py-3 px-6 text-right font-body-md text-body-md text-on-surface font-medium">$115</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors h-[56px]">
+<td class="py-3 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-primary font-bold text-sm">AK</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Anna Kowalski</span>
+</div>
+</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-md text-body-md">212 - Deluxe</td>
+<td class="py-3 px-6 text-on-surface-variant font-body-sm text-body-sm">Nov 18 - Nov 21</td>
+<td class="py-3 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary-container font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> Confirmed
+                                            </span>
+</td>
+<td class="py-3 px-6 text-right font-body-md text-body-md text-on-surface font-medium">$600</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Sidebar / Secondary Info -->
+<div class="md:col-span-4 flex flex-col gap-gutter">
+<!-- Room Status Donut Chart -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-outline-variant/30 flex flex-col items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface self-start w-full mb-4">Room Status</h3>
+<div class="relative w-48 h-48 mb-4">
+<canvas id="roomStatusChart"></canvas>
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+<span class="font-stat-value text-stat-value text-on-surface">150</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Rooms</span>
+</div>
+</div>
+<div class="w-full grid grid-cols-2 gap-2 mt-2">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Available (24)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Occupied (110)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cleaning (12)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Maint. (4)</span>
+</div>
+</div>
+</div>
+<!-- Actionable Lists (Bento Style) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/30 overflow-hidden flex-1 flex flex-col">
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant/30 bg-surface-bright/50">
+<button class="flex-1 py-3 font-label-md text-label-md text-primary border-b-2 border-primary bg-surface-container-low/50">Operations</button>
+<button class="flex-1 py-3 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Alerts <span class="ml-1 bg-error text-on-error rounded-full px-1.5 py-0.5 text-[10px]">2</span></button>
+</div>
+<!-- Content List -->
+<div class="p-4 flex-1 overflow-y-auto">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3 mt-1">Arrivals / Departures</h4>
+<div class="flex flex-col gap-2 mb-6">
+<!-- List Item Check In -->
+<div class="p-3 bg-surface rounded-lg border border-outline-variant/20 flex items-center gap-3">
+<div class="p-2 bg-secondary-container/10 text-secondary-container rounded-md">
+<span class="material-symbols-outlined text-[20px]">login</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-sm text-on-surface">Michael Ross</p>
+<p class="font-body-sm text-xs text-on-surface-variant">Room 102 • Standard</p>
+</div>
+<button class="text-primary font-label-md text-xs hover:underline">Check In</button>
+</div>
+<!-- List Item Check Out -->
+<div class="p-3 bg-surface rounded-lg border border-outline-variant/20 flex items-center gap-3">
+<div class="p-2 bg-error/10 text-error rounded-md">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-sm text-on-surface">David Thompson</p>
+<p class="font-body-sm text-xs text-on-surface-variant">Room 108 • Standard</p>
+</div>
+<button class="text-on-surface-variant border border-outline-variant px-2 py-1 rounded text-xs hover:bg-surface-container transition-colors">Done</button>
+</div>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Tasks &amp; Alerts</h4>
+<div class="flex flex-col gap-2">
+<!-- HK Task -->
+<div class="p-3 bg-surface rounded-lg border border-outline-variant/20 border-l-4 border-l-tertiary-fixed-dim flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[20px] mt-0.5">cleaning_services</span>
+<div>
+<p class="font-label-md text-sm text-on-surface">101 Standard Queen</p>
+<p class="font-body-sm text-xs text-on-surface-variant">Checkout Cleaning required</p>
+</div>
+</div>
+<!-- Maint Alert -->
+<div class="p-3 bg-surface rounded-lg border border-outline-variant/20 border-l-4 border-l-error flex items-start gap-3">
+<span class="material-symbols-outlined text-error text-[20px] mt-0.5">plumbing</span>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-label-md text-sm text-on-surface">Room 305</p>
+<span class="text-[10px] font-bold text-error bg-error/10 px-1.5 rounded uppercase">High</span>
+</div>
+<p class="font-body-sm text-xs text-on-surface-variant mt-0.5">AC leaking water</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-outline-variant/30 text-center bg-surface-bright/50">
+<button class="text-primary font-label-md text-sm hover:underline">View Daily Report</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Chart.js Initialization -->
+<script>
+        // Setup Chart.js defaults to match Tailwind Theme
+        Chart.defaults.font.family = 'Inter, sans-serif';
+        Chart.defaults.color = '#484456'; // on-surface-variant
+        Chart.defaults.scale.grid.color = '#e5eeff'; // surface-container
+
+        // Sparkline for Revenue
+        const ctxSparkline = document.getElementById('revenueSparkline').getContext('2d');
+        new Chart(ctxSparkline, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7'],
+                datasets: [{
+                    data: [35, 38, 42, 40, 45, 43, 48],
+                    borderColor: '#4a05da', // primary
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(74, 5, 218, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { display: false }, y: { display: false } },
+                layout: { padding: 0 }
+            }
+        });
+
+        // Occupancy Bar/Line Chart
+        const ctxOccupancy = document.getElementById('occupancyChart').getContext('2d');
+        new Chart(ctxOccupancy, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Occupancy %',
+                        data: [75, 78, 82, 85, 92, 95, 84],
+                        borderColor: '#006c44', // secondary
+                        backgroundColor: '#006c44',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                    },
+                    {
+                        type: 'bar',
+                        label: 'New Bookings',
+                        data: [12, 15, 8, 20, 25, 18, 10],
+                        backgroundColor: '#6338f1', // primary-container
+                        borderRadius: 4,
+                        yAxisID: 'y',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { 
+                        type: 'linear', display: true, position: 'left',
+                        title: { display: true, text: 'Bookings', font: { size: 10 } }
+                    },
+                    y1: { 
+                        type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false },
+                        min: 0, max: 100,
+                        title: { display: true, text: 'Occupancy %', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Donut Chart Room Status
+        const ctxRoomStatus = document.getElementById('roomStatusChart').getContext('2d');
+        new Chart(ctxRoomStatus, {
+            type: 'doughnut',
+            data: {
+                labels: ['Available', 'Occupied', 'Cleaning', 'Maintenance'],
+                datasets: [{
+                    data: [24, 110, 12, 4],
+                    backgroundColor: [
+                        '#4fdf9b', // secondary-fixed-dim
+                        '#4a05da', // primary
+                        '#ffb870', // tertiary-fixed-dim
+                        '#ba1a1a'  // error
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false } // Custom legend built in HTML
+                }
+            }
+        });
+    </script>
+</body></html>

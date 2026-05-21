@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InnHub - Reservations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c44",
+                        "surface-container": "#e5eeff",
+                        "background": "#f8f9ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#6c3d00",
+                        "primary-fixed-dim": "#cabeff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#005232",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c9c3d9",
+                        "surface-bright": "#f8f9ff",
+                        "surface-tint": "#6135ef",
+                        "on-primary-fixed": "#1c0062",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ffd4ad",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#693c00",
+                        "surface": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#002112",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb870",
+                        "inverse-primary": "#cabeff",
+                        "primary-container": "#6338f1",
+                        "tertiary-container": "#8e5200",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#4800d6",
+                        "primary": "#4a05da",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed": "#ffdcbe",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-fixed-dim": "#4fdf9b",
+                        "on-surface-variant": "#484456",
+                        "on-primary-container": "#e0d7ff",
+                        "on-secondary": "#ffffff",
+                        "outline": "#797488",
+                        "secondary-fixed": "#6ffcb5",
+                        "on-secondary-container": "#007349",
+                        "primary-fixed": "#e6deff",
+                        "secondary-container": "#6ffcb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-md-mobile": ["Hanken Grotesk"],
+                        "stat-value": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "stat-value": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[260px] flex flex-col bg-surface border-r border-outline-variant hidden md:flex">
+<div class="flex flex-col h-full py-8">
+<div class="px-6 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-primary">InnHub</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Internal Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Reservations (Active) -->
+<a class="flex items-center gap-3 px-6 py-4 text-primary font-bold border-r-4 border-primary bg-primary-container/10 active:scale-95 active:opacity-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-md text-label-md">Reservations</span>
+</a>
+<!-- Rooms -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+<span class="font-label-md text-label-md">Rooms</span>
+</a>
+<!-- Guests -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Guests</span>
+</a>
+<!-- Housekeeping -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="cleaning_services">cleaning_services</span>
+<span class="font-label-md text-label-md">Housekeeping</span>
+</a>
+<!-- Maintenance -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="font-label-md text-label-md">Maintenance</span>
+</a>
+<!-- Billing -->
+<a class="flex items-center gap-3 px-6 py-4 text-on-surface-variant font-medium hover:bg-surface-container-low hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md font-bold hover:bg-primary/90 transition-colors shadow-sm">
+                    Add New Booking
+                </button>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-[260px] h-20 flex items-center bg-surface-bright border-b border-outline-variant z-10">
+<div class="flex justify-between items-center w-full px-8 gap-6">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (hidden on md) -->
+<button class="md:hidden p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">
+                    InnHub Demo Residence
+                </div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-on-surface-variant hidden sm:block">Nov 15, 2023</span>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border border-outline-variant">
+<img alt="Manager Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a hotel manager in a light grey suit against a solid soft blue background. Clean, corporate lighting, friendly expression, modern corporate portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn4OZg1KaTuouJVm2x_Zl4p2zZygKEjJjqWQ3OTfgDkqgL07tHqhcYbh7n2ZCJjvmP5tqEDzKlsMYN8WKJHwZkS72OFAGudsIDF10uZb_T8SVZ84ld6gHspne1cr8RFFXP9yURtcoxqJvEWcIePZTltYopN20xt2MIjg1zaYab_mme73bzujWWYmUr9TQJ_OoPSc883aEjCLbWkC2llJY5H03VCv8YJFTzdX113k6Kmys0bJr4o9SWRQtHBEB5QTbzNwhwgBhpWWc"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 mt-20 md:ml-[260px] p-margin-mobile md:p-margin-desktop w-full max-w-[1600px] mx-auto">
+<div class="flex flex-col gap-6">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Reservations</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage and track all property bookings.</p>
+</div>
+<!-- Search & Filter Bar -->
+<div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline" placeholder="Search by guest, ID..." type="text"/>
+</div>
+<button class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                        Date Range
+                    </button>
+<button class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filters
+                    </button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex space-x-1 border-b border-outline-variant">
+<button class="px-4 py-3 font-label-md text-label-md text-primary border-b-2 border-primary">Upcoming</button>
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">In-house</button>
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Past</button>
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Cancelled</button>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-low/50">
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Res ID</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Guest Name</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Room</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Dates</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Status</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold">Payment</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface font-medium">#RES-8092</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-md font-bold">JD</div>
+<div class="font-body-md text-body-md text-on-surface">John Doe</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">204 - Deluxe King</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">Nov 16 - Nov 20</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-md text-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span>
+                                        Confirmed
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md text-[11px]">
+                                        Paid
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Check-in">
+<span class="material-symbols-outlined text-[20px]">login</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Print Invoice">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface font-medium">#RES-8093</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center font-label-md font-bold">AS</div>
+<div class="font-body-md text-body-md text-on-surface">Alice Smith</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">310 - Junior Suite</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">Nov 18 - Nov 22</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/20 text-on-tertiary-container font-label-md text-label-md text-[11px] text-[#8e5200]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#8e5200]"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md text-[11px]">
+                                        Partial
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Check-in">
+<span class="material-symbols-outlined text-[20px]">login</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Print Invoice">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface font-medium">#RES-8094</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-md font-bold">MJ</div>
+<div class="font-body-md text-body-md text-on-surface">Michael Johnson</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">105 - Standard Double</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">Nov 20 - Nov 21</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-md text-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span>
+                                        Confirmed
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container/30 text-on-error-container font-label-md text-label-md text-[11px]">
+                                        Unpaid
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Check-in">
+<span class="material-symbols-outlined text-[20px]">login</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Print Invoice">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 3 of 45 entries</span>
+<div class="flex gap-1">
+<button class="p-1 text-outline hover:text-primary transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-label-md text-label-md">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low text-on-surface font-label-md text-label-md transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low text-on-surface font-label-md text-label-md transition-colors">3</button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
