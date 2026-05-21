@@ -3,6 +3,9 @@
 .pi/
 .pi-lens/
 
+# Agent/session handoff files
+/context.md
+
 # Dependencies
 node_modules/
 
