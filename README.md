@@ -148,8 +148,20 @@ Guest inquiry → Reservation → Check-in → Stay management
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
+
+### Backend environment
+
+InnHub uses InsForge as the MVP backend. Fill `.env.local` with the project values from InsForge settings or the connected backend metadata:
+
+```env
+VITE_INSFORGE_BASE_URL=https://your-project.region.insforge.app
+VITE_INSFORGE_ANON_KEY=your-anon-key
+```
+
+Keep real keys in `.env.local` or deployment settings only. Issue #4 prepares the environment foundation; database tables and seed data are handled in later backend slices.
 
 Useful checks:
 
