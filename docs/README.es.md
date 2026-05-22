@@ -23,6 +23,7 @@
 | [Arquitectura](05-architecture.es.md)                         | Estructura interna, organización frontend y límites de datos     |
 | [Flujo Git](06-git-workflow.es.md)                            | Estrategia de ramas, issues, PRs y flujo de trabajo              |
 | [Especificación funcional](07-functional-specification.es.md) | Actores, requisitos, reglas de negocio y criterios de aceptación |
+| [ERD de base de datos](08-database-erd.es.md)                 | Modelo entidad-relación a nivel base de datos y diseño de tablas |
 
 ## Orden sugerido
 
@@ -30,9 +31,10 @@
 2. Alcance MVP
 3. Modelo de dominio
 4. Especificación funcional
-5. Stack tecnológico
-6. Arquitectura
-7. Flujo Git
+5. ERD de base de datos
+6. Stack tecnológico
+7. Arquitectura
+8. Flujo Git
 
 ## Recursos visuales y plantillas
 

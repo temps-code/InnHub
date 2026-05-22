@@ -23,6 +23,7 @@
 | [Architecture](05-architecture.md) | Internal structure, frontend organization, and data boundaries |
 | [Git Workflow](06-git-workflow.md) | Branch strategy, issues, PRs, and development flow |
 | [Functional Specification](07-functional-specification.md) | Actors, requirements, business rules, and acceptance criteria |
+| [Database ERD](08-database-erd.md) | Database-level entity relationship model and table design |
 
 ---
 
@@ -32,9 +33,10 @@
 2. MVP Scope
 3. Domain Model
 4. Functional Specification
-5. Tech Stack
-6. Architecture
-7. Git Workflow
+5. Database ERD
+6. Tech Stack
+7. Architecture
+8. Git Workflow
 
 ## Assets and Templates
 
