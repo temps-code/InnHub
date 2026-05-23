@@ -141,8 +141,10 @@ Consulta del huésped → Reserva → Check-in → Gestión de estadía
 | Testing                   | Vitest                      |
 | Backend / BaaS            | InsForge                    |
 | Base de datos             | PostgreSQL                  |
-| Auth / Storage / Realtime | Servicios de InsForge       |
+| Auth / Realtime            | Servicios de InsForge       |
 | Deploy                    | Vercel o Netlify + InsForge |
+
+Storage queda diferido intencionalmente hasta que un flujo acotado de archivos lo requiera, como comprobantes de pago, adjuntos de mantenimiento o PDFs de facturas.
 
 ## Primeros pasos
 

@@ -141,8 +141,10 @@ Guest inquiry → Reservation → Check-in → Stay management
 | Testing                   | Vitest                       |
 | Backend / BaaS            | InsForge                     |
 | Database                  | PostgreSQL                   |
-| Auth / Storage / Realtime | InsForge services            |
+| Auth / Realtime            | InsForge services            |
 | Deployment                | Vercel or Netlify + InsForge |
+
+Storage is intentionally deferred until a scoped file workflow requires it, such as payment receipts, maintenance attachments, or invoice PDFs.
 
 ## Getting Started
 

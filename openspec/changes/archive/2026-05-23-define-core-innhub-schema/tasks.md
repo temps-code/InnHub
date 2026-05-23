@@ -93,20 +93,20 @@ Goal: apply the already-reviewed migration to InsForge and record remote schema 
 
 ### Pre-apply checks
 
-- [ ] Confirm Work Unit A is merged/accepted and `npm run test:run` passes on the branch used for remote application.
-- [ ] Confirm InsForge MCP connectivity and target backend metadata availability.
-- [ ] Confirm or test `pgcrypto` / `gen_random_uuid()` support before full migration execution.
+- [x] Confirm Work Unit A is merged/accepted and `npm run test:run` passes on the branch used for remote application.
+- [x] Confirm InsForge MCP connectivity and target backend metadata availability.
+- [x] Confirm or test `pgcrypto` / `gen_random_uuid()` support before full migration execution.
 
 ### Remote apply
 
-- [ ] Read `database/migrations/001_define_core_innhub_schema.sql` exactly as committed.
-- [ ] Apply SQL to InsForge with MCP tool `insforge_run-raw-sql`.
-- [ ] If application partially fails, stop, record error/output, and use approved rollback/reset plan before retrying.
+- [x] Read `database/migrations/001_define_core_innhub_schema.sql` exactly as committed.
+- [x] Apply SQL to InsForge with MCP tool `insforge_run-raw-sql`.
+- [x] If application partially fails, stop, record error/output, and use approved rollback/reset plan before retrying. No partial failure occurred.
 
 ### Remote validation
 
-- [ ] Validate schema inventory with `insforge_get-backend-metadata`.
-- [ ] Inspect representative tables with `insforge_get-table-schema`:
+- [x] Validate schema inventory with `insforge_get-backend-metadata`.
+- [x] Inspect representative tables with `insforge_get-table-schema`:
   - `properties`
   - `profiles`
   - `rooms`
@@ -114,8 +114,8 @@ Goal: apply the already-reviewed migration to InsForge and record remote schema 
   - `stays`
   - `invoices`
   - `payments`
-- [ ] Validate enum types/values with `insforge_run-raw-sql` against PostgreSQL catalogs if metadata does not expose enum values.
-- [ ] Validate key constraints or document any InsForge capability limitation:
+- [x] Validate enum types/values with `insforge_run-raw-sql` against PostgreSQL catalogs if metadata does not expose enum values.
+- [x] Validate key constraints or document any InsForge capability limitation:
   - `profiles.auth_user_id` uniqueness.
   - `rooms(property_id, identifier)` uniqueness.
   - required `property_id` FKs.
@@ -124,12 +124,12 @@ Goal: apply the already-reviewed migration to InsForge and record remote schema 
 
 ### Evidence and verification
 
-- [ ] Record exact InsForge MCP tools used and results in `openspec/changes/define-core-innhub-schema/apply-progress.md` or a dedicated validation section.
-- [ ] Run final local checks after evidence updates:
+- [x] Record exact InsForge MCP tools used and results in `openspec/changes/define-core-innhub-schema/apply-progress.md` or a dedicated validation section.
+- [x] Run final local checks after evidence updates:
   - `npm run test:run`
   - `npm run lint` if TypeScript files changed in this work unit.
   - `npm run build` if app/runtime TypeScript changed.
-- [ ] Prepare verify evidence for required tables, enums, property scope, relationship checks, and non-goals.
+- [x] Prepare verify evidence for required tables, enums, property scope, relationship checks, and non-goals.
 
 ### Work Unit B rollback
 

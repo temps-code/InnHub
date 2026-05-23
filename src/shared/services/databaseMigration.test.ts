@@ -158,6 +158,9 @@ describe("core InnHub database migration", () => {
 			"status reservation_item_status not null",
 		);
 		expect(stays).toContain("reservation_item_id uuid");
+		expect(stays).toContain(
+			"stays_reservation_item_key unique (reservation_item_id)",
+		);
 		expect(stays).toContain("room_id uuid not null");
 		expect(stayGuests).toContain("stay_id uuid not null");
 		expect(stayGuests).toContain("guest_id uuid not null");
