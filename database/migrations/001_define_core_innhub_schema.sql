@@ -138,6 +138,7 @@ create table stays (
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now(),
 	constraint stays_id_property_id_key unique (id, property_id),
+	constraint stays_reservation_item_key unique (reservation_item_id),
 	constraint stays_expected_checkout_check check (expected_check_out_date >= actual_check_in_at::date),
 	constraint stays_reservation_item_property_fk foreign key (reservation_item_id, property_id) references reservation_items(id, property_id) on delete restrict,
 	constraint stays_primary_guest_property_fk foreign key (primary_guest_id, property_id) references guests(id, property_id) on delete restrict,
