@@ -8,17 +8,17 @@
 
 ## Resumen del stack
 
-| Capa           | Tecnología                  | Razón                                                                       |
-| -------------- | --------------------------- | --------------------------------------------------------------------------- |
-| Frontend       | Vite + React + TypeScript   | SPA rápida, conocida y tipada                                               |
-| Estilos        | Tailwind CSS                | Iteración visual rápida y sistema consistente                               |
-| Routing        | React Router                | Enrutamiento estándar del cliente                                           |
-| Formularios    | React Hook Form + Zod       | Validación tipada y manejo limpio                                           |
-| Gráficos       | Recharts                    | Visualización de dashboard/reportes                                         |
-| Testing        | Vitest                      | Tests rápidos para reglas y utilidades                                      |
-| Backend / BaaS | InsForge                    | PostgreSQL, Auth, Storage, APIs y Realtime con menos carga backend          |
-| Base de datos  | PostgreSQL                  | Modelo relacional adecuado para reservas, facturas, habitaciones y reportes |
-| Deploy         | Vercel / Netlify + InsForge | Camino simple para demo y defensa                                           |
+| Capa           | Tecnología                  | Razón                                                                        |
+| -------------- | --------------------------- | ---------------------------------------------------------------------------- |
+| Frontend       | Vite + React + TypeScript   | SPA rápida, conocida y tipada                                                |
+| Estilos        | Tailwind CSS                | Iteración visual rápida y sistema consistente                                |
+| Routing        | React Router                | Enrutamiento estándar del cliente                                            |
+| Formularios    | React Hook Form + Zod       | Validación tipada y manejo limpio                                            |
+| Gráficos       | Recharts                    | Visualización de dashboard/reportes                                          |
+| Testing        | Vitest                      | Tests rápidos para reglas y utilidades                                       |
+| Backend / BaaS | InsForge                    | PostgreSQL, Auth, APIs, Realtime selectivo y Storage futuro con menor carga  |
+| Base de datos  | PostgreSQL                  | Modelo relacional adecuado para reservas, facturas, habitaciones y reportes  |
+| Deploy         | Vercel / Netlify + InsForge | Camino simple para demo y defensa                                            |
 
 ## Por qué este stack
 
@@ -29,6 +29,19 @@ El proyecto tiene tiempo limitado y debe priorizar un MVP funcional y desplegabl
 Tailwind CSS está configurado mediante el plugin de Vite e importado desde `src/index.css`. El CSS global debe limitarse a valores base del documento, variables semánticas de color y resets mínimos; los estilos de features y UI compartida deben usar utilidades de Tailwind.
 
 Los modos claro y oscuro quedan preparados para un cambio manual futuro mediante el atributo `data-theme` en el elemento raíz `<html>`. Usar `data-theme="light"` o `data-theme="dark"` en lugar de depender solo de la preferencia del sistema operativo.
+
+## Estrategia de storage
+
+InsForge Storage forma parte de la capacidad backend seleccionada, pero queda diferido para la implementación actual del MVP hasta que un flujo concreto de archivos lo necesite.
+
+Usos futuros probables:
+
+- comprobantes de pagos manuales;
+- adjuntos de tickets de mantenimiento;
+- PDFs de facturas;
+- logos de propiedades o fotos de habitaciones.
+
+No agregar buckets de storage, UI de carga ni tablas de metadata de archivos como parte del schema core salvo que una issue acotada lo pida explícitamente. Cuando se incorpore, storage debe definir nombres de buckets, rutas filtradas por `property_id`, reglas de acceso y referencias de metadata en PostgreSQL antes de implementarse.
 
 ## Estrategia realtime
 
