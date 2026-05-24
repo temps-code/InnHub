@@ -1,7 +1,7 @@
 import { Navigate, type RouteObject } from "react-router-dom";
 
 import { ProtectedLayout } from "../layouts/ProtectedLayout";
-import { LoginPlaceholderPage } from "../pages/LoginPlaceholderPage";
+import { LoginPage } from "../pages/LoginPage";
 import { ModulePlaceholderPage } from "../pages/ModulePlaceholderPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
@@ -9,7 +9,7 @@ import { APP_BASE_PATH, protectedRoutes } from "./routeMetadata";
 
 export const appRoutes: RouteObject[] = [
 	{ path: "/", element: <PublicHomePage /> },
-	{ path: "/login", element: <LoginPlaceholderPage /> },
+	{ path: "/login", element: <LoginPage /> },
 	{
 		path: APP_BASE_PATH,
 		element: <ProtectedLayout />,

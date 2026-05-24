@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 
+import { useAuthSession } from "../../features/auth";
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 
 type TopBarProps = {
@@ -8,12 +9,41 @@ type TopBarProps = {
 
 export function TopBar({ activeRoute }: TopBarProps) {
 	const { t } = useTranslation();
+	const { logout, state } = useAuthSession();
+	const profileLabel =
+		state.status === "authenticated"
+			? (state.session.profile.fullName ?? state.session.user.email)
+			: undefined;
 
 	return (
-		<header className="border-b border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-4 md:px-8">
-			<p className="m-0 text-xs font-bold tracking-[0.14em] text-[var(--color-primary)] uppercase">{t("shell.topbar.eyebrow")}</p>
-			<p className="m-0 text-xl font-bold text-[var(--color-heading)]">{activeRoute ? t(activeRoute.titleKey) : t("shell.topbar.fallbackTitle")}</p>
-			<p className="m-0 text-sm text-[var(--color-muted)]">{t("shell.topbar.workspaceLabel")}</p>
+		<header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-4 md:px-8">
+			<div>
+				<p className="m-0 text-xs font-bold tracking-[0.14em] text-[var(--color-primary)] uppercase">
+					{t("shell.topbar.eyebrow")}
+				</p>
+				<p className="m-0 text-xl font-bold text-[var(--color-heading)]">
+					{activeRoute
+						? t(activeRoute.titleKey)
+						: t("shell.topbar.fallbackTitle")}
+				</p>
+				<p className="m-0 text-sm text-[var(--color-muted)]">
+					{t("shell.topbar.workspaceLabel")}
+				</p>
+			</div>
+			<div className="flex items-center gap-3">
+				{profileLabel ? (
+					<span className="text-sm font-medium text-[var(--color-muted)]">
+						{profileLabel}
+					</span>
+				) : null}
+				<button
+					className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-2 text-sm font-bold text-[var(--color-heading)]"
+					onClick={() => void logout()}
+					type="button"
+				>
+					{t("auth.logout")}
+				</button>
+			</div>
 		</header>
 	);
 }

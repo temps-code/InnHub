@@ -104,66 +104,66 @@ Rollback boundary: restore structural `ProtectedLayout`, restore `/login` placeh
 
 ### B1. RED — Protected route behavior tests
 
-- [ ] Update `src/app/__tests__/App.routing.test.tsx` with failing tests for issue #5 behavior.
-- [ ] Cover:
+- [x] Update `src/app/__tests__/App.routing.test.tsx` with failing tests for issue #5 behavior.
+- [x] Cover:
   - unauthenticated `/app/dashboard` does not render protected sidebar/topbar/workspace and reaches `/login` or login-required UI;
   - loading state does not render protected shell content;
   - invalid profile/property state does not render protected shell content;
   - authenticated valid session renders dashboard through the existing shell;
   - `/login` renders a real login form outside the protected shell.
-- [ ] Use injected fake auth state/gateway so tests do not depend on live InsForge.
-- [ ] Run `npm run test:run -- src/app/__tests__/App.routing.test.tsx` and record RED evidence.
+- [x] Use injected fake auth state/gateway so tests do not depend on live InsForge.
+- [x] Run `npm run test:run -- src/app/__tests__/App.routing.test.tsx` and record RED evidence.
 
 ### B2. GREEN — ProtectedLayout guard
 
-- [ ] Update `src/app/layouts/ProtectedLayout.tsx` to switch on `useAuthSession().state`.
-- [ ] For `loading`, render a public-safe loading state without `AppShell`.
-- [ ] For `unauthenticated`, redirect to `/login` with optional `from` location state or render a login-required path, as finalized during apply.
-- [ ] For `invalid`, render a public-safe invalid-session message or recovery path without `AppShell`.
-- [ ] For `authenticated`, render existing `AppShell` + `Outlet` behavior.
-- [ ] Run the focused routing tests and confirm the guard cases pass.
+- [x] Update `src/app/layouts/ProtectedLayout.tsx` to switch on `useAuthSession().state`.
+- [x] For `loading`, render a public-safe loading state without `AppShell`.
+- [x] For `unauthenticated`, redirect to `/login` with optional `from` location state or render a login-required path, as finalized during apply.
+- [x] For `invalid`, render a public-safe invalid-session message or recovery path without `AppShell`.
+- [x] For `authenticated`, render existing `AppShell` + `Outlet` behavior.
+- [x] Run the focused routing tests and confirm the guard cases pass.
 
 ### B3. RED — Login/logout interaction tests
 
-- [ ] Add or update tests for login/logout interactions in concrete targets:
+- [x] Add or update tests for login/logout interactions in concrete targets:
   - `src/features/auth/__tests__/LoginForm.test.tsx`, if a separate form component is created;
   - `src/app/__tests__/App.routing.test.tsx`, if route-level behavior is enough.
-- [ ] Cover:
+- [x] Cover:
   - required email/password validation or disabled submit behavior;
   - valid credentials call provider `login` and navigate to the intended route or `/app/dashboard`;
   - invalid credentials show a UI-safe error;
   - logout prevents protected content from continuing to render.
-- [ ] Run focused tests and record RED evidence.
+- [x] Run focused tests and record RED evidence.
 
 ### B4. GREEN — Login page and logout UI
 
-- [ ] Replace or rename `src/app/pages/LoginPlaceholderPage.tsx` to `src/app/pages/LoginPage.tsx` and update `src/app/routes/routes.tsx`.
-- [ ] Create `src/features/auth/components/LoginForm.tsx` if it keeps login UI small and testable; otherwise keep minimal form logic in `LoginPage.tsx`.
-- [ ] Implement MVP email/password login with local state or existing React Hook Form only if it reduces code.
-- [ ] On successful login, navigate to preserved `from` path if practical; otherwise navigate to `/app/dashboard` and document the simpler MVP behavior.
-- [ ] Add compact logout action in the existing shell target, such as `src/app/shell/TopBar.tsx` or `src/app/shell/AppShell.tsx`.
-- [ ] Do not add registration/reset/user-management links unless inert and explicitly marked out of scope.
-- [ ] Run focused login/logout/routing tests and confirm GREEN.
+- [x] Replace or rename `src/app/pages/LoginPlaceholderPage.tsx` to `src/app/pages/LoginPage.tsx` and update `src/app/routes/routes.tsx`.
+- [x] Create `src/features/auth/components/LoginForm.tsx` if it keeps login UI small and testable; otherwise keep minimal form logic in `LoginPage.tsx`.
+- [x] Implement MVP email/password login with local state or existing React Hook Form only if it reduces code.
+- [x] On successful login, navigate to preserved `from` path if practical; otherwise navigate to `/app/dashboard` and document the simpler MVP behavior.
+- [x] Add compact logout action in the existing shell target, such as `src/app/shell/TopBar.tsx` or `src/app/shell/AppShell.tsx`.
+- [x] Do not add registration/reset/user-management links unless inert and explicitly marked out of scope.
+- [x] Run focused login/logout/routing tests and confirm GREEN.
 
 ### B5. TRIANGULATE — i18n and safe state copy
 
-- [ ] Update only necessary user-facing strings in:
+- [x] Update only necessary user-facing strings in:
   - `src/shared/i18n/resources/en.ts`;
   - `src/shared/i18n/resources/es.ts`.
-- [ ] Include copy for login labels, loading/auth-required state, invalid profile/property state, safe auth error, and logout.
-- [ ] Ensure errors never render tokens, anon keys, JWTs, or raw SDK error payloads.
-- [ ] Run `npm run test:run` and fix any i18n or route regressions.
+- [x] Include copy for login labels, loading/auth-required state, invalid profile/property state, safe auth error, and logout.
+- [x] Ensure errors never render tokens, anon keys, JWTs, or raw SDK error payloads.
+- [x] Run `npm run test:run` and fix any i18n or route regressions.
 
 ### B6. REFACTOR — Route/UI boundary cleanup
 
-- [ ] Inspect `src/app/layouts/ProtectedLayout.tsx`, `src/app/pages/LoginPage.tsx`, `src/app/shell/*`, and `src/features/auth/components/*` for direct InsForge imports or client creation.
-- [ ] Confirm protected route tests from issue #3 were intentionally updated from structural-only expectations to real auth enforcement.
-- [ ] Confirm no feature CRUD, seed data, Storage, RBAC, registration/reset, or issue #7 enforcement slipped into the diff.
-- [ ] Run final validation commands:
+- [x] Inspect `src/app/layouts/ProtectedLayout.tsx`, `src/app/pages/LoginPage.tsx`, `src/app/shell/*`, and `src/features/auth/components/*` for direct InsForge imports or client creation.
+- [x] Confirm protected route tests from issue #3 were intentionally updated from structural-only expectations to real auth enforcement.
+- [x] Confirm no feature CRUD, seed data, Storage, RBAC, registration/reset, or issue #7 enforcement slipped into the diff.
+- [x] Run final validation commands:
   - `npm run test:run`;
   - `npm run lint`;
   - `npm run build`.
-- [ ] Record validation results and changed-line estimate for Work Unit B in `openspec/changes/configure-auth-session/apply-progress.md`.
+- [x] Record validation results and changed-line estimate for Work Unit B in `openspec/changes/configure-auth-session/apply-progress.md`.
 
 ## Final SDD Closeout Tasks
 

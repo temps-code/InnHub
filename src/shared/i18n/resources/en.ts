@@ -25,15 +25,8 @@ export const en = {
 	},
 	public: {
 		home: {
-			loginLink: "View login placeholder",
+			loginLink: "Sign in",
 			previewLink: "Open app preview",
-		},
-		login: {
-			eyebrow: "Structural entry point",
-			title: "Login placeholder",
-			description:
-				"Authentication and session enforcement will be implemented in the future auth slice. This page only reserves the public route.",
-			previewLink: "Preview protected app shell",
 		},
 		notFound: {
 			title: "Page not found",
@@ -42,14 +35,35 @@ export const en = {
 			previewLink: "Open app preview",
 		},
 	},
+	auth: {
+		login: {
+			eyebrow: "Secure access",
+			title: "Sign in to InnHub",
+			description:
+				"Use your InnHub credentials to access your property workspace.",
+			emailLabel: "Email address",
+			passwordLabel: "Password",
+			submit: "Sign in",
+			submitting: "Signing in...",
+			requiredError: "Enter your email and password to sign in.",
+			genericError: "Invalid email or password.",
+		},
+		logout: "Log out",
+		states: {
+			loading: "Checking session",
+			invalidEyebrow: "Access blocked",
+			invalidTitle: "Account access needs attention",
+			invalidDescription:
+				"Your account is not linked to an active InnHub profile for a property. Contact an administrator before continuing.",
+		},
+	},
 	shell: {
 		sidebar: { ariaLabel: "Application modules" },
 		workspace: { ariaLabel: "{{title}} workspace" },
 		topbar: {
-			eyebrow: "Protected layout preview",
+			eyebrow: "Property workspace",
 			fallbackTitle: "App workspace",
-			workspaceLabel:
-				"Structural shell only. Auth and backend integration are deferred.",
+			workspaceLabel: "Authenticated InnHub workspace.",
 		},
 	},
 	placeholders: {
