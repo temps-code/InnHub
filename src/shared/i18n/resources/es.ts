@@ -27,15 +27,8 @@ export const es = {
 	},
 	public: {
 		home: {
-			loginLink: "Ver placeholder de login",
+			loginLink: "Iniciar sesión",
 			previewLink: "Abrir vista previa de la app",
-		},
-		login: {
-			eyebrow: "Punto de entrada estructural",
-			title: "Placeholder de login",
-			description:
-				"La autenticación y la validación de sesión se implementarán en el futuro slice de auth. Esta página solo reserva la ruta pública.",
-			previewLink: "Previsualizar shell protegido",
 		},
 		notFound: {
 			title: "Página no encontrada",
@@ -44,14 +37,35 @@ export const es = {
 			previewLink: "Abrir vista previa de la app",
 		},
 	},
+	auth: {
+		login: {
+			eyebrow: "Acceso seguro",
+			title: "Iniciar sesión en InnHub",
+			description:
+				"Usá tus credenciales de InnHub para acceder al espacio de tu propiedad.",
+			emailLabel: "Correo electrónico",
+			passwordLabel: "Contraseña",
+			submit: "Iniciar sesión",
+			submitting: "Iniciando sesión...",
+			requiredError: "Ingresá tu correo y contraseña para iniciar sesión.",
+			genericError: "Correo o contraseña inválidos.",
+		},
+		logout: "Cerrar sesión",
+		states: {
+			loading: "Validando sesión",
+			invalidEyebrow: "Acceso bloqueado",
+			invalidTitle: "El acceso de la cuenta requiere atención",
+			invalidDescription:
+				"Tu cuenta no está vinculada a un perfil activo de InnHub para una propiedad. Contactá a un administrador antes de continuar.",
+		},
+	},
 	shell: {
 		sidebar: { ariaLabel: "Módulos de la aplicación" },
 		workspace: { ariaLabel: "Espacio de trabajo: {{title}}" },
 		topbar: {
-			eyebrow: "Vista previa del layout protegido",
+			eyebrow: "Espacio de propiedad",
 			fallbackTitle: "Espacio de trabajo",
-			workspaceLabel:
-				"Shell estructural solamente. Auth e integración backend quedan diferidas.",
+			workspaceLabel: "Espacio autenticado de InnHub.",
 		},
 	},
 	placeholders: {
