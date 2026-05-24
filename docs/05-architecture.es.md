@@ -69,6 +69,14 @@ src/
 | Reglas puras cuando sea posible             | Facilita unit tests                       |
 | Realtime envuelto en hooks/services         | Evita duplicar lógica de suscripción      |
 
+## Acceso a datos limitado por propiedad
+
+Los services operativos deben derivar el scope de propiedad desde la sesión autenticada, no desde props de componentes, formularios, rutas, URLs ni payloads provistos por quien llama. Las lecturas y mutaciones de records asociados a una propiedad deben usar los helpers compartidos de property scope antes de construir queries de InsForge.
+
+Usar filtros por `property_id` para tablas operativas asociadas a propiedad y limitar la raíz `properties` con `id = session.propertyId`. Si un payload incluye un `property_id` diferente al scope de sesión, los services deben rechazarlo en lugar de confiar en input de UI.
+
+Estos helpers de repositorio son el patrón requerido en frontend/services, pero no equivalen a aislamiento completo a nivel base de datos. Las policies remotas de InsForge/PostgreSQL requieren un slice separado, aprobado, versionado y validado.
+
 ## Uso de Atomic Design
 
 Atomic Design se aplica solo a UI compartida: botones, badges, inputs, cards, modales, tablas y primitivas de layout. Componentes específicos quedan dentro de su feature.
