@@ -167,15 +167,15 @@ Rollback boundary: restore structural `ProtectedLayout`, restore `/login` placeh
 
 ## Final SDD Closeout Tasks
 
-- [ ] Review `openspec/changes/configure-auth-session/proposal.md`, `specs/auth-session/spec.md`, `design.md`, and this `tasks.md` for consistency after apply.
-- [ ] Ensure `openspec/changes/configure-auth-session/apply-progress.md` records strict-TDD RED/GREEN/TRIANGULATE/REFACTOR evidence for both work units.
-- [ ] Run final verification after all selected work units are accepted:
+- [x] Review `openspec/changes/configure-auth-session/proposal.md`, `specs/auth-session/spec.md`, `design.md`, and this `tasks.md` for consistency after apply.
+- [x] Ensure `openspec/changes/configure-auth-session/apply-progress.md` records strict-TDD RED/GREEN/TRIANGULATE/REFACTOR evidence for both work units.
+- [x] Run final verification after all selected work units are accepted:
   - `npm run test:run`;
   - `npm run lint`;
   - `npm run build`.
-- [ ] During verify, confirm acceptance criteria from `openspec/changes/configure-auth-session/specs/auth-session/spec.md` and issue #5.
-- [ ] Sync `auth-session` into canonical OpenSpec specs only after the full issue #5 scope is verified.
-- [ ] Archive `openspec/changes/configure-auth-session/` only after sync and verification pass.
+- [x] During verify, confirm acceptance criteria from `openspec/changes/configure-auth-session/specs/auth-session/spec.md` and issue #5.
+- [x] Sync `auth-session` into canonical OpenSpec specs only after the full issue #5 scope is verified.
+- [x] Archive `openspec/changes/configure-auth-session/` only after sync and verification pass.
 
 ## PR / Delivery Notes
 
