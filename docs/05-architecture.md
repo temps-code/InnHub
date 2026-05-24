@@ -69,6 +69,14 @@ src/
 | Business rules are pure when possible    | Enables reliable unit tests                   |
 | Realtime is wrapped in hooks/services    | Avoids duplicated subscription logic          |
 
+## Property-Scoped Data Access
+
+Operational services must derive the current property scope from the authenticated session, not from component props, forms, routes, URLs, or caller-provided payloads. Service reads and mutations for property-owned records should use the shared property-scope helpers before building InsForge queries.
+
+Use `property_id` filters for property-owned operational tables and constrain the `properties` root by `id = session.propertyId`. If a payload includes a different `property_id` than the session scope, services must reject it instead of trusting UI input.
+
+These repository helpers are the required frontend/service pattern, but they are not complete database-level isolation. Remote InsForge/PostgreSQL policies require a separate approved, versioned, and validated slice.
+
 ## Atomic Design Usage
 
 Use Atomic Design for shared UI only: buttons, badges, inputs, cards, modals, tables, layout primitives. Feature-specific components stay inside their feature folders.
