@@ -75,16 +75,21 @@ The system MUST provide complete English and Spanish translation resources for t
 - WHEN new module labels or shell keys are added
 - THEN they SHOULD follow the established shared i18n resource structure instead of adding hardcoded UI copy
 
-### Requirement: No User Settings UI
+### Requirement: Minimal Preference Controls UI
 
-The system MUST NOT add a settings screen, navigation language switcher, or other end-user language preference UI as part of this change.
+The system MUST NOT add a full, dedicated user settings page or screen, but it SHALL expose a minimal locale toggle button in visible app shell surfaces to allow the user to switch between English (`en`) and Spanish (`es`) on demand.
 
-#### Scenario: Locale can be tested without settings UI
+#### Scenario: Locale can be switched via toggle UI
+- GIVEN the visitor is on any visible page surface (TopBar, LoginPage, PublicHomePage)
+- WHEN the user clicks the language toggle button
+- THEN the system MUST switch the active language (English ↔ Spanish)
+- AND the system MUST persist the new language preference in `innhub.locale`
 
-- GIVEN the change is implemented
+#### Scenario: Locale can be tested without full settings page
+- GIVEN the preference controls are implemented
 - WHEN tests verify Spanish rendering or locale switching behavior
-- THEN they MAY use i18n APIs, helpers, or controlled persisted values
-- AND they MUST NOT depend on a newly added settings UI
+- THEN they MAY use i18n APIs, helpers, controlled persisted values, or the language toggle button
+- AND they MUST NOT depend on a full user settings page or route
 
 ## Acceptance Criteria
 
@@ -93,5 +98,6 @@ The system MUST NOT add a settings screen, navigation language switcher, or othe
 - Spanish (`es`) rendering is supported for current app shell copy and module labels.
 - Invalid values persisted under `innhub.locale` fall back safely to English.
 - Translation resources live outside JSX components.
-- The change does not add settings UI, backend locale persistence, locale routing, or an external UI component library.
+- The change does not add a full user settings page or screen, backend locale persistence, locale routing, or an external UI component library.
+- A minimal locale toggle button is exposed in visible app shell surfaces (TopBar, LoginPage, PublicHomePage) to switch languages and persist the preference under `innhub.locale`.
 - Tests cover default English rendering, Spanish rendering, invalid persisted locale fallback, and resource-backed current shell labels.

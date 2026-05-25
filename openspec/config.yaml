@@ -1,12 +1,16 @@
 strict_tdd: true
 context: |
-  innhub-app is a Node.js/TypeScript ESM, React project.
+  innhub-app is a Node.js/TypeScript 6.0 ESM, React 19 + Vite 8 project.
   Detected markers: package.json, tsconfig.json, npm package manager.
   Package managers: npm.
+  Styling: Tailwind CSS 4 (via @tailwindcss/vite plugin).
+  Backend: InsForge SDK 1.2 (BaaS).
+  i18n: i18next + react-i18next.
   Primary test command: npm run test:run.
-  Unit tests: Vitest (npm run test:run).
-  Integration tests: Testing Library (npm run test:run).
+  Unit tests: Vitest 4.1 (npm run test:run).
+  Integration tests: Testing Library React 16 + jest-dom 6 + user-event 14 (npm run test:run).
   E2E tests: none.
+  Test files: 18 files, 109 tests passing.
 rules:
   proposal:
     require_problem_statement: true
@@ -21,7 +25,7 @@ rules:
   verify:
     test_command: "npm run test:run"
 testing:
-  detected: "2026-05-18"
+  detected: "2026-05-24"
   runner:
     command: "npm run test:run"
     framework: "Vitest"
@@ -41,7 +45,8 @@ testing:
     e2e:
       []
   coverage:
-    command: ""
+    command: "npx vitest run --coverage"
+    note: "Requires @vitest/coverage-v8 (not yet installed)"
     commands:
       []
 quality:
@@ -50,9 +55,11 @@ quality:
     - scope: "."
       command: "npm run lint"
       framework: "linter"
-  typecheck: ""
+  typecheck: "tsc -b"
   typecheck_commands:
-    []
+    - scope: "."
+      command: "tsc -b"
+      framework: "typescript"
   format: ""
   format_commands:
     []
