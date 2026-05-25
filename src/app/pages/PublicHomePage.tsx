@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { ModuleCard, PageSection } from "../../shared/components";
+import { ModuleCard, PageSection, PreferenceBar } from "../../shared/components";
 
 const foundationModuleKeys = [
 	"properties",
@@ -18,9 +18,12 @@ export function PublicHomePage() {
 
 	return (
 		<main
-			className="mx-auto w-[min(1120px,calc(100%_-_32px))] py-16 max-[760px]:w-[min(1120px,calc(100%_-_24px))] max-[760px]:py-8"
+			className="relative mx-auto w-[min(1120px,calc(100%_-_32px))] py-16 max-[760px]:w-[min(1120px,calc(100%_-_24px))] max-[760px]:py-8"
 			aria-labelledby="app-title"
 		>
+			<div className="absolute top-4 right-0 max-[760px]:top-2">
+				<PreferenceBar />
+			</div>
 			<section className="grid max-w-3xl gap-5 py-[72px] max-[760px]:py-12">
 				<img
 					className="h-[72px] w-[72px] rounded-[20px] shadow-[0_18px_48px_rgb(124_58_237_/_18%)]"
