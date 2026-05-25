@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { useAuthSession } from "../../features/auth";
+import { PreferenceBar } from "../../shared/components";
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 
 type TopBarProps = {
@@ -43,6 +44,7 @@ export function TopBar({ activeRoute }: TopBarProps) {
 				>
 					{t("auth.logout")}
 				</button>
+				<PreferenceBar />
 			</div>
 		</header>
 	);

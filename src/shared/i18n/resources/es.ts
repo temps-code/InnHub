@@ -74,6 +74,18 @@ export const es = {
 		eyebrow: "Placeholder de módulo",
 		note: "Placeholder solamente. Los workflows de features se implementarán en slices posteriores.",
 	},
+	preferences: {
+		theme: {
+			label: "Tema",
+			toggleDark: "Cambiar al tema oscuro",
+			toggleLight: "Cambiar al tema claro",
+		},
+		locale: {
+			label: "Idioma",
+			toggleEn: "Cambiar a inglés",
+			toggleEs: "Cambiar a español",
+		},
+	},
 	routes: {
 		protected: {
 			dashboard: {

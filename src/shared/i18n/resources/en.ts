@@ -72,6 +72,18 @@ export const en = {
 		eyebrow: "Module placeholder",
 		note: "Placeholder only. Feature workflows will be implemented in later slices.",
 	},
+	preferences: {
+		theme: {
+			label: "Theme",
+			toggleDark: "Switch to dark theme",
+			toggleLight: "Switch to light theme",
+		},
+		locale: {
+			label: "Language",
+			toggleEn: "Switch to English",
+			toggleEs: "Switch to Spanish",
+		},
+	},
 	routes: {
 		protected: {
 			dashboard: {

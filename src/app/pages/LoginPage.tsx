@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { LoginForm } from "../../features/auth/components/LoginForm";
+import { PreferenceBar } from "../../shared/components";
 
 type LoginLocationState = {
 	readonly from?: { readonly pathname?: string };
@@ -22,9 +23,12 @@ export function LoginPage() {
 
 	return (
 		<main
-			className="mx-auto grid min-h-screen w-[min(720px,calc(100%_-_32px))] place-items-center py-12"
+			className="relative mx-auto grid min-h-screen w-[min(720px,calc(100%_-_32px))] place-items-center py-12"
 			aria-labelledby="login-title"
 		>
+			<div className="absolute top-4 right-0">
+				<PreferenceBar />
+			</div>
 			<section className="w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-panel)]">
 				<p className="m-0 text-sm font-bold tracking-[0.14em] text-[var(--color-primary)] uppercase">
 					{t("auth.login.eyebrow")}
