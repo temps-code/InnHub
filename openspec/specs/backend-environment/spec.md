@@ -101,12 +101,62 @@ The system MUST keep issue #4 limited to backend environment foundation and MUST
 - WHEN reviewers inspect frontend changes
 - THEN the change MUST NOT implement auth screens, reservations, rooms, guests, billing, housekeeping, maintenance, reports, dashboard metrics, realtime subscriptions, or feature CRUD services
 
+### Requirement: Demo Credential Configuration Documentation
+
+The system MUST document any frontend demo credential configuration using Vite-compatible names and placeholder values only.
+
+#### Scenario: Environment example lists demo credential placeholders
+
+- GIVEN the implementation uses frontend-configured demo credentials
+- WHEN a developer opens `.env.example`
+- THEN the system MUST show placeholder-only demo credential variables with Vite-compatible names
+- AND the file MUST NOT contain real passwords, real API keys, anon keys, JWTs, access tokens, or private secrets.
+
+#### Scenario: Demo credential values are treated as public
+
+- GIVEN demo credential variables are exposed to the Vite frontend bundle
+- WHEN documentation describes those variables
+- THEN it MUST state that such values are public demo-only credentials, not secrets
+- AND it MUST warn that production or personal credentials MUST NOT be committed or treated as protected by frontend env naming.
+
+### Requirement: Demo Backend Setup Documentation
+
+The system MUST document the backend state required for demo login without requiring repository-managed production seed data.
+
+#### Scenario: Developer prepares demo backend state
+
+- GIVEN a developer or evaluator wants to use demo login
+- WHEN they follow setup documentation
+- THEN they MUST be told that a matching InsForge Auth user must exist
+- AND an active `profiles` row MUST link that auth user through `profiles.auth_user_id`
+- AND the linked profile MUST reference a valid property through `property_id`.
+
+#### Scenario: Documentation preserves setup boundary
+
+- GIVEN demo setup documentation is reviewed
+- WHEN reviewers inspect the change
+- THEN it MUST NOT claim that repository code creates the external InsForge Auth user unless such provisioning is explicitly implemented and validated
+- AND it MUST NOT introduce database schema changes, RLS/policy changes, or production seed data as part of this demo-login change.
+
+### Requirement: Demo Configuration Safe Missing-State Handling
+
+The system MUST define a safe missing-configuration state for demo login that does not expose configured values or backend secrets.
+
+#### Scenario: Missing demo config is explicit and non-secret
+
+- GIVEN one or more required demo credential values are absent or blank
+- WHEN the login page needs to decide whether demo access is available
+- THEN the system MUST expose an intentional unavailable, disabled, hidden, or safe-error state
+- AND the state MUST NOT render passwords, anon keys, tokens, JWTs, raw environment values, or raw backend payloads.
+
 ## Acceptance Criteria
 
 - `.env.example` documents `VITE_INSFORGE_BASE_URL` and `VITE_INSFORGE_ANON_KEY` with placeholders only.
+- `.env.example` documents frontend demo credential variables, when used, with Vite-compatible placeholder names only.
 - The frontend has a single InsForge SDK client/config boundary.
 - The SDK usage follows current InsForge MCP documentation.
 - Missing configuration behavior is clear and does not leak secrets.
 - Local/demo setup documentation explains how to create `.env.local` and where to obtain values.
+- Demo setup documentation treats frontend demo credentials as public demo-only values and explains the required InsForge Auth user, active linked profile, and property association.
 - No real secrets are committed.
-- No schema, auth flow, feature CRUD, realtime, storage, functions, seed data, deployment, or UI library work is included.
+- No schema, auth flow expansion, feature CRUD, realtime, storage, functions, production seed data, remote user provisioning, deployment, or UI library work is included.
