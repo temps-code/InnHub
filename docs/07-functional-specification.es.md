@@ -53,10 +53,10 @@
 - Cada usuario pertenece a una sola propiedad en el MVP.
 - Los registros operativos se filtran por propiedad.
 - Una habitación no puede tener reservas activas superpuestas.
-- Una reserva futura no cambia el estado físico a `reserved`.
-- El check-out debe disparar flujo de limpieza.
-- Mantenimiento puede bloquear disponibilidad.
-- Facturas pagadas no se modifican libremente.
+- Para los estados físicos de habitación y sus reglas de transición, consulte el [Alcance del MVP](02-mvp-scope.es.md#estados-de-habitacion). Una reserva futura no cambia el estado físico a `reserved`.
+- El check-out dispara el flujo de limpieza.
+- Mantenimiento bloquea la disponibilidad de la habitación.
+- Las facturas pagadas no se pueden modificar.
 
 ## Flujo de aceptación
 

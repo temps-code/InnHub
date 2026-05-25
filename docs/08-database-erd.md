@@ -75,17 +75,6 @@ A customer can reserve two double rooms and one single room as one `reservation`
 
 ## Main Relationships
 
-```text
-Property
-├── Profiles
-├── Guests
-├── RoomTypes ─── Rooms
-├── Reservations ─── ReservationItems ─── Stays ─── StayGuests
-├── HousekeepingTasks
-├── MaintenanceTickets
-└── Invoices ─── Payments
-```
-
 Key cardinalities:
 
 - One `property` has many operational records.

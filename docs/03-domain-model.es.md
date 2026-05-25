@@ -36,16 +36,7 @@ El diagrama muestra `Property` como raíz operativa. El ERD a nivel base de dato
 
 ## Relaciones
 
-```text
-Property
-├── Profiles
-├── Guests
-├── RoomTypes ─── Rooms
-├── Reservations ─── ReservationItems ─── Stays ─── StayGuests
-├── HousekeepingTasks
-├── MaintenanceTickets
-└── Invoices ─── Payments
-```
+Para ver las relaciones físicas a nivel de base de datos y las restricciones detalladas de las tablas, consulte el [ERD de base de datos](08-database-erd.es.md).
 
 ## Modelos derivados
 

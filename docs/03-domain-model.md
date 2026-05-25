@@ -36,16 +36,7 @@ The diagram shows `Property` as the operational root. The database-level ERD exp
 
 ## Relationship Overview
 
-```text
-Property
-├── Profiles
-├── Guests
-├── RoomTypes ─── Rooms
-├── Reservations ─── ReservationItems ─── Stays ─── StayGuests
-├── HousekeepingTasks
-├── MaintenanceTickets
-└── Invoices ─── Payments
-```
+For the physical database-level relationships and detailed table constraints, see [Database ERD](08-database-erd.md).
 
 ## Derived Read Models
 

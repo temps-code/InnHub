@@ -89,6 +89,8 @@ Use Atomic Design for shared UI only: buttons, badges, inputs, cards, modals, ta
 
 InnHub prioritizes reusable components before feature-specific UI growth. The existing architecture and component diagrams above are the reference views for this strategy; a new diagram is not required unless the implementation introduces a new architectural boundary.
 
+For academic goals, presentation criteria, and refactoring techniques, see [Academic & Refactoring Criteria](ACADEMIC.md).
+
 ### Implemented Shared UI Primitives
 
 The first reusable shared UI primitives are implemented under `src/shared/components` and specified in `openspec/specs/shared-ui/spec.md`. They are intentionally small, domain-neutral, and presentation-only.
@@ -103,27 +105,8 @@ The first reusable shared UI primitives are implemented under `src/shared/compon
 
 `PageSection` was implemented instead of a full `AppLayout` for this stage because routing, authentication, navigation, and protected layout decisions belong to later work. These primitives should remain generic: room-specific labels, reservation rules, metric calculations, and business decisions belong in feature code, schemas, services, or utility functions.
 
-### Refactoring Techniques
-
-| Technique                                 | Problem detected                                                                                   | Project strategy                                                                                                                                                | Expected improvement                                                                                   |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Extract Component                         | Large screens can mix JSX, layout, styling, and repeated UI fragments                              | Move repeated UI into shared components only when at least two modules can reuse it or when a component has a clear generic role                                | Improves cohesion, reduces duplication, and supports the product-line goal of reusable building blocks |
-| Extract Constants / Replace Magic Strings | Status names, labels, module names, routes, and UI messages can become scattered hard-coded values | Define typed constants or configuration objects for repeated states, labels, dashboard metrics, and module metadata                                             | Improves consistency, reduces typo-prone changes, and makes future module variation easier             |
-| Extract Pure Function                     | Business rules can accidentally move into JSX or event handlers                                    | Move reusable calculations and decisions, such as status-to-tone mapping or availability checks, into feature utilities or shared utilities when domain-neutral | Makes rules testable, easier to review, and independent from UI rendering                              |
-
-Refactoring should be incremental. The goal is not to build a large design system early, but to extract stable patterns as the MVP grows.
-
-### Academic Presentation Criteria
-
-For the refactoring assignment, the project will present at least two techniques with explicit evidence:
-
-1. **Extract Component** will be demonstrated through repeated UI patterns such as buttons, status indicators, cards, and layout sections.
-2. **Extract Constants / Replace Magic Strings** will be demonstrated through shared configuration for repeated status names, route labels, module metadata, or dashboard metrics.
-3. **Extract Pure Function** may be added when business rules or UI mappings need testable logic outside JSX.
-
-The implementation phase should only extract a component or rule when the duplication is visible or the reusable role is clear. This keeps the documentation aligned with the code and avoids artificial refactoring.
-
 ## Related Documents
 
+- [Academic Criteria](ACADEMIC.md)
 - [Tech Stack](04-tech-stack.md)
 - [Domain Model](03-domain-model.md)

@@ -89,6 +89,8 @@ Atomic Design se aplica solo a UI compartida: botones, badges, inputs, cards, mo
 
 InnHub prioriza componentes reutilizables antes de hacer crecer la UI específica de cada feature. Los diagramas de arquitectura y componentes existentes en este documento son la referencia para esta estrategia; no se requiere un diagrama nuevo salvo que la implementación introduzca un nuevo límite arquitectónico.
 
+Para el marco académico, los criterios de presentación y las técnicas de refactorización, consulte [Objetivos Académicos y Criterios de Refactorización](ACADEMIC.es.md).
+
 ### Primitivas de UI compartida implementadas
 
 Las primeras primitivas reutilizables de UI compartida ya están implementadas bajo `src/shared/components` y especificadas en `openspec/specs/shared-ui/spec.md`. Son deliberadamente pequeñas, neutrales al dominio y solo de presentación.
@@ -103,27 +105,8 @@ Las primeras primitivas reutilizables de UI compartida ya están implementadas b
 
 `PageSection` se implementó en lugar de un `AppLayout` completo en esta etapa porque las decisiones de routing, autenticación, navegación y layouts protegidos pertenecen a trabajo posterior. Estas primitivas deben mantenerse genéricas: etiquetas específicas de habitaciones, reglas de reservas, cálculos de métricas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
 
-### Técnicas de refactorización
-
-| Técnica                                   | Problema detectado                                                                                      | Estrategia del proyecto                                                                                                                                                                | Mejora esperada                                                                                                    |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Extract Component                         | Las pantallas grandes pueden mezclar JSX, layout, estilos y fragmentos de UI repetidos                  | Mover UI repetida a componentes compartidos solo cuando al menos dos módulos puedan reutilizarla o cuando tenga un rol genérico claro                                                  | Mejora la cohesión, reduce duplicación y sostiene el objetivo de componentes reutilizables en la línea de producto |
-| Extract Constants / Replace Magic Strings | Nombres de estados, labels, módulos, rutas y mensajes pueden quedar dispersos como valores hardcodeados | Definir constantes tipadas u objetos de configuración para estados, labels, métricas de dashboard y metadatos de módulos repetidos                                                     | Mejora la consistencia, reduce errores por tipeo y facilita variaciones futuras entre módulos                      |
-| Extract Pure Function                     | Las reglas de negocio pueden terminar accidentalmente dentro de JSX o handlers                          | Mover cálculos y decisiones reutilizables, como mapeo de estado a tono visual o validaciones de disponibilidad, a utilidades de feature o compartidas cuando sean neutrales al dominio | Hace las reglas testeables, más fáciles de revisar e independientes del renderizado de UI                          |
-
-La refactorización debe ser incremental. El objetivo no es construir un design system grande de forma temprana, sino extraer patrones estables a medida que crece el MVP.
-
-### Criterios para la presentación académica
-
-Para el entregable de refactorización, el proyecto presentará al menos dos técnicas con evidencia explícita:
-
-1. **Extract Component** se demostrará mediante patrones repetidos de UI como botones, indicadores de estado, cards y secciones de layout.
-2. **Extract Constants / Replace Magic Strings** se demostrará mediante configuración compartida para nombres de estado, labels de rutas, metadatos de módulos o métricas de dashboard repetidas.
-3. **Extract Pure Function** podrá agregarse cuando las reglas de negocio o los mapeos visuales necesiten lógica testeable fuera del JSX.
-
-La fase de implementación solo debe extraer un componente o regla cuando la duplicación sea visible o el rol reutilizable sea claro. Esto mantiene la documentación alineada con el código y evita refactorizaciones artificiales.
-
 ## Documentos relacionados
 
+- [Criterios Académicos](ACADEMIC.es.md)
 - [Stack tecnológico](04-tech-stack.es.md)
 - [Modelo de dominio](03-domain-model.es.md)

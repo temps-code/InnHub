@@ -53,10 +53,10 @@
 - A user belongs to exactly one property in the MVP.
 - Operational records are filtered by property.
 - A room cannot have overlapping active reservations.
-- A future reservation does not change physical room state to `reserved`.
-- Check-out should trigger cleaning workflow.
-- Maintenance can block room availability.
-- Paid invoices should not be freely modified.
+- For physical room states and transition rules, see [MVP Scope](02-mvp-scope.md#room-states). A future reservation does not change physical room state to `reserved`.
+- Check-out triggers the housekeeping/cleaning workflow.
+- Maintenance blocks room availability.
+- Paid invoices cannot be modified.
 
 ## Acceptance Flow
 

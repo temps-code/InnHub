@@ -1,6 +1,7 @@
 # InnHub — Product Overview
 
-> This document defines what InnHub is, who it serves, and why the project exists.
+> This document defines what InnHub is, who it serves, and why the project exists.  
+> For the academic framework and evaluation guidelines, see [Academic & Refactoring Criteria](ACADEMIC.md).
 
 📄 Read this in: **English** | [Español](01-product-overview.es.md)
 
@@ -24,13 +25,7 @@ InnHub centralizes the operational workflow in one web application. Each propert
 
 ## Target Users
 
-| Actor | Main Need |
-|---|---|
-| Administrator | Configure the property, users, roles, rooms, and system settings |
-| Manager | Monitor occupancy, revenue, operations, and reports |
-| Receptionist | Manage guests, reservations, check-ins, check-outs, invoices, and payments |
-| Housekeeping Staff | Follow and complete cleaning tasks |
-| Maintenance Staff | Register and resolve room maintenance issues |
+See [Functional Specification](07-functional-specification.md#actors) for the detailed list of project actors and their specific operational needs.
 
 ## Core Workflow
 
@@ -43,24 +38,17 @@ Guest inquiry → Reservation → Check-in → Stay management
 
 ## Project Goals
 
-- Build a serious academic MVP with professional documentation.
 - Keep scope realistic while preserving business value.
 - Use a known frontend stack and InsForge to reduce backend overhead.
-- Demonstrate clean architecture, modularity, and testable business rules.
-- Present the project as a GitHub/CV-ready product case study.
+- For academic-specific evaluation goals, see [Academic & Refactoring Criteria](ACADEMIC.md).
 
 ## Non-Goals
 
-- Full accounting system.
-- Payroll or inventory management.
-- External booking integrations.
-- Real payment gateway processing.
-- Mobile app.
-- Advanced BI/AI features.
-- Enterprise multi-tenant SaaS complexity.
+See [MVP Scope](02-mvp-scope.md#out-of-scope) for the project boundaries, limitations, and out-of-scope definitions.
 
 ## Related Documents
 
+- [Academic Criteria](ACADEMIC.md)
 - [MVP Scope](02-mvp-scope.md)
 - [Domain Model](03-domain-model.md)
 - [Functional Specification](07-functional-specification.md)

@@ -1,6 +1,7 @@
 # InnHub — Visión del Producto
 
-> Este documento define qué es InnHub, a quién sirve y por qué existe el proyecto.
+> Este documento define qué es InnHub, a quién sirve y por qué existe el proyecto.  
+> Para el marco académico y las pautas de evaluación, consulte [Objetivos Académicos y Criterios de Refactorización](ACADEMIC.es.md).
 
 📄 Leer en: [English](01-product-overview.md) | **Español**
 
@@ -24,13 +25,7 @@ InnHub centraliza el flujo operativo en una aplicación web. Cada propiedad gest
 
 ## Usuarios objetivo
 
-| Actor | Necesidad principal |
-|---|---|
-| Administrador | Configurar propiedad, usuarios, roles, habitaciones y ajustes |
-| Gerente | Monitorear ocupación, ingresos, operaciones y reportes |
-| Recepcionista | Gestionar huéspedes, reservas, check-ins, check-outs, facturas y pagos |
-| Personal de limpieza | Seguir y completar tareas de limpieza |
-| Personal de mantenimiento | Registrar y resolver incidencias de habitaciones |
+Consulte la [Especificación Funcional](07-functional-specification.es.md#actores) para ver la lista detallada de actores del proyecto y sus necesidades operativas específicas.
 
 ## Flujo principal
 
@@ -43,24 +38,17 @@ Consulta del huésped → Reserva → Check-in → Gestión de estadía
 
 ## Objetivos
 
-- Construir un MVP académico serio con documentación profesional.
 - Mantener alcance realista sin perder valor de negocio.
 - Usar stack frontend conocido e InsForge para reducir carga backend.
-- Demostrar arquitectura limpia, modularidad y reglas testeables.
-- Presentar el proyecto como caso de producto apto para GitHub/CV.
+- Para los objetivos específicos de la evaluación académica, consulte [Objetivos Académicos y Criterios de Refactorización](ACADEMIC.es.md).
 
 ## Fuera de alcance
 
-- Contabilidad completa.
-- Nómina o inventario.
-- Integraciones con Booking/Airbnb.
-- Pasarela de pagos real.
-- App móvil.
-- BI/IA avanzado.
-- Complejidad SaaS multi-tenant empresarial.
+Consulte el [Alcance del MVP](02-mvp-scope.es.md#fuera-de-alcance) para ver los límites, restricciones y definiciones de fuera de alcance del proyecto.
 
 ## Documentos relacionados
 
+- [Criterios Académicos](ACADEMIC.es.md)
 - [MVP Scope](02-mvp-scope.es.md)
 - [Domain Model](03-domain-model.es.md)
 - [Functional Specification](07-functional-specification.es.md)

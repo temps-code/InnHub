@@ -75,17 +75,6 @@ Un cliente puede reservar dos habitaciones dobles y una simple como una `reserva
 
 ## Relaciones principales
 
-```text
-Property
-├── Profiles
-├── Guests
-├── RoomTypes ─── Rooms
-├── Reservations ─── ReservationItems ─── Stays ─── StayGuests
-├── HousekeepingTasks
-├── MaintenanceTickets
-└── Invoices ─── Payments
-```
-
 Cardinalidades clave:
 
 - Una `property` tiene muchos registros operativos.
