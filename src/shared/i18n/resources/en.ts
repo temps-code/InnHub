@@ -47,6 +47,8 @@ export const en = {
 			submitting: "Signing in...",
 			requiredError: "Enter your email and password to sign in.",
 			genericError: "Invalid email or password.",
+			demoSubmit: "Use demo account",
+			demoUnavailable: "Demo account is not configured for this environment.",
 		},
 		logout: "Log out",
 		states: {

@@ -49,6 +49,8 @@ export const es = {
 			submitting: "Iniciando sesión...",
 			requiredError: "Ingresá tu correo y contraseña para iniciar sesión.",
 			genericError: "Correo o contraseña inválidos.",
+			demoSubmit: "Usar cuenta demo",
+			demoUnavailable: "La cuenta demo no está configurada para este entorno.",
 		},
 		logout: "Cerrar sesión",
 		states: {
