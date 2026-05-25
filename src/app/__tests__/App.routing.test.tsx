@@ -6,7 +6,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AuthSessionProvider } from "../../features/auth";
 import type { AuthSessionGateway } from "../../features/auth/services/authSessionService";
@@ -18,6 +18,32 @@ import type {
 import { i18n } from "../../shared/i18n/config";
 import { protectedRoutes } from "../routes/routeMetadata";
 import { appRoutes } from "../routes/routes";
+
+// PropertyProfilePage depends on useCurrentProperty, so we provide a
+// default mock so the properties route renders its read view instead of
+// stalling in a loading/error state when no real backend is available.
+vi.mock("../../features/properties/useCurrentProperty", () => ({
+	useCurrentProperty: () => ({
+		state: {
+			status: "loaded" as const,
+			property: {
+				id: "property-1",
+				slug: "test-property",
+				name: "Test Property",
+				business_type: "hotel",
+				timezone: "America/New_York",
+				currency: "USD",
+				address: "123 Test St",
+				phone: "+1 555-0000",
+				email: "test@innhub.test",
+				created_at: "2025-01-01T00:00:00Z",
+				updated_at: "2025-06-01T00:00:00Z",
+			},
+		},
+		update: vi.fn(),
+		refresh: vi.fn(),
+	}),
+}));
 
 const authUser: AuthUser = {
 	id: "auth-user-1",
