@@ -30,6 +30,18 @@ Tailwind CSS is configured through the Vite plugin and imported from `src/index.
 
 Light and dark mode are prepared for future manual switching through the `data-theme` attribute on the root `<html>` element. Use `data-theme="light"` or `data-theme="dark"` instead of relying only on the operating system preference.
 
+## Demo Authentication Setup
+
+The login screen may expose an optional demo account for MVP validation when `VITE_DEMO_LOGIN_EMAIL` and `VITE_DEMO_LOGIN_PASSWORD` are configured. Because Vite frontend variables are bundled into the browser, these values are public demo-only credentials, not secrets. Never commit production credentials, personal accounts, API keys, JWTs, or private tokens.
+
+Demo login still uses the normal InsForge authentication flow. Before it works, the backend environment must already contain:
+
+- an InsForge Auth user for the demo credentials;
+- an active `profiles` row whose `auth_user_id` matches that Auth user;
+- a valid `property_id` on that profile that references an existing property.
+
+Repository code does not provision the external Auth user or create production seed data as part of demo login.
+
 ## Storage Strategy
 
 InsForge Storage is part of the selected backend capability, but it is deferred for the current MVP implementation until a concrete file workflow needs it.

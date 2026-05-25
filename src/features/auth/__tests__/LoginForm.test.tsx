@@ -5,11 +5,12 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AuthSessionProvider } from "../AuthSessionProvider";
 import { LoginForm } from "../components/LoginForm";
 import type { AuthSessionGateway } from "../services/authSessionService";
+import type { DemoCredentialsResult } from "../services/demoCredentials";
 import type { AppProfile, AuthGatewayResult, AuthUser } from "../types";
 import { i18n } from "../../../shared/i18n/config";
 
@@ -47,11 +48,22 @@ function createGateway(
 	};
 }
 
-function renderLoginForm(gateway = createGateway()) {
+function renderLoginForm({
+	gateway = createGateway(),
+	demoCredentials = { status: "unavailable" },
+	onAuthenticated = () => undefined,
+}: {
+	readonly gateway?: AuthSessionGateway;
+	readonly demoCredentials?: DemoCredentialsResult;
+	readonly onAuthenticated?: () => void;
+} = {}) {
 	return render(
 		<I18nextProvider i18n={i18n}>
 			<AuthSessionProvider gateway={gateway}>
-				<LoginForm onAuthenticated={() => undefined} />
+				<LoginForm
+					demoCredentials={demoCredentials}
+					onAuthenticated={onAuthenticated}
+				/>
 			</AuthSessionProvider>
 		</I18nextProvider>,
 	);
@@ -76,14 +88,14 @@ describe("LoginForm", () => {
 
 	it("shows a generic UI-safe error for invalid credentials", async () => {
 		const user = userEvent.setup();
-		renderLoginForm(
-			createGateway({
+		renderLoginForm({
+			gateway: createGateway({
 				signInWithPassword: async () =>
 					fail("Invalid credentials secret-token", {
 						access_token: "secret-token",
 					}),
 			}),
-		);
+		});
 
 		await user.type(screen.getByLabelText("Email address"), "bad@innhub.test");
 		await user.type(screen.getByLabelText("Password"), "wrong-password");
@@ -103,17 +115,11 @@ describe("LoginForm", () => {
 	it("calls the authenticated callback after a valid login", async () => {
 		let authenticated = false;
 		const user = userEvent.setup();
-		render(
-			<I18nextProvider i18n={i18n}>
-				<AuthSessionProvider gateway={createGateway()}>
-					<LoginForm
-						onAuthenticated={() => {
-							authenticated = true;
-						}}
-					/>
-				</AuthSessionProvider>
-			</I18nextProvider>,
-		);
+		renderLoginForm({
+			onAuthenticated: () => {
+				authenticated = true;
+			},
+		});
 
 		await user.type(
 			screen.getByLabelText("Email address"),
@@ -125,5 +131,48 @@ describe("LoginForm", () => {
 		await waitFor(() => {
 			expect(authenticated).toBe(true);
 		});
+	});
+
+	it("submits configured demo credentials through the existing login flow", async () => {
+		let authenticated = false;
+		const user = userEvent.setup();
+		const signInWithPassword = vi.fn(async () => ok(authUser));
+		renderLoginForm({
+			gateway: createGateway({ signInWithPassword }),
+			demoCredentials: {
+				status: "available",
+				credentials: {
+					email: "demo@innhub.test",
+					password: "demo-password",
+				},
+			},
+			onAuthenticated: () => {
+				authenticated = true;
+			},
+		});
+
+		await user.click(screen.getByRole("button", { name: "Use demo account" }));
+
+		await waitFor(() => {
+			expect(signInWithPassword).toHaveBeenCalledWith({
+				email: "demo@innhub.test",
+				password: "demo-password",
+			});
+			expect(authenticated).toBe(true);
+		});
+	});
+
+	it("shows a safe unavailable demo action when demo config is missing", () => {
+		renderLoginForm({ demoCredentials: { status: "unavailable" } });
+
+		expect(
+			screen.getByRole("button", { name: "Use demo account" }),
+		).toBeDisabled();
+		expect(
+			screen.getByText("Demo account is not configured for this environment."),
+		).toBeInTheDocument();
+		expect(
+			screen.getByText("Demo account is not configured for this environment."),
+		).not.toHaveTextContent("password");
 	});
 });

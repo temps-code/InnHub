@@ -2,12 +2,20 @@ import { type FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAuthSession } from "../hooks/useAuthSession";
+import {
+	resolveDemoCredentials,
+	type DemoCredentialsResult,
+} from "../services/demoCredentials";
 
 type LoginFormProps = {
 	readonly onAuthenticated: () => void;
+	readonly demoCredentials?: DemoCredentialsResult;
 };
 
-export function LoginForm({ onAuthenticated }: LoginFormProps) {
+export function LoginForm({
+	demoCredentials = resolveDemoCredentials(),
+	onAuthenticated,
+}: LoginFormProps) {
 	const { t } = useTranslation();
 	const { login } = useAuthSession();
 	const [email, setEmail] = useState("");
@@ -15,18 +23,14 @@ export function LoginForm({ onAuthenticated }: LoginFormProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
+	async function submitCredentials(credentials: {
+		readonly email: string;
+		readonly password: string;
+	}) {
 		setError(null);
-
-		if (!email.trim() || !password) {
-			setError(t("auth.login.requiredError"));
-			return;
-		}
-
 		setIsSubmitting(true);
 		try {
-			const result = await login({ email: email.trim(), password });
+			const result = await login(credentials);
 
 			if (!result.ok) {
 				setError(t("auth.login.genericError"));
@@ -37,6 +41,26 @@ export function LoginForm({ onAuthenticated }: LoginFormProps) {
 		} finally {
 			setIsSubmitting(false);
 		}
+	}
+
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+
+		if (!email.trim() || !password) {
+			setError(t("auth.login.requiredError"));
+			return;
+		}
+
+		await submitCredentials({ email: email.trim(), password });
+	}
+
+	async function handleDemoSubmit() {
+		if (demoCredentials.status !== "available") {
+			setError(t("auth.login.demoUnavailable"));
+			return;
+		}
+
+		await submitCredentials(demoCredentials.credentials);
 	}
 
 	return (
@@ -88,6 +112,21 @@ export function LoginForm({ onAuthenticated }: LoginFormProps) {
 			>
 				{isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}
 			</button>
+			<div className="grid gap-2 border-t border-[var(--color-border)] pt-4">
+				<button
+					className="inline-flex justify-center rounded-full border border-[var(--color-border)] px-5 py-3 font-bold text-[var(--color-heading)] disabled:cursor-not-allowed disabled:opacity-60"
+					disabled={isSubmitting || demoCredentials.status !== "available"}
+					onClick={handleDemoSubmit}
+					type="button"
+				>
+					{t("auth.login.demoSubmit")}
+				</button>
+				{demoCredentials.status === "unavailable" ? (
+					<p className="m-0 text-sm text-[var(--color-muted)]">
+						{t("auth.login.demoUnavailable")}
+					</p>
+				) : null}
+			</div>
 		</form>
 	);
 }
