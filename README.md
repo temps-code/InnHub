@@ -17,7 +17,7 @@
 </p>
 
 <p>
-  <img src="https://img.shields.io/badge/Status-Planning-7C3AED?style=for-the-badge" alt="Status: Planning">
+  <img src="https://img.shields.io/badge/Status-Development-7C3AED?style=for-the-badge" alt="Status: Development">
   <img src="https://img.shields.io/badge/Type-Academic_MVP-C4B5FD?style=for-the-badge" alt="Academic MVP">
 </p>
 
@@ -199,7 +199,7 @@ Core rule: UI components should not talk directly to InsForge. Data access and b
 
 ## Project Status
 
-InnHub currently has its planning documentation, Vite React TypeScript scaffold, MIT license, and baseline repository structure prepared for academic review. The next implementation step is to build MVP modules in small, reviewable work units.
+InnHub is in active development. Core architectural layers, routing, state management, and the backend environment are configured. MVP modules (such as properties, reservations, and rooms) are currently being developed and integrated.
 
 ## Author
 

@@ -17,7 +17,7 @@
 </p>
 
 <p>
-  <img src="https://img.shields.io/badge/Estado-Planificación-7C3AED?style=for-the-badge" alt="Estado: Planificación">
+  <img src="https://img.shields.io/badge/Estado-En_Desarrollo-7C3AED?style=for-the-badge" alt="Estado: En Desarrollo">
   <img src="https://img.shields.io/badge/Tipo-MVP_Académico-C4B5FD?style=for-the-badge" alt="MVP académico">
 </p>
 
@@ -199,7 +199,7 @@ Regla central: los componentes de UI no deben hablar directamente con InsForge. 
 
 ## Estado del proyecto
 
-InnHub ya tiene su documentación de planificación, scaffold Vite React TypeScript, licencia MIT y estructura base de repositorio preparada para revisión académica. El siguiente paso de implementación es construir los módulos del MVP en unidades pequeñas y revisables.
+InnHub se encuentra en desarrollo activo. Las capas arquitectónicas base, enrutamiento, estado global y el entorno del backend ya están configurados. Los módulos clave del MVP (como propiedades, reservas y habitaciones) están siendo implementados e integrados de forma incremental.
 
 ## Autor
 
