@@ -5,6 +5,7 @@ import { LoginPage } from "../pages/LoginPage";
 import { ModulePlaceholderPage } from "../pages/ModulePlaceholderPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
+import { PropertyProfilePage } from "../../features/properties/PropertyProfilePage";
 import { APP_BASE_PATH, protectedRoutes } from "./routeMetadata";
 
 export const appRoutes: RouteObject[] = [
@@ -17,7 +18,12 @@ export const appRoutes: RouteObject[] = [
 			{ index: true, element: <Navigate to="/app/dashboard" replace /> },
 			...protectedRoutes.map((route) => ({
 				path: route.path,
-				element: <ModulePlaceholderPage route={route} />,
+				element:
+					route.id === "properties" ? (
+						<PropertyProfilePage titleKey={route.titleKey} />
+					) : (
+						<ModulePlaceholderPage route={route} />
+					),
 			})),
 		],
 	},
