@@ -69,6 +69,10 @@ src/
 | Reglas puras cuando sea posible             | Facilita unit tests                       |
 | Realtime envuelto en hooks/services         | Evita duplicar lógica de suscripción      |
 
+## Convención de service layer
+
+Las features respaldadas por backend deben exponer el acceso a datos mediante hooks y services, no desde componentes JSX. Los services deben devolver valores tipados estilo `ServiceResult<T>`, normalizar fallas backend en errores locales seguros antes de llegar a callers de UI y mantener objetos raw del SDK/backend detrás de límites de servicio.
+
 ## Acceso a datos limitado por propiedad
 
 Los services operativos deben derivar el scope de propiedad desde la sesión autenticada, no desde props de componentes, formularios, rutas, URLs ni payloads provistos por quien llama. Las lecturas y mutaciones de records asociados a una propiedad deben usar los helpers compartidos de property scope antes de construir queries de InsForge.

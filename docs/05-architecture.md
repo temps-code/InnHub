@@ -69,6 +69,10 @@ src/
 | Business rules are pure when possible    | Enables reliable unit tests                   |
 | Realtime is wrapped in hooks/services    | Avoids duplicated subscription logic          |
 
+## Service Layer Convention
+
+Backend-backed features must expose data access through hooks and services, not JSX components. Services should return typed `ServiceResult<T>` style values, normalize backend failures into safe local errors before UI-facing callers see them, and keep raw SDK/backend objects behind service boundaries.
+
 ## Property-Scoped Data Access
 
 Operational services must derive the current property scope from the authenticated session, not from component props, forms, routes, URLs, or caller-provided payloads. Service reads and mutations for property-owned records should use the shared property-scope helpers before building InsForge queries.
