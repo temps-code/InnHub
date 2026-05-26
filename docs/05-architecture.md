@@ -105,7 +105,7 @@ The first reusable shared UI primitives are implemented under `src/shared/compon
 
 `PageSection` was implemented before protected routing was finalized because the section pattern is layout-agnostic. These primitives should remain generic: room-specific labels, reservation rules, metric calculations, and business decisions belong in feature code, schemas, services, or utility functions.
 
-## Protected Route Architecture
+## Protected Route Architecture & Navigation
 
 Protected routes are organized into three groups with role-based sidebar visibility:
 
@@ -115,7 +115,22 @@ Protected routes are organized into three groups with role-based sidebar visibil
 | `reports` | reports | `manager` | Occupancy, revenue, and operational reports |
 | `settings` | property profile, users | `administrator` | Property configuration and staff management |
 
-Settings routes nest under `/app/settings/*` (e.g., `/app/settings/property`). Route metadata owns label keys, paths, groups, icon mapping, role visibility, and explicit per-group ordering through the `order` field. Sidebar filtering is UI-level only — direct URL access is not guarded. Role hierarchy: `administrator > manager > receptionist > (housekeeping = maintenance)`.
+Settings routes nest under `/app/settings/*` (e.g., `/app/settings/property`). Route metadata owns label keys, paths, groups, icon mapping, role visibility, and explicit per-group ordering through the `order` field.
+
+### Role-Based Access Guard (Direct URL Restriction)
+
+To ensure robust security, direct URL path access is guarded at the layout level in `ProtectedLayout.tsx`. If a user attempts to navigate directly via URL to a route whose `minRole` exceeds their current authenticated role:
+1. The guard reads `activeRoute.minRole` and the current `userRole` derived from the session via `useAuthSession`.
+2. It validates authorization using the `canAccess(minRole, userRole)` hierarchy helper.
+3. If unauthorized, it terminates the navigation and performs a clean redirection to the `/app/dashboard` workspace path with `{ replace: true }`.
+
+### Responsive Mobile Sidebar Drawer
+
+On mobile viewports (widths narrower than `768px`), the navigation sidebar changes dynamically:
+1. **Off-Canvas Drawer**: The `<aside>` sidebar is positioned off-canvas (`fixed w-64 -translate-x-full`) and transitions into view (`translate-x-0`) using standard Tailwind CSS classes controlled by stateful `isSidebarOpen` props managed at the `AppShell` root.
+2. **Hamburger Menu Toggle**: A mobile hamburger menu button (ghost variant `Button` atom with a Lucide `Menu` icon) is rendered within the `TopBar` on small screens to toggle the drawer open.
+3. **Backdrop Overlay**: Rendering the drawer open displays an absolute semi-transparent backdrop overlay. Clicking this backdrop triggers `setIsSidebarOpen(false)`.
+4. **Auto-Closing Navigation & Close Button**: Clicking any `NavLink` within the sidebar invokes the `onClose` callback prop to auto-close the drawer. A dedicated `Button` with a Lucide `X` icon is also available in the sidebar header to dismiss the drawer.
 
 ## Related Documents
 

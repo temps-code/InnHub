@@ -144,6 +144,25 @@ describe("PropertyProfilePage", () => {
 			expect(screen.getByText("my-hotel")).toBeInTheDocument();
 		});
 
+		it("applies responsive grid classes to ReadOnlyField elements", async () => {
+			mockUseCurrentProperty.mockReturnValue({
+				state: { status: "loaded", property: aProperty },
+				update: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			const idValue = screen.getByText("property-1");
+			const fieldContainer = idValue.parentElement;
+			expect(fieldContainer).toBeTruthy();
+			expect(fieldContainer).toHaveClass("grid");
+			expect(fieldContainer).toHaveClass("grid-cols-1");
+			expect(fieldContainer).toHaveClass("sm:grid-cols-[180px_1fr]");
+			expect(fieldContainer).toHaveClass("gap-1");
+			expect(fieldContainer).toHaveClass("sm:gap-2");
+		});
+
 		it("shows an error state when property load fails", async () => {
 			mockUseCurrentProperty.mockReturnValue({
 				state: {

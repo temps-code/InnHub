@@ -6,9 +6,10 @@ import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 
 type SidebarNavProps = {
 	items: readonly GroupedRouteItem[];
+	onClose?: () => void;
 };
 
-export function SidebarNav({ items }: SidebarNavProps) {
+export function SidebarNav({ items, onClose }: SidebarNavProps) {
 	const { t } = useTranslation();
 
 	if (items.length === 0) {
@@ -36,6 +37,7 @@ export function SidebarNav({ items }: SidebarNavProps) {
 											].join(" ")
 										}
 										to={item.href}
+										onClick={onClose}
 									>
 										{item.icon ? (
 											<item.icon

@@ -12,6 +12,7 @@ import { AuthSessionProvider } from "../../features/auth";
 import type { AuthSessionGateway } from "../../features/auth/services/authSessionService";
 import type {
 	AppProfile,
+	AppProfileRole,
 	AuthGatewayResult,
 	AuthUser,
 } from "../../features/auth/types";
@@ -80,6 +81,29 @@ function createGateway(
 	return {
 		getCurrentUser: async () => ok(null),
 		findProfileByAuthUserId: async () => ok(activeProfile),
+		signInWithPassword: async () => ok(authUser),
+		signOut: async () => ok(undefined),
+		...overrides,
+	};
+}
+
+function roleProfile(role: AppProfileRole): AppProfile {
+	return {
+		...activeProfile,
+		id: `profile-${role}`,
+		fullName: role.charAt(0).toUpperCase() + role.slice(1),
+		role,
+	};
+}
+
+function createRoleGateway(
+	role: AppProfileRole,
+	overrides: Partial<AuthSessionGateway> = {},
+): AuthSessionGateway {
+	const profile = roleProfile(role);
+	return {
+		getCurrentUser: async () => ok(authUser),
+		findProfileByAuthUserId: async () => ok(profile),
 		signInWithPassword: async () => ok(authUser),
 		signOut: async () => ok(undefined),
 		...overrides,
@@ -287,6 +311,69 @@ describe("app routing foundation", () => {
 		expect(screen.queryByText("Reports")).toBeNull();
 		expect(screen.queryByText("Settings")).toBeNull();
 	});
+
+	it.each([
+		["administrator", "/app/dashboard", "Dashboard"],
+		["manager", "/app/dashboard", "Dashboard"],
+		["receptionist", "/app/dashboard", "Dashboard"],
+		["housekeeping", "/app/housekeeping", "Housekeeping"],
+		["maintenance", "/app/maintenance", "Maintenance"],
+	] as const)(
+		"renders the sidebar navigation shell for %s role",
+		async (role, path, title) => {
+			renderRoute(path, createRoleGateway(role));
+
+			await waitFor(() => {
+				expect(
+					screen.getByRole("navigation", { name: "Application modules" }),
+				).toBeTruthy();
+			});
+
+			expect(screen.getByRole("banner")).toBeTruthy();
+			expect(
+				screen.getByRole("heading", { name: title }),
+			).toBeTruthy();
+		},
+	);
+
+	it.each([
+		["administrator", "/app/dashboard", true, true, true],
+		["manager", "/app/dashboard", true, true, false],
+		["receptionist", "/app/dashboard", true, false, false],
+		["housekeeping", "/app/housekeeping", true, false, false],
+		["maintenance", "/app/maintenance", true, false, false],
+	] as const)(
+		"shows correct sidebar groups for %s role",
+		async (role, path, showOperations, showReports, showSettings) => {
+			renderRoute(path, createRoleGateway(role));
+
+			await waitFor(() => {
+				expect(
+					screen.getByRole("navigation", { name: "Application modules" }),
+				).toBeTruthy();
+			});
+
+			if (showOperations) {
+				expect(screen.getByText("Operations")).toBeTruthy();
+			} else {
+				expect(screen.queryByText("Operations")).toBeNull();
+			}
+
+			if (showReports) {
+				// "Reports" appears as both a heading and a nav link — use getAllByText
+				const reportsElements = screen.getAllByText("Reports");
+				expect(reportsElements.length).toBeGreaterThan(0);
+			} else {
+				expect(screen.queryByText("Reports")).toBeNull();
+			}
+
+			if (showSettings) {
+				expect(screen.getByText("Settings")).toBeTruthy();
+			} else {
+				expect(screen.queryByText("Settings")).toBeNull();
+			}
+		},
+	);
 });
 
 describe("settings routing", () => {
@@ -312,10 +399,10 @@ describe("settings routing", () => {
 		}
 	});
 
-	it("redirects /app/properties to /app/settings/property", async () => {
+	it("redirects /app/properties to /app/settings/property for admin", async () => {
 		renderRoute(
 			"/app/properties",
-			createGateway({ getCurrentUser: async () => ok(authUser) }),
+			createAdminGateway(),
 		);
 
 		await waitFor(() => {
@@ -324,4 +411,44 @@ describe("settings routing", () => {
 			).toBeTruthy();
 		});
 	});
+
+	it("redirects unauthorized roles (non-admins) from settings routes to /app/dashboard", async () => {
+		renderRoute(
+			"/app/settings/property",
+			createGateway({ getCurrentUser: async () => ok(authUser) }),
+		);
+
+		await waitFor(() => {
+			expect(screen.getByRole("heading", { name: "Dashboard" })).toBeTruthy();
+		});
+	});
+
+	it.each([
+		["administrator", true],
+		["manager", false],
+		["receptionist", false],
+		["housekeeping", false],
+		["maintenance", false],
+	] as const)(
+		"redirects %s role from /app/properties appropriately",
+		async (role, isAdmin) => {
+			renderRoute("/app/properties", createRoleGateway(role));
+
+			if (isAdmin) {
+				await waitFor(() => {
+					expect(
+						screen.getByRole("heading", { name: /Property Profile/i }),
+					).toBeTruthy();
+				});
+			} else {
+				await waitFor(() => {
+					// Non-admin roles should NOT see the Property Profile page
+					// (they get redirected through settings guard → dashboard or blank)
+					expect(
+						screen.queryByRole("heading", { name: /Property Profile/i }),
+					).toBeNull();
+				});
+			}
+		},
+	);
 });

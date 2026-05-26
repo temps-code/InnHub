@@ -105,7 +105,7 @@ Las primeras primitivas reutilizables de UI compartida ya están implementadas b
 
 `PageSection` se implementó antes de que el routing protegido estuviera finalizado porque el patrón de sección es independiente del layout. Estas primitivas deben mantenerse genéricas: etiquetas específicas de habitaciones, reglas de reservas, cálculos de métricas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
 
-## Arquitectura de rutas protegidas
+## Arquitectura de rutas protegidas y navegación
 
 Las rutas protegidas están organizadas en tres grupos con visibilidad basada en rol:
 
@@ -115,7 +115,22 @@ Las rutas protegidas están organizadas en tres grupos con visibilidad basada en
 | `reports` | reports | `manager` | Reportes de ocupación, ingresos y operaciones |
 | `settings` | property profile, users | `administrator` | Configuración de propiedad y gestión de personal |
 
-Las rutas de configuración anidan bajo `/app/settings/*` (ej: `/app/settings/property`). La metadata de rutas define claves de etiquetas, paths, grupos, mapeo de íconos, visibilidad por rol y orden explícito por grupo mediante el campo `order`. El filtrado en el sidebar es solo a nivel de UI — el acceso por URL directa no está restringido. Jerarquía de roles: `administrator > manager > receptionist > (housekeeping = maintenance)`.
+Las rutas de configuración anidan bajo `/app/settings/*` (ej: `/app/settings/property`). La metadata de rutas define claves de etiquetas, paths, grupos, mapeo de íconos, visibilidad por rol y orden explícito por grupo mediante el campo `order`.
+
+### Guardián de acceso basado en rol (restricción por URL directa)
+
+Para garantizar una seguridad sólida, el acceso directo a rutas por URL se custodia a nivel de layout en `ProtectedLayout.tsx`. Si un usuario intenta navegar directamente mediante la URL a una ruta cuyo `minRole` supera su rol autenticado actual:
+1. El guardián lee `activeRoute.minRole` y el `userRole` actual derivado de la sesión a través de `useAuthSession`.
+2. Valida la autorización utilizando el ayudante de jerarquía `canAccess(minRole, userRole)`.
+3. Si no está autorizado, interrumpe la navegación y realiza una redirección limpia a la ruta de espacio de trabajo `/app/dashboard` con `{ replace: true }`.
+
+### Panel lateral responsive para móviles (off-canvas drawer)
+
+En resoluciones de pantalla móviles (anchos inferiores a `768px`), el panel de navegación lateral cambia de manera dinámica:
+1. **Drawer Off-Canvas**: El panel `<aside>` se posiciona fuera de la pantalla (`fixed w-64 -translate-x-full`) y se desliza hacia la vista (`translate-x-0`) utilizando clases estándar de Tailwind CSS controladas por la propiedad de estado `isSidebarOpen` gestionada en la raíz de `AppShell`.
+2. **Botón de menú hamburguesa**: Se incluye un botón de menú hamburguesa para móviles (átomo `Button` con variante ghost y un ícono Lucide `Menu`) dentro de `TopBar` en pantallas pequeñas para abrir el drawer.
+3. **Fondo translúcido (backdrop)**: Al abrir el drawer, se renderiza un fondo translúcido absoluto. Hacer clic en este fondo activa `setIsSidebarOpen(false)`.
+4. **Auto-cierre de navegación y botón de cierre**: Hacer clic en cualquier enlace de navegación (`NavLink`) dentro del sidebar invoca la función callback `onClose` para auto-cerrar el drawer. También se incluye un botón dedicado con un ícono Lucide `X` en la cabecera del sidebar para cerrar el drawer de forma manual.
 
 ## Documentos relacionados
 
