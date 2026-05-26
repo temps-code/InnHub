@@ -15,6 +15,7 @@
 | Routing        | React Router                | Enrutamiento estándar del cliente                                            |
 | Formularios    | React Hook Form + Zod       | Validación tipada y manejo limpio                                            |
 | Gráficos       | Recharts                    | Visualización de dashboard/reportes                                          |
+| Iconos         | Lucide React                | Tree-shakeable, set de iconos consistente para navegación y acciones UI       |
 | Testing        | Vitest                      | Tests rápidos para reglas y utilidades                                       |
 | Backend / BaaS | InsForge                    | PostgreSQL, Auth, APIs, Realtime selectivo y Storage futuro con menor carga  |
 | Base de datos  | PostgreSQL                  | Modelo relacional adecuado para reservas, facturas, habitaciones y reportes  |
@@ -29,6 +30,20 @@ El proyecto tiene tiempo limitado y debe priorizar un MVP funcional y desplegabl
 Tailwind CSS está configurado mediante el plugin de Vite e importado desde `src/index.css`. El CSS global debe limitarse a valores base del documento, variables semánticas de color y resets mínimos; los estilos de features y UI compartida deben usar utilidades de Tailwind.
 
 Los modos claro y oscuro quedan preparados para un cambio manual futuro mediante el atributo `data-theme` en el elemento raíz `<html>`. Usar `data-theme="light"` o `data-theme="dark"` en lugar de depender solo de la preferencia del sistema operativo.
+
+## Sistema de íconos
+
+InnHub usa **Lucide React** como librería de íconos global. Se eligió Lucide por ser tree-shakeable, tener una cuadrícula de diseño consistente de 24px, soporte TypeScript y compatibilidad con React 19.
+
+Convenciones:
+
+- **Íconos de navegación**: 20px, `aria-hidden="true"`, antes de la etiqueta en el sidebar.
+- **Íconos en botones**: 16px, antes de la etiqueta, opcionales.
+- **Íconos de estado**: según el tono semántico del StatusBadge, decorativos con `aria-hidden`.
+- **Íconos de estado vacío**: 48px+, decorativos, acompañados de un mensaje de texto descriptivo.
+- **Accesibilidad**: íconos decorativos usan `aria-hidden="true"`; íconos solitarios requieren `aria-label` o `title`.
+
+Cada ruta protegida en `ProtectedRouteMeta` referencia un componente de ícono de Lucide. El mapeo sigue el dominio del módulo (ej: `LayoutDashboard` para dashboard, `Building2` para propiedades, `CalendarCheck` para reservas).
 
 ## Configuración de autenticación demo
 

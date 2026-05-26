@@ -15,6 +15,7 @@
 | Routing        | React Router                | Standard client-side routing                                                          |
 | Forms          | React Hook Form + Zod       | Typed validation and clean form handling                                              |
 | Charts         | Recharts                    | Dashboard/report visualizations                                                       |
+| Icons          | Lucide React                | Tree-shakeable, consistent icon set for navigation and UI affordances                 |
 | Testing        | Vitest                      | Fast tests for business rules and utilities                                           |
 | Backend / BaaS | InsForge                    | PostgreSQL, Auth, APIs, selective Realtime, and future Storage with reduced overhead   |
 | Database       | PostgreSQL                  | Relational model fits reservations, invoices, rooms, and reports                      |
@@ -29,6 +30,20 @@ The project has a limited delivery window and should prioritize a functional, de
 Tailwind CSS is configured through the Vite plugin and imported from `src/index.css`. Global CSS should stay limited to document-level defaults, semantic color variables, and base resets; feature and shared UI styling should use Tailwind utilities.
 
 Light and dark mode are prepared for future manual switching through the `data-theme` attribute on the root `<html>` element. Use `data-theme="light"` or `data-theme="dark"` instead of relying only on the operating system preference.
+
+## Icon System
+
+InnHub uses **Lucide React** as its project-wide icon library. Lucide was chosen for its tree-shakeable bundle, consistent 24px design grid, TypeScript support, and compatibility with React 19.
+
+Conventions:
+
+- **Navigation icons**: 20px, `aria-hidden="true"`, rendered before the label in the sidebar.
+- **Button icons**: 16px, placed before the label, optional.
+- **Status/indicator icons**: match StatusBadge semantic tones, decorative with `aria-hidden`.
+- **Empty state icons**: 48px+, decorative, accompanied by a descriptive text message.
+- **Accessibility**: decorative icons use `aria-hidden="true"`; standalone icons require `aria-label` or `title`.
+
+Each protected route in `ProtectedRouteMeta` references a Lucide icon component. The mapping follows the module domain (e.g., `LayoutDashboard` for dashboard, `Building2` for properties, `CalendarCheck` for reservations).
 
 ## Demo Authentication Setup
 

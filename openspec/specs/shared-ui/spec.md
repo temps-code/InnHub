@@ -133,6 +133,7 @@ The system MUST refactor the current app shell to use `PageSection` and `ModuleC
 ### Requirement: Shared UI Architecture Boundaries
 
 Shared UI primitives MUST remain presentation-only and MUST respect InnHub's frontend architecture boundaries.
+(Previously: Prohibited all external UI libraries including icon packages)
 
 #### Scenario: No backend or feature dependencies
 
@@ -144,7 +145,9 @@ Shared UI primitives MUST remain presentation-only and MUST respect InnHub's fro
 
 - GIVEN this change establishes the first shared UI foundation
 - WHEN the primitives are implemented
-- THEN the system MUST NOT add a new external UI library, Storybook setup, icon package, modal system, table system, form system, or complex polymorphic component framework
+- THEN the system MUST NOT add Storybook, modal system, table system, form system, or complex polymorphic component framework
+- AND the system MUST permit lucide-react as the sole icon package, restricted to navigation and shared icon usage
+- AND all other external UI libraries remain prohibited
 
 ### Requirement: Test and Quality Coverage
 

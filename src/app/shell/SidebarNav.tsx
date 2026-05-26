@@ -15,7 +15,10 @@ export function SidebarNav({ items }: SidebarNavProps) {
 			<ul className="m-0 grid list-none gap-2 p-0">
 				{items.map((item) => (
 					<li key={item.id}>
-						<NavLink className={({ isActive }) => ["block rounded-xl px-4 py-3 text-sm font-bold no-underline", isActive ? "bg-[var(--color-primary-soft)] text-[var(--color-primary)]" : "text-[var(--color-muted)] hover:bg-[var(--color-primary-soft)]"].join(" ")} to={item.href}>
+						<NavLink className={({ isActive }) => ["flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold no-underline", isActive ? "bg-[var(--color-primary-soft)] text-[var(--color-primary)]" : "text-[var(--color-muted)] hover:bg-[var(--color-primary-soft)]"].join(" ")} to={item.href}>
+							{item.icon ? (
+								<item.icon aria-hidden="true" size={20} />
+							) : null}
 							{t(item.labelKey)}
 						</NavLink>
 					</li>

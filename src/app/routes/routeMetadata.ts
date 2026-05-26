@@ -1,3 +1,19 @@
+import type { LucideProps } from "lucide-react";
+import {
+	BarChart3,
+	Building2,
+	CalendarCheck,
+	DoorOpen,
+	Layers,
+	LayoutDashboard,
+	Receipt,
+	SprayCan,
+	UserCheck,
+	Users,
+	Wrench,
+} from "lucide-react";
+import type { ComponentType } from "react";
+
 export const APP_BASE_PATH = "/app";
 
 export type ProtectedRouteId =
@@ -20,29 +36,35 @@ export type ProtectedRouteMeta = {
 	labelKey: string;
 	titleKey: string;
 	descriptionKey: string;
+	icon?: ComponentType<LucideProps>;
 };
 
-const route = (id: ProtectedRouteId, path: string): ProtectedRouteMeta => ({
+const route = (
+	id: ProtectedRouteId,
+	path: string,
+	icon?: ComponentType<LucideProps>,
+): ProtectedRouteMeta => ({
 	id,
 	path,
 	href: `${APP_BASE_PATH}/${path}`,
 	labelKey: `routes.protected.${id}.label`,
 	titleKey: `routes.protected.${id}.title`,
 	descriptionKey: `routes.protected.${id}.description`,
+	icon,
 });
 
 export const protectedRoutes = [
-	route("dashboard", "dashboard"),
-	route("properties", "properties"),
-	route("users", "users"),
-	route("rooms", "rooms"),
-	route("roomTypes", "room-types"),
-	route("guests", "guests"),
-	route("reservations", "reservations"),
-	route("housekeeping", "housekeeping"),
-	route("maintenance", "maintenance"),
-	route("billing", "billing"),
-	route("reports", "reports"),
+	route("dashboard", "dashboard", LayoutDashboard),
+	route("properties", "properties", Building2),
+	route("users", "users", Users),
+	route("rooms", "rooms", DoorOpen),
+	route("roomTypes", "room-types", Layers),
+	route("guests", "guests", UserCheck),
+	route("reservations", "reservations", CalendarCheck),
+	route("housekeeping", "housekeeping", SprayCan),
+	route("maintenance", "maintenance", Wrench),
+	route("billing", "billing", Receipt),
+	route("reports", "reports", BarChart3),
 ] as const;
 
 export function findProtectedRoute(pathname: string) {
