@@ -2,13 +2,14 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
+import type { GroupedRouteItem } from "../routes/routeMetadata";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
 type AppShellProps = {
 	activeRoute?: ProtectedRouteMeta;
 	children: ReactNode;
-	items: readonly ProtectedRouteMeta[];
+	items: readonly GroupedRouteItem[];
 };
 
 export function AppShell({ activeRoute, children, items }: AppShellProps) {

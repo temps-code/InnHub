@@ -103,7 +103,19 @@ The first reusable shared UI primitives are implemented under `src/shared/compon
 | `ModuleCard`  | Implemented    | Navigation or summaries for rooms, reservations, guests, billing, housekeeping, maintenance, and reports | Lets the product line expose different modules with a consistent reusable card pattern                                 |
 | `PageSection` | Implemented    | Shared page spacing, headings, descriptions, actions, and responsive sections                            | Separates section structure from business content and avoids repeating page scaffolding in every feature               |
 
-`PageSection` was implemented instead of a full `AppLayout` for this stage because routing, authentication, navigation, and protected layout decisions belong to later work. These primitives should remain generic: room-specific labels, reservation rules, metric calculations, and business decisions belong in feature code, schemas, services, or utility functions.
+`PageSection` was implemented before protected routing was finalized because the section pattern is layout-agnostic. These primitives should remain generic: room-specific labels, reservation rules, metric calculations, and business decisions belong in feature code, schemas, services, or utility functions.
+
+## Protected Route Architecture
+
+Protected routes are organized into three groups with role-based sidebar visibility:
+
+| Group | Routes | Minimum Role | Description |
+|-------|--------|-------------|-------------|
+| `operations` | dashboard, rooms, room-types, guests, reservations, housekeeping, maintenance, billing | `receptionist` (most), `housekeeping`, `maintenance` | Daily operational workflows and module access |
+| `reports` | reports | `manager` | Occupancy, revenue, and operational reports |
+| `settings` | property profile, users | `administrator` | Property configuration and staff management |
+
+Settings routes nest under `/app/settings/*` (e.g., `/app/settings/property`). Route metadata owns label keys, paths, groups, icon mapping, role visibility, and explicit per-group ordering through the `order` field. Sidebar filtering is UI-level only — direct URL access is not guarded. Role hierarchy: `administrator > manager > receptionist > (housekeeping = maintenance)`.
 
 ## Related Documents
 

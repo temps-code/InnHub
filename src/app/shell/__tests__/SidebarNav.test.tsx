@@ -6,9 +6,17 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { ProtectedRouteMeta } from "../../routes/routeMetadata";
-import { protectedRoutes } from "../../routes/routeMetadata";
+import type { GroupedRouteItem } from "../../routes/routeMetadata";
+import { allRoutes } from "../../routes/routeMetadata";
 import { SidebarNav } from "../SidebarNav";
+
+const groupedRoutes: GroupedRouteItem[] = [
+	{
+		group: "operations",
+		labelKey: "shell.sidebar.group.operations",
+		items: allRoutes.filter((r) => r.group === "operations"),
+	},
+];
 
 vi.mock("react-i18next", () => ({
 	useTranslation: () => ({
@@ -18,32 +26,51 @@ vi.mock("react-i18next", () => ({
 
 afterEach(cleanup);
 
-describe("SidebarNav icon rendering", () => {
+describe("SidebarNav grouped section rendering", () => {
+	it("renders group heading for each group with items", () => {
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groupedRoutes} />
+			</MemoryRouter>,
+		);
+
+		expect(
+			screen.getByText(`shell.sidebar.group.${groupedRoutes[0].group}`),
+		).toBeTruthy();
+	});
+
 	it("renders an svg icon for each route with an icon defined", () => {
 		render(
 			<MemoryRouter>
-				<SidebarNav items={protectedRoutes} />
+				<SidebarNav items={groupedRoutes} />
 			</MemoryRouter>,
 		);
 
 		const links = screen.getAllByRole("link");
-		// Every protected route has an icon defined
 		const svgCount = links.reduce(
 			(count, link) => count + (link.querySelector("svg") ? 1 : 0),
 			0,
 		);
-		expect(svgCount).toBe(protectedRoutes.length);
+		expect(svgCount).toBe(groupedRoutes[0].items.length);
 	});
 
 	it("rendering without icon does not break layout", () => {
-		const itemWithoutIcon: ProtectedRouteMeta = {
-			id: "dashboard",
-			path: "dashboard",
-			href: "/app/dashboard",
-			labelKey: "routes.protected.dashboard.label",
-			titleKey: "routes.protected.dashboard.title",
-			descriptionKey: "routes.protected.dashboard.description",
-			// icon is intentionally undefined
+		const itemWithoutIcon: GroupedRouteItem = {
+			group: "operations",
+			labelKey: "shell.sidebar.group.operations",
+			items: [
+				{
+					id: "dashboard",
+					path: "dashboard",
+					href: "/app/dashboard",
+					labelKey: "routes.protected.dashboard.label",
+					titleKey: "routes.protected.dashboard.title",
+					descriptionKey: "routes.protected.dashboard.description",
+					group: "operations",
+					order: 10,
+					minRole: "receptionist",
+				},
+			],
 		};
 
 		render(
@@ -58,16 +85,16 @@ describe("SidebarNav icon rendering", () => {
 	});
 
 	it("renders icon with aria-hidden attribute", () => {
-		// Use the properties route which has an icon
-		const itemWithIcon = protectedRoutes[0];
-
 		render(
 			<MemoryRouter>
-				<SidebarNav items={[itemWithIcon]} />
+				<SidebarNav items={groupedRoutes} />
 			</MemoryRouter>,
 		);
 
-		const svg = screen.getByRole("link").querySelector("svg");
-		expect(svg).toHaveAttribute("aria-hidden", "true");
+		const links = screen.getAllByRole("link");
+		links.forEach((link) => {
+			const svg = link.querySelector("svg");
+			expect(svg).toHaveAttribute("aria-hidden", "true");
+		});
 	});
 });

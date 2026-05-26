@@ -6,7 +6,8 @@ import { ModulePlaceholderPage } from "../pages/ModulePlaceholderPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
 import { PropertyProfilePage } from "../../features/properties/PropertyProfilePage";
-import { APP_BASE_PATH, protectedRoutes } from "./routeMetadata";
+import { APP_BASE_PATH, protectedRoutes, settingsRoutes } from "./routeMetadata";
+import { SettingsLayout } from "./SettingsLayout";
 
 export const appRoutes: RouteObject[] = [
 	{ path: "/", element: <PublicHomePage /> },
@@ -16,15 +17,32 @@ export const appRoutes: RouteObject[] = [
 		element: <ProtectedLayout />,
 		children: [
 			{ index: true, element: <Navigate to="/app/dashboard" replace /> },
+			// Top-level routes (operations + reports)
 			...protectedRoutes.map((route) => ({
 				path: route.path,
 				element:
-					route.id === "properties" ? (
+					route.id === "propertyProfile" ? (
 						<PropertyProfilePage titleKey={route.titleKey} />
 					) : (
 						<ModulePlaceholderPage route={route} />
 					),
 			})),
+			// Settings nesting
+			{
+				path: "settings",
+				element: <SettingsLayout />,
+				children: settingsRoutes.map((route) => ({
+					path: route.path,
+					element:
+						route.id === "propertyProfile" ? (
+							<PropertyProfilePage titleKey={route.titleKey} />
+						) : (
+							<ModulePlaceholderPage route={route} />
+						),
+				})),
+			},
+			// Old path redirect
+			{ path: "properties", element: <Navigate to="/app/settings/property" /> },
 		],
 	},
 	{ path: "*", element: <NotFoundPage /> },

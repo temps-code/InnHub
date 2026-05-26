@@ -16,7 +16,11 @@ import type {
 	AuthUser,
 } from "../../features/auth/types";
 import { i18n } from "../../shared/i18n/config";
-import { protectedRoutes } from "../routes/routeMetadata";
+import {
+	allRoutes,
+	canAccess,
+	settingsRoutes,
+} from "../routes/routeMetadata";
 import { appRoutes } from "../routes/routes";
 
 // PropertyProfilePage depends on useCurrentProperty, so we provide a
@@ -59,6 +63,13 @@ const activeProfile: AppProfile = {
 	fullName: "Front Desk",
 };
 
+const adminProfile: AppProfile = {
+	...activeProfile,
+	id: "admin-profile",
+	fullName: "Administrator",
+	role: "administrator",
+};
+
 function ok<T>(data: T): AuthGatewayResult<T> {
 	return { data, error: null };
 }
@@ -69,6 +80,18 @@ function createGateway(
 	return {
 		getCurrentUser: async () => ok(null),
 		findProfileByAuthUserId: async () => ok(activeProfile),
+		signInWithPassword: async () => ok(authUser),
+		signOut: async () => ok(undefined),
+		...overrides,
+	};
+}
+
+function createAdminGateway(
+	overrides: Partial<AuthSessionGateway> = {},
+): AuthSessionGateway {
+	return {
+		getCurrentUser: async () => ok(authUser),
+		findProfileByAuthUserId: async () => ok(adminProfile),
 		signInWithPassword: async () => ok(authUser),
 		signOut: async () => ok(undefined),
 		...overrides,
@@ -202,21 +225,103 @@ describe("app routing foundation", () => {
 	});
 
 	it("keeps protected route metadata reachable from the shared shell", async () => {
-		for (const route of protectedRoutes) {
+		for (const route of allRoutes) {
 			cleanup();
-			renderRoute(
-				route.href,
-				createGateway({ getCurrentUser: async () => ok(authUser) }),
-			);
+			renderRoute(route.href, createAdminGateway());
 
 			await waitFor(() => {
-				expect(
-					screen.getByRole("link", { name: i18n.t(route.labelKey) }),
-				).toHaveAttribute("href", route.href);
+				const links = screen.getAllByRole("link", {
+					name: i18n.t(route.labelKey),
+				});
+				const matchingLink = links.find(
+					(link) => link.getAttribute("href") === route.href,
+				);
+				expect(matchingLink).toBeTruthy();
+				expect(matchingLink).toHaveAttribute("href", route.href);
 			});
 			expect(
-				screen.getByRole("heading", { name: i18n.t(route.titleKey) }),
-			).toBeTruthy();
+				screen.getAllByRole("heading", { name: i18n.t(route.titleKey) }).length,
+			).toBeGreaterThan(0);
 		}
+	});
+
+	it("canAccess returns expected hierarchy", () => {
+		// Same-role: always true
+		expect(canAccess("administrator", "administrator")).toBe(true);
+		expect(canAccess("manager", "manager")).toBe(true);
+		expect(canAccess("receptionist", "receptionist")).toBe(true);
+		expect(canAccess("housekeeping", "housekeeping")).toBe(true);
+		expect(canAccess("maintenance", "maintenance")).toBe(true);
+		// Higher-role user CAN access lower-minimum content
+		expect(canAccess("manager", "administrator")).toBe(true);
+		expect(canAccess("receptionist", "manager")).toBe(true);
+		expect(canAccess("receptionist", "administrator")).toBe(true);
+		expect(canAccess("housekeeping", "administrator")).toBe(true);
+		// Lower-role user CANNOT access higher-minimum content
+		expect(canAccess("administrator", "manager")).toBe(false);
+		expect(canAccess("administrator", "receptionist")).toBe(false);
+		expect(canAccess("manager", "receptionist")).toBe(false);
+		expect(canAccess("administrator", "housekeeping")).toBe(false);
+		expect(canAccess("administrator", "maintenance")).toBe(false);
+		// Cross-role: same privileges
+		expect(canAccess("housekeeping", "maintenance")).toBe(true);
+		expect(canAccess("maintenance", "housekeeping")).toBe(true);
+	});
+
+	it("hides reports and settings groups from receptionist sidebar", async () => {
+		renderRoute(
+			"/app/dashboard",
+			createGateway({ getCurrentUser: async () => ok(authUser) }),
+		);
+
+		await waitFor(() => {
+			expect(
+				screen.getByRole("navigation", { name: "Application modules" }),
+			).toBeTruthy();
+		});
+
+		// Operations group heading IS visible for receptionist
+		expect(screen.getByText("Operations")).toBeTruthy();
+
+		// Reports and Settings groups are NOT visible for receptionist
+		expect(screen.queryByText("Reports")).toBeNull();
+		expect(screen.queryByText("Settings")).toBeNull();
+	});
+});
+
+describe("settings routing", () => {
+	afterEach(async () => {
+		cleanup();
+		await i18n.changeLanguage("en");
+	});
+
+	it("renders settings routes under /app/settings/*", async () => {
+		for (const route of settingsRoutes) {
+			cleanup();
+			renderRoute(route.href, createAdminGateway());
+
+			await waitFor(() => {
+				const links = screen.getAllByRole("link", {
+					name: i18n.t(route.labelKey),
+				});
+				const matchingLink = links.find(
+					(link) => link.getAttribute("href") === route.href,
+				);
+				expect(matchingLink).toBeTruthy();
+			});
+		}
+	});
+
+	it("redirects /app/properties to /app/settings/property", async () => {
+		renderRoute(
+			"/app/properties",
+			createGateway({ getCurrentUser: async () => ok(authUser) }),
+		);
+
+		await waitFor(() => {
+			expect(
+				screen.getByRole("heading", { name: /Property Profile/i }),
+			).toBeTruthy();
+		});
 	});
 });

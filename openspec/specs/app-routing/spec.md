@@ -27,52 +27,42 @@ The system MUST define a public route group for unauthenticated-facing pages and
 
 ### Requirement: Structural Protected Route Group
 
-The system MUST define a protected application route group that represents authenticated application space structurally while deferring real authentication, authorization, and session enforcement to a future change.
+The system MUST derive the user role from the authenticated session and filter sidebar navigation by role, without implementing route-level guards or 403 pages.
 
-#### Scenario: Protected routes render through a structural boundary
+#### Scenario: Sidebar shows only accessible entries
 
-- GIVEN a user opens any protected application route
-- WHEN the route is rendered
-- THEN the route MUST render through a shared protected layout boundary
-- AND the boundary MUST be structural only
-- AND it MUST NOT block, redirect, or authorize users based on real authentication state
+- GIVEN a user opens a protected route
+- WHEN the sidebar renders
+- THEN entries whose minRole exceeds the user's role MUST be hidden
+- AND direct URL access MUST still render content (no guard)
 
-#### Scenario: Real auth behavior is deferred
+#### Scenario: Role derived from auth session
 
-- GIVEN the protected route boundary exists
-- WHEN the application renders protected content
-- THEN it MUST NOT call an auth provider, backend service, InsForge API, or browser persistence mechanism to validate a session
-- AND it MUST NOT implement RBAC or role-based route access rules
+- GIVEN the protected layout renders
+- WHEN the user role is available from useAuthSession
+- THEN the layout MUST use it to filter which sidebar items appear
 
 ### Requirement: Shared Application Shell
 
-The system MUST provide a shared application shell for protected routes with sidebar navigation, a topbar or header area, and a main content outlet for nested route content.
+The system MUST accept grouped, role-filtered route items and render sidebar navigation in labeled sections.
 
-#### Scenario: Protected content uses the shell regions
+#### Scenario: Three labeled groups in sidebar
 
-- GIVEN a protected route is active
-- WHEN the page renders
-- THEN the shell MUST display sidebar navigation
-- AND the shell MUST display a topbar or header area
-- AND the shell MUST display the active route content inside a main workspace outlet
-
-#### Scenario: Nested content stays inside the workspace
-
-- GIVEN a user navigates between protected module routes
-- WHEN each route is rendered
-- THEN the sidebar and topbar MUST remain shared shell regions
-- AND only the main content outlet SHOULD change for the active module page
+- GIVEN a user with administrator role
+- WHEN the sidebar displays
+- THEN navigation items MUST appear in three groups: operations, reports, settings
+- AND each group MUST show a section header
 
 ### Requirement: MVP Module Placeholder Destinations
 
-The system MUST provide protected placeholder destinations for the MVP modules needed by the current product scope, without implementing module workflows or backend-backed data views.
+The system MUST provide placeholders for all MVP modules, with property profile and users under a settings group.
 
-#### Scenario: Core module placeholders are reachable
+#### Scenario: Placeholders reachable at new paths
 
-- GIVEN the protected application route group is available
-- WHEN navigation destinations are inspected or visited
-- THEN placeholders MUST exist for dashboard, properties, users, rooms, room types, guests, reservations, housekeeping, maintenance, billing, and reports
-- AND each placeholder MUST identify its module purpose in a compact, non-workflow page
+- GIVEN the protected route group is available
+- WHEN navigation destinations are visited
+- THEN placeholders MUST exist for dashboard, rooms, room types, guests, reservations, housekeeping, maintenance, billing, and reports at top-level paths
+- AND placeholders for property profile and users MUST exist under /app/settings/*
 
 #### Scenario: Placeholders do not become feature implementations
 
@@ -124,11 +114,82 @@ The routing foundation, protected layout, shell, navigation, and placeholders MU
 - THEN it MAY adopt the general sidebar, topbar, and workspace composition
 - BUT it MUST NOT directly port Stitch-generated HTML, CDN Tailwind configuration, inline scripts, Chart.js usage, or prototype-only code
 
+### Requirement: Route Metadata with Group and Role Fields
+
+Route metadata MUST include `group` (`operations | reports | settings`) and `minRole: AppProfileRole`. A `canAccess(minRole, userRole)` helper MUST enforce: administrator > manager > receptionist > (housekeeping | maintenance).
+
+#### Scenario: Metadata carries group and minRole
+
+- GIVEN a route is defined in routeMetadata
+- WHEN inspected
+- THEN it MUST have a group and minRole value
+
+#### Scenario: Hierarchy resolves correctly
+
+- GIVEN a route with minRole = "administrator"
+- WHEN canAccess is called with userRole = "manager"
+- THEN it MUST return false
+- WHEN userRole = "administrator"
+- THEN it MUST return true
+
+### Requirement: Settings Nested Routes
+
+Routes MUST render under `/app/settings/*` via a SettingsLayout. The old `/app/properties` MUST redirect to `/app/settings/property`.
+
+#### Scenario: Settings layout renders
+
+- GIVEN a user navigates to `/app/settings/property` or `/app/settings/users`
+- WHEN the route resolves
+- THEN it MUST render through a SettingsLayout inside the protected shell
+
+#### Scenario: Properties path redirects
+
+- GIVEN a user visits `/app/properties`
+- WHEN the route resolves
+- THEN it MUST redirect to `/app/settings/property`
+
+### Requirement: Sidebar Grouped Sections
+
+The sidebar MUST render items grouped by `group` field with section headers. Items with minRole above the user's role MUST be excluded.
+
+#### Scenario: Administrator sees all groups
+
+- GIVEN a user with administrator role
+- WHEN the sidebar renders
+- THEN three groups MUST appear: operations, reports, settings
+
+#### Scenario: Receptionist sees filtered view
+
+- GIVEN a user with receptionist role
+- WHEN the sidebar renders
+- THEN settings items MUST be hidden (minRole = administrator)
+- AND reports items MUST be hidden (minRole = manager)
+
+### Requirement: Test and Documentation Coverage
+
+Tests MUST cover role filtering, settings routes, and the redirect. Architecture docs MUST describe the route group structure.
+
+#### Scenario: Tests verify new routing behavior
+
+- GIVEN routing tests execute
+- WHEN an administrator and a receptionist render the sidebar
+- THEN tests MUST verify different group visibility per role
+- AND verify `/app/settings/*` resolves correctly
+- AND verify `/app/properties` redirects
+
+#### Scenario: Docs updated
+
+- GIVEN architecture docs (English and Spanish)
+- WHEN a reviewer reads them
+- THEN they MUST describe the three route groups and settings nesting
+
 ## Acceptance Criteria
 
 - Public and protected route groups are explicitly represented in the frontend route structure.
 - Protected routes render through a shared shell with sidebar, topbar, and main content outlet.
-- Dashboard, properties, users, rooms, room types, guests, reservations, housekeeping, maintenance, billing, and reports have protected placeholder destinations only.
+- Dashboard, rooms, room types, guests, reservations, housekeeping, maintenance, billing, and reports have protected placeholder destinations at top-level paths.
+- Property profile and users have protected placeholder destinations under /app/settings/*.
+- Routes are organized into three groups (operations, reports, settings) with role-based sidebar visibility.
 - Navigation links and route definitions remain consistent and reviewable.
 - Structural route/layout components perform no backend, InsForge, real auth, session, RBAC, or feature workflow behavior.
 - Room Status Board implementation, Stitch HTML porting, backend work, and real authentication remain outside this change.

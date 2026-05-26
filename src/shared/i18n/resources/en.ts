@@ -59,8 +59,18 @@ export const en = {
 				"Your account is not linked to an active InnHub profile for a property. Contact an administrator before continuing.",
 		},
 	},
+	settings: {
+		subNavAriaLabel: "Settings navigation",
+	},
 	shell: {
-		sidebar: { ariaLabel: "Application modules" },
+		sidebar: {
+			ariaLabel: "Application modules",
+			group: {
+				operations: "Operations",
+				reports: "Reports",
+				settings: "Settings",
+			},
+		},
 		workspace: { ariaLabel: "{{title}} workspace" },
 		topbar: {
 			eyebrow: "Property workspace",
@@ -111,6 +121,12 @@ export const en = {
 	},
 	routes: {
 		protected: {
+			propertyProfile: {
+				label: "Property Profile",
+				title: "Property Profile",
+				description:
+					"Your property profile and operational settings will appear here.",
+			},
 			dashboard: {
 				label: "Dashboard",
 				title: "Dashboard",

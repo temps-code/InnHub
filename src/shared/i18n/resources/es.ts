@@ -61,8 +61,18 @@ export const es = {
 				"Tu cuenta no está vinculada a un perfil activo de InnHub para una propiedad. Contactá a un administrador antes de continuar.",
 		},
 	},
+	settings: {
+		subNavAriaLabel: "Navegación de configuración",
+	},
 	shell: {
-		sidebar: { ariaLabel: "Módulos de la aplicación" },
+		sidebar: {
+			ariaLabel: "Módulos de la aplicación",
+			group: {
+				operations: "Operaciones",
+				reports: "Reportes",
+				settings: "Configuración",
+			},
+		},
 		workspace: { ariaLabel: "Espacio de trabajo: {{title}}" },
 		topbar: {
 			eyebrow: "Espacio de propiedad",
@@ -113,6 +123,12 @@ export const es = {
 	},
 	routes: {
 		protected: {
+			propertyProfile: {
+				label: "Perfil de propiedad",
+				title: "Perfil de propiedad",
+				description:
+					"Tu perfil de propiedad y configuración operativa aparecerán aquí.",
+			},
 			dashboard: {
 				label: "Dashboard",
 				title: "Dashboard",

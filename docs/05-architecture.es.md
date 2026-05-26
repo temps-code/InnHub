@@ -103,7 +103,19 @@ Las primeras primitivas reutilizables de UI compartida ya están implementadas b
 | `ModuleCard`  | Implementado  | Navegación o resúmenes para habitaciones, reservas, huéspedes, facturación, housekeeping, mantenimiento y reportes | Permite exponer distintos módulos de la línea de producto con un patrón de tarjeta consistente y reutilizable           |
 | `PageSection` | Implementado  | Espaciado de página, encabezados, descripciones, acciones y secciones responsive compartidas                       | Separa la estructura de sección del contenido de negocio y evita repetir scaffolding en cada feature                    |
 
-`PageSection` se implementó en lugar de un `AppLayout` completo en esta etapa porque las decisiones de routing, autenticación, navegación y layouts protegidos pertenecen a trabajo posterior. Estas primitivas deben mantenerse genéricas: etiquetas específicas de habitaciones, reglas de reservas, cálculos de métricas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
+`PageSection` se implementó antes de que el routing protegido estuviera finalizado porque el patrón de sección es independiente del layout. Estas primitivas deben mantenerse genéricas: etiquetas específicas de habitaciones, reglas de reservas, cálculos de métricas y decisiones de negocio pertenecen al código de feature, schemas, services o funciones utilitarias.
+
+## Arquitectura de rutas protegidas
+
+Las rutas protegidas están organizadas en tres grupos con visibilidad basada en rol:
+
+| Grupo | Rutas | Rol mínimo | Descripción |
+|-------|-------|------------|-------------|
+| `operations` | dashboard, rooms, room-types, guests, reservations, housekeeping, maintenance, billing | `receptionist` (la mayoría), `housekeeping`, `maintenance` | Workflows operativos diarios y acceso a módulos |
+| `reports` | reports | `manager` | Reportes de ocupación, ingresos y operaciones |
+| `settings` | property profile, users | `administrator` | Configuración de propiedad y gestión de personal |
+
+Las rutas de configuración anidan bajo `/app/settings/*` (ej: `/app/settings/property`). La metadata de rutas define claves de etiquetas, paths, grupos, mapeo de íconos, visibilidad por rol y orden explícito por grupo mediante el campo `order`. El filtrado en el sidebar es solo a nivel de UI — el acceso por URL directa no está restringido. Jerarquía de roles: `administrator > manager > receptionist > (housekeeping = maintenance)`.
 
 ## Documentos relacionados
 

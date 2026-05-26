@@ -3,7 +3,12 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useAuthSession } from "../../features/auth";
-import { protectedRoutes, findProtectedRoute } from "../routes/routeMetadata";
+import {
+	allRoutes,
+	canAccess,
+	findProtectedRoute,
+	type GroupedRouteItem,
+} from "../routes/routeMetadata";
 import { AppShell } from "../shell/AppShell";
 
 function CenteredAuthState({ children }: { readonly children: ReactNode }) {
@@ -52,8 +57,32 @@ export function ProtectedLayout() {
 		);
 	}
 
+	// Fall through to authenticated state — the other statuses all return early
+	const userRole = state.session.profile.role;
+	const visibleRoutes = allRoutes
+		.filter((r) => canAccess(r.minRole, userRole))
+		.toSorted((a, b) => a.order - b.order);
+
+	const grouped: GroupedRouteItem[] = [
+		{
+			group: "operations" as const,
+			labelKey: "shell.sidebar.group.operations",
+			items: visibleRoutes.filter((r) => r.group === "operations"),
+		},
+		{
+			group: "reports" as const,
+			labelKey: "shell.sidebar.group.reports",
+			items: visibleRoutes.filter((r) => r.group === "reports"),
+		},
+		{
+			group: "settings" as const,
+			labelKey: "shell.sidebar.group.settings",
+			items: visibleRoutes.filter((r) => r.group === "settings"),
+		},
+	].filter((g) => g.items.length > 0);
+
 	return (
-		<AppShell activeRoute={activeRoute} items={protectedRoutes}>
+		<AppShell activeRoute={activeRoute} items={grouped}>
 			<Outlet />
 		</AppShell>
 	);
