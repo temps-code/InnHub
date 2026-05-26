@@ -59,6 +59,11 @@ export function ProtectedLayout() {
 
 	// Fall through to authenticated state — the other statuses all return early
 	const userRole = state.session.profile.role;
+
+	if (activeRoute && !canAccess(activeRoute.minRole, userRole)) {
+		return <Navigate to="/app/dashboard" replace />;
+	}
+
 	const visibleRoutes = allRoutes
 		.filter((r) => canAccess(r.minRole, userRole))
 		.toSorted((a, b) => a.order - b.order);

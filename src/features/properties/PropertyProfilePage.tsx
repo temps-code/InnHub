@@ -65,7 +65,7 @@ function ReadOnlyField({
 	readonly value: string;
 }) {
 	return (
-		<div className="grid grid-cols-[180px_1fr] gap-2 text-sm">
+		<div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-1 sm:gap-2 text-sm">
 			<span className="font-medium text-[var(--color-muted)]">{label}</span>
 			<span className="text-[var(--color-heading)]">{value}</span>
 		</div>

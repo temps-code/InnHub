@@ -27,20 +27,27 @@ The system MUST define a public route group for unauthenticated-facing pages and
 
 ### Requirement: Structural Protected Route Group
 
-The system MUST derive the user role from the authenticated session and filter sidebar navigation by role, without implementing route-level guards or 403 pages.
+The system MUST derive the user role from the authenticated session, filter sidebar navigation by role, and restrict direct URL path access to authorized roles.
+(Previously: The system filtered sidebar navigation but did not restrict direct URL access or enforce route-level access guards.)
 
 #### Scenario: Sidebar shows only accessible entries
 
 - GIVEN a user opens a protected route
 - WHEN the sidebar renders
 - THEN entries whose minRole exceeds the user's role MUST be hidden
-- AND direct URL access MUST still render content (no guard)
 
 #### Scenario: Role derived from auth session
 
 - GIVEN the protected layout renders
 - WHEN the user role is available from useAuthSession
 - THEN the layout MUST use it to filter which sidebar items appear
+
+#### Scenario: Direct URL access is denied for unauthorized roles
+
+- GIVEN a user tries to access a route whose minRole exceeds the user's role
+- WHEN the route is requested via a direct URL path
+- THEN the system MUST deny access
+- AND the system MUST render a Denied page or redirect the user to a safe page
 
 ### Requirement: Shared Application Shell
 
@@ -167,13 +174,14 @@ The sidebar MUST render items grouped by `group` field with section headers. Ite
 
 ### Requirement: Test and Documentation Coverage
 
-Tests MUST cover role filtering, settings routes, and the redirect. Architecture docs MUST describe the route group structure.
+Tests MUST cover role filtering across all 5 AppProfileRoles, settings routes, and the redirect. Architecture docs MUST describe the route group structure.
+(Previously: Tests only verified administrator and receptionist roles)
 
-#### Scenario: Tests verify new routing behavior
+#### Scenario: Tests verify all-role routing behavior
 
-- GIVEN routing tests execute
-- WHEN an administrator and a receptionist render the sidebar
-- THEN tests MUST verify different group visibility per role
+- GIVEN routing tests execute with parameterized role data
+- WHEN each of the 5 AppProfileRoles (administrator, manager, receptionist, housekeeping, maintenance) renders the sidebar
+- THEN tests MUST verify role-specific group visibility per role
 - AND verify `/app/settings/*` resolves correctly
 - AND verify `/app/properties` redirects
 
@@ -182,6 +190,39 @@ Tests MUST cover role filtering, settings routes, and the redirect. Architecture
 - GIVEN architecture docs (English and Spanish)
 - WHEN a reviewer reads them
 - THEN they MUST describe the three route groups and settings nesting
+
+### Requirement: Responsive Mobile Navigation Drawer
+
+On small viewports (< 768px), the system MUST render the main navigation drawer off-canvas and provide a Menu toggle button.
+
+#### Scenario: Mobile drawer slides out
+
+- GIVEN a user on a viewport narrower than 768px
+- WHEN the user clicks the Menu button
+- THEN the main navigation drawer MUST slide out off-canvas
+
+#### Scenario: Mobile drawer closes automatically
+
+- GIVEN the off-canvas navigation drawer is open on a mobile viewport
+- WHEN the user clicks the backdrop or any navigation link
+- THEN the navigation drawer MUST close automatically
+
+### Requirement: Mobile Sidebar Independent Scroll
+
+On viewports below 768px, the navigation drawer MUST keep the header (logo + close button) fixed while allowing the navigation list to scroll independently.
+
+#### Scenario: Header stays fixed, nav scrolls on mobile
+
+- GIVEN a user on a viewport narrower than 768px
+- WHEN the mobile navigation drawer is open
+- THEN the drawer header with logo and close button MUST remain fixed at the top
+- AND the navigation list below the header MUST scroll independently within the drawer
+
+#### Scenario: Scroll splitting not applied on desktop
+
+- GIVEN a viewport of 768px or wider
+- WHEN the sidebar renders
+- THEN the sidebar MUST render without independent header/nav scroll splitting
 
 ## Acceptance Criteria
 
