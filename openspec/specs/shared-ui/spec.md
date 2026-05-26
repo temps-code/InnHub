@@ -168,6 +168,25 @@ The system MUST include focused tests for the shared UI primitives and preserve 
 - AND `npm run lint` MUST pass
 - AND `npm run build` MUST pass
 
+### Requirement: Multi-Role Demo Credentials
+
+The system MUST expose demo credentials for multiple InnHub accounts with distinct AppProfileRoles so evaluators and automated tests can authenticate as any of the 5 roles.
+
+> **Merge note**: The `getDemoAccount(role)` and `getAllDemoAccounts()` utility functions are implemented in `demoCredentials.ts`. LoginForm UI integration for role selection is **pending a future change** — evaluators can use direct URL access or modify code to verify multi-role behavior via login.
+
+#### Scenario: Demo credentials available for all 5 roles
+
+- GIVEN demo credentials are configured
+- WHEN the system resolves available demo accounts
+- THEN the system MUST provide credentials for accounts with administrator, manager, receptionist, housekeeping, and maintenance roles
+
+#### Scenario: Role-to-credential mapping interface
+
+- GIVEN a test or evaluation flow requires a specific role
+- WHEN it queries demo credentials by role
+- THEN the system MUST return the corresponding credentials for the requested role
+- AND it MUST return undefined or null for roles without configured credentials
+
 ## Acceptance Criteria
 
 - `Button`, `StatusBadge`, `ModuleCard`, minimal `MetricCard`, and `PageSection` exist under `src/shared/components`.
