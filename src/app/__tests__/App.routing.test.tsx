@@ -50,6 +50,24 @@ vi.mock("../../features/properties/useCurrentProperty", () => ({
 	}),
 }));
 
+// UserProfilePage depends on useCurrentProfile, mock it so the profile
+// route renders loaded state without requiring a real backend.
+vi.mock("../../features/profile/useCurrentProfile", () => ({
+	useCurrentProfile: () => ({
+		state: {
+			status: "loaded" as const,
+			profile: {
+				fullName: "Admin User",
+				email: "admin@innhub.test",
+				role: "administrator",
+				propertyName: "Test Property",
+			},
+		},
+		update: vi.fn(),
+		refresh: vi.fn(),
+	}),
+}));
+
 const authUser: AuthUser = {
 	id: "auth-user-1",
 	email: "frontdesk@innhub.test",

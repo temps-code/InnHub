@@ -126,6 +126,22 @@ export const es = {
 		eyebrow: "Placeholder de módulo",
 		note: "Placeholder solamente. Los workflows de features se implementarán en slices posteriores.",
 	},
+	profile: {
+		title: "Mi Perfil",
+		loading: "Cargando perfil...",
+		loadError: "No se pudo cargar el perfil.",
+		edit: "Editar Perfil",
+		save: "Guardar Cambios",
+		cancel: "Cancelar",
+		saved: "Perfil actualizado correctamente",
+		updateError: "No se pudieron guardar los cambios. Intentá de nuevo.",
+		fields: {
+			fullName: "Nombre Completo",
+			email: "Correo Electrónico",
+			role: "Rol",
+			property: "Propiedad",
+		},
+	},
 	preferences: {
 		theme: {
 			label: "Tema",
