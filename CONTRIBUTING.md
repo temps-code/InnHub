@@ -7,13 +7,13 @@ InnHub is an individual academic/professional project. Work should stay issue-fi
 Use this path only after the project owner explicitly approves completing the workflow through `main`.
 
 1. Work on `features` and keep the change tied to one GitHub issue.
-2. Review the diff against the issue acceptance criteria.
+2. Review the diff against the issue acceptance criteria. Use `judgment-day` for non-trivial changes.
 3. Run the verification gate: `npm run lint`, `npm run build`, and `npm run test:run`.
-4. Fix blockers, then rerun the affected verification.
-5. Commit on `features` with a Conventional Commit message.
-6. Create a pull request from `features` to `qa` with `Closes #N` in the body, then merge it.
-7. Create a pull request from `qa` to `main` with `Closes #N` in the body.
-8. Add an evidence comment on the issue with verification results and key decisions.
+4. Fix blockers, then rerun the affected verification. If the fix changes behavior, routing, architecture, or tests, re-run `judgment-day`.
+5. Commit on `features` with a Conventional Commit message. Load `work-unit-commits` before committing to plan reviewable units.
+6. Create a pull request from `features` to `qa` with `Closes #N` in the body. Use `branch-pr` to open the PR and `comment-writer` for the body.
+7. Create a pull request from `qa` to `main` with `Closes #N` in the body. Use `branch-pr` to open the PR.
+8. Add an evidence comment on the issue with verification results and key decisions. Use `comment-writer` for the comment.
 9. Merge the `qa` → `main` pull request (the issue auto-closes via `Closes #N`).
 10. Fast-forward `refactor` to `main`: `git checkout refactor && git merge --ff-only main`.
 11. Push all branches: `git push origin features qa main refactor`.
@@ -53,26 +53,31 @@ When a review finds issues:
 
 Expected non-blocking warnings should still be mentioned in the issue evidence. Current examples include Vite large chunk warnings or Node deprecation warnings when commands otherwise pass.
 
-## Recommended agent skills and subagents
+## Recommended skills
 
-These are the installed skills/work patterns expected for this repository. Use the smallest safe workflow; do not add ceremony for trivial one-file edits.
+These are the installed skills expected for this repository. Load them with the `skill()` tool when the task matches their trigger. Use the smallest safe workflow; do not add ceremony for trivial one-file edits.
 
-| Phase | Recommended skill or subagent | When to use |
+| Phase | Skill | When to use |
 | --- | --- | --- |
-| Requirements and scope | `gentle-ai` | Use for non-trivial work, SDD/OpenSpec discipline, acceptance criteria, and approval gates. |
-| Documentation design | `cognitive-doc-design` | Use when writing guides, workflow docs, README sections, architecture notes, or review-facing docs. |
-| Work-unit planning | `work-unit-commits` | Use before committing implementation work so commits remain reviewable and tests/docs stay with the behavior. |
-| Codebase exploration | `scout` or `context-builder` subagent | Use when understanding requires reading 4+ files or mapping unfamiliar flow. |
-| Implementation | `worker` subagent | Use for bounded multi-file implementation after scope is clear. Keep one writer unless isolated worktrees are approved. |
-| Review | `reviewer` subagent, fresh context | Use before closing non-trivial issues, before PRs, after fixes, or when acceptance criteria must be independently checked. |
-| SDD planning | `sdd-proposal`, `sdd-spec`, `sdd-design`, `sdd-tasks` | Use for large, ambiguous, architectural, or product-facing changes. |
-| SDD implementation and verification | `sdd-apply`, `sdd-verify`, `sdd-archive` | Use when an OpenSpec/SDD change exists and must be applied, verified, and archived. |
-| PR creation | `branch-pr` | Use only when the project owner asks to prepare or open a PR. |
-| Large PR splitting | `chained-pr` | Use if a change grows beyond a comfortable review size or needs stacked review slices. |
-| Issue creation | `issue-creation` | Use when creating new GitHub issues. |
-| Review comments | `comment-writer` | Use when drafting GitHub comments, PR feedback, or issue replies. |
+| Codebase investigation | `sdd-explore` | When understanding requires reading 4+ files or mapping unfamiliar flows. |
+| Documentation | `cognitive-doc-design` | When writing guides, READMEs, architecture docs, RFCs, or review-facing documents. |
+| SDD — Init | `sdd-init` | When starting a new project with SDD or when init has not been run yet. |
+| SDD — Proposal | `sdd-propose` | To define scope, technical approach, and risks for a change. |
+| SDD — Spec | `sdd-spec` | To write delta specs with requirement scenarios. |
+| SDD — Design | `sdd-design` | To plan components, interfaces, data flow, and test plan. |
+| SDD — Tasks | `sdd-tasks` | To break specs and design into actionable tasks with a review forecast. |
+| SDD — Apply | `sdd-apply` | When an SDD change with tasks, specs, and design is ready. |
+| SDD — Verify | `sdd-verify` | To validate implementation against specs, tasks, and tests. |
+| SDD — Archive | `sdd-archive` | To close an SDD change and sync delta specs into the main specs. |
+| SDD — Onboarding | `sdd-onboard` | To guide someone through their first full SDD cycle on the real codebase. |
+| Reviewable commits | `work-unit-commits` | Before committing, to plan logical units that keep tests and docs with the code. |
+| Adversarial review | `judgment-day` | Before closing non-trivial issues, before PRs, after fixes, or when acceptance criteria need independent verification. Uses blind dual review with fresh context. |
+| Issue creation | `issue-creation` | When creating new GitHub issues. |
+| PR creation | `branch-pr` | Only when the project owner asks to open a PR. |
+| Large / chained PRs | `chained-pr` | If the change exceeds 400 lines, needs stacked review slices, or the owner approves chained PRs. |
+| Comments and reviews | `comment-writer` | For PR comments, issue feedback, review replies, or async project messages. |
 
-Fresh review rule: final reviews should use a fresh-context `reviewer` so the reviewer is not biased by implementation assumptions.
+Fresh review rule: final reviews must use `judgment-day` with fresh context to avoid bias from having been part of the implementation.
 
 ## Completion workflow checklist
 
