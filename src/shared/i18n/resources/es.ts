@@ -97,6 +97,29 @@ export const es = {
 			workspaceLabel: "Espacio autenticado de InnHub.",
 		},
 	},
+	roomTypes: {
+		list: {
+			title: "Tipos de habitación",
+			loading: "Cargando tipos de habitación...",
+			empty: "No se encontraron tipos de habitación. Creá uno para empezar.",
+			error: "No se pudieron cargar los tipos de habitación.",
+		},
+		fields: {
+			name: "Nombre",
+			description: "Descripción",
+			capacity: "Capacidad",
+			base_price: "Precio base",
+		},
+		create: {
+			title: "Crear tipo de habitación",
+			submit: "Crear",
+		},
+		edit: {
+			title: "Editar tipo de habitación",
+			submit: "Guardar cambios",
+		},
+		duplicateName: "Ya existe un tipo de habitación con ese nombre.",
+	},
 	properties: {
 		profile: {
 			eyebrow: "Perfil de propiedad",
