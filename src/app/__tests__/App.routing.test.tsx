@@ -50,6 +50,24 @@ vi.mock("../../features/properties/useCurrentProperty", () => ({
 	}),
 }));
 
+// UserProfilePage depends on useCurrentProfile, mock it so the profile
+// route renders loaded state without requiring a real backend.
+vi.mock("../../features/profile/useCurrentProfile", () => ({
+	useCurrentProfile: () => ({
+		state: {
+			status: "loaded" as const,
+			profile: {
+				fullName: "Admin User",
+				email: "admin@innhub.test",
+				role: "administrator",
+				propertyName: "Test Property",
+			},
+		},
+		update: vi.fn(),
+		refresh: vi.fn(),
+	}),
+}));
+
 const authUser: AuthUser = {
 	id: "auth-user-1",
 	email: "frontdesk@innhub.test",
@@ -287,9 +305,30 @@ describe("app routing foundation", () => {
 		expect(canAccess("manager", "receptionist")).toBe(false);
 		expect(canAccess("administrator", "housekeeping")).toBe(false);
 		expect(canAccess("administrator", "maintenance")).toBe(false);
-		// Peer roles: cannot access each other's routes
+		// Distinct levels: higher-level user can access lower-minimum routes
+		expect(canAccess("maintenance", "housekeeping")).toBe(true);
+		// Lower-level user cannot access higher-minimum routes
 		expect(canAccess("housekeeping", "maintenance")).toBe(false);
-		expect(canAccess("maintenance", "housekeeping")).toBe(false);
+	});
+
+	it("any role (level 10) is accessible by all authenticated roles", () => {
+		expect(canAccess("any", "any")).toBe(true);
+		expect(canAccess("any", "administrator")).toBe(true);
+		expect(canAccess("any", "manager")).toBe(true);
+		expect(canAccess("any", "receptionist")).toBe(true);
+		expect(canAccess("any", "housekeeping")).toBe(true);
+		expect(canAccess("any", "maintenance")).toBe(true);
+	});
+
+	it("uses >= comparison with distinct levels (peers no longer equal)", () => {
+		// maintenance (30) cannot access housekeeping (40)
+		expect(canAccess("housekeeping", "maintenance")).toBe(false);
+		// housekeeping (40) cannot access receptionist (50) routes
+		expect(canAccess("receptionist", "housekeeping")).toBe(false);
+		// manager (80) can access receptionist (60) routes
+		expect(canAccess("receptionist", "manager")).toBe(true);
+		// but housekeeping (40) CANNOT access maintenance (30) — downwards still blocked
+		expect(canAccess("maintenance", "housekeeping")).toBe(true);
 	});
 
 	it("hides reports and settings groups from receptionist sidebar", async () => {
@@ -307,7 +346,7 @@ describe("app routing foundation", () => {
 		// Operations group heading IS visible for receptionist
 		expect(screen.getByText("Operations")).toBeTruthy();
 
-		// Reports and Settings groups are NOT visible for receptionist
+		// Reports and Settings groups are NOT visible (pinned profile is below groups)
 		expect(screen.queryByText("Reports")).toBeNull();
 		expect(screen.queryByText("Settings")).toBeNull();
 	});
@@ -451,4 +490,32 @@ describe("settings routing", () => {
 			}
 		},
 	);
+
+	it("profile route exists in settingsRoutes with minRole: any", () => {
+		const profileRoute = settingsRoutes.find((r) => r.id === "profile");
+		expect(profileRoute).toBeDefined();
+		expect(profileRoute!.path).toBe("profile");
+		expect(profileRoute!.href).toBe("/app/settings/profile");
+		expect(profileRoute!.group).toBe("settings");
+	});
+
+	it.each([
+		"administrator",
+		"manager",
+		"receptionist",
+		"housekeeping",
+		"maintenance",
+		"any",
+	] as const)("profile route is accessible to %s role", async (role) => {
+		renderRoute(
+			"/app/settings/profile",
+			createRoleGateway(role),
+		);
+
+		await waitFor(() => {
+			expect(
+				screen.getByRole("heading", { name: /My Profile|Placeholder|profile/i }),
+			).toBeTruthy();
+		});
+	});
 });

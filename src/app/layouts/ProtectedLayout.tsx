@@ -65,30 +65,35 @@ export function ProtectedLayout() {
 		return <Navigate to={fallback?.href ?? "/app/dashboard"} replace />;
 	}
 
-	const visibleRoutes = allRoutes
+	const allVisibleRoutes = allRoutes
 		.filter((r) => canAccess(r.minRole, userRole))
 		.toSorted((a, b) => a.order - b.order);
+
+	// Separate the profile route so it renders as a pinned item instead
+	// of appearing inside the settings group
+	const profileRoute = allVisibleRoutes.find((r) => r.id === "profile");
+	const filteredRoutes = allVisibleRoutes.filter((r) => r.id !== "profile");
 
 	const grouped: GroupedRouteItem[] = [
 		{
 			group: "operations" as const,
 			labelKey: "shell.sidebar.group.operations",
-			items: visibleRoutes.filter((r) => r.group === "operations"),
+			items: filteredRoutes.filter((r) => r.group === "operations"),
 		},
 		{
 			group: "reports" as const,
 			labelKey: "shell.sidebar.group.reports",
-			items: visibleRoutes.filter((r) => r.group === "reports"),
+			items: filteredRoutes.filter((r) => r.group === "reports"),
 		},
 		{
 			group: "settings" as const,
 			labelKey: "shell.sidebar.group.settings",
-			items: visibleRoutes.filter((r) => r.group === "settings"),
+			items: filteredRoutes.filter((r) => r.group === "settings"),
 		},
 	].filter((g) => g.items.length > 0);
 
 	return (
-		<AppShell activeRoute={activeRoute} items={grouped}>
+		<AppShell activeRoute={activeRoute} items={grouped} pinnedItem={profileRoute}>
 			<Outlet />
 		</AppShell>
 	);

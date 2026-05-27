@@ -9,6 +9,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AppProfileRole } from "../../../features/auth/types";
 import type { GroupedRouteItem } from "../../routes/routeMetadata";
 import { allRoutes, canAccess } from "../../routes/routeMetadata";
+import type { ProtectedRouteMeta } from "../../routes/routeMetadata";
+import { UserCircle } from "lucide-react";
 import { SidebarNav } from "../SidebarNav";
 import { AppShell } from "../AppShell";
 import { AuthSessionProvider } from "../../../features/auth";
@@ -281,5 +283,75 @@ describe("sidebar mobile scroll layout", () => {
 		const wrapper = nav.parentElement;
 		expect(wrapper).toHaveClass("overflow-y-auto");
 		expect(wrapper).toHaveClass("min-h-0");
+	});
+});
+
+describe("SidebarNav pinned item", () => {
+	const profileMeta: ProtectedRouteMeta = {
+		id: "profile",
+		path: "profile",
+		href: "/app/settings/profile",
+		labelKey: "routes.protected.profile.label",
+		titleKey: "routes.protected.profile.title",
+		descriptionKey: "routes.protected.profile.description",
+		group: "settings",
+		order: 30,
+		minRole: "any",
+		icon: UserCircle,
+	};
+
+	it("renders a divider / horizontal rule above pinned item", () => {
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groupedRoutes} pinnedItem={profileMeta} />
+			</MemoryRouter>,
+		);
+
+		const hr = document.querySelector("hr");
+		expect(hr).toBeTruthy();
+	});
+
+	it("renders pinned My Profile link below groups", () => {
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groupedRoutes} pinnedItem={profileMeta} />
+			</MemoryRouter>,
+		);
+
+		const profileLink = screen.getByRole("link", {
+			name: "routes.protected.profile.label",
+		});
+		expect(profileLink).toBeTruthy();
+		expect(profileLink).toHaveAttribute("href", "/app/settings/profile");
+	});
+
+	it("does not render pinned section when no pinnedItem is provided", () => {
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groupedRoutes} />
+			</MemoryRouter>,
+		);
+
+		const hr = document.querySelector("hr");
+		const profileLink = screen.queryByRole("link", {
+			name: "routes.protected.profile.label",
+		});
+		expect(hr).toBeNull();
+		expect(profileLink).toBeNull();
+	});
+
+	it("renders an svg icon (UserCircle) inside the pinned link", () => {
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groupedRoutes} pinnedItem={profileMeta} />
+			</MemoryRouter>,
+		);
+
+		const profileLink = screen.getByRole("link", {
+			name: "routes.protected.profile.label",
+		});
+		const svg = profileLink.querySelector("svg");
+		expect(svg).toBeTruthy();
+		expect(svg).toHaveAttribute("aria-hidden", "true");
 	});
 });

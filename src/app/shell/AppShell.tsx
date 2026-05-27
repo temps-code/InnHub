@@ -12,9 +12,10 @@ type AppShellProps = {
 	activeRoute?: ProtectedRouteMeta;
 	children: ReactNode;
 	items: readonly GroupedRouteItem[];
+	pinnedItem?: ProtectedRouteMeta;
 };
 
-export function AppShell({ activeRoute, children, items }: AppShellProps) {
+export function AppShell({ activeRoute, children, items, pinnedItem }: AppShellProps) {
 	const { t } = useTranslation();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const workspaceLabel = activeRoute
@@ -59,7 +60,7 @@ export function AppShell({ activeRoute, children, items }: AppShellProps) {
 					</Button>
 				</div>
 				<div className="flex-1 overflow-y-auto min-h-0 px-5">
-					<SidebarNav items={items} onClose={() => setIsSidebarOpen(false)} />
+					<SidebarNav items={items} onClose={() => setIsSidebarOpen(false)} pinnedItem={pinnedItem} />
 				</div>
 			</aside>
 
