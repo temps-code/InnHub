@@ -13,22 +13,30 @@ export type DemoAccount = {
 };
 
 const DEMO_ACCOUNTS: readonly DemoAccount[] = [
-	{ role: "administrator", email: "admin@innhub.test", password: "demo-admin" },
-	{ role: "manager", email: "manager@innhub.test", password: "demo-manager" },
+	{
+		role: "administrator",
+		email: "admin+tarija-admin@innhub.dev",
+		password: "Demo123!",
+	},
+	{
+		role: "manager",
+		email: "admin+tarija-manager@innhub.dev",
+		password: "Demo123!",
+	},
 	{
 		role: "receptionist",
-		email: "receptionist@innhub.test",
-		password: "demo-receptionist",
+		email: "admin+tarija-reception@innhub.dev",
+		password: "Demo123!",
 	},
 	{
 		role: "housekeeping",
-		email: "housekeeping@innhub.test",
-		password: "demo-housekeeping",
+		email: "admin+tarija-housekeep@innhub.dev",
+		password: "Demo123!",
 	},
 	{
 		role: "maintenance",
-		email: "maintenance@innhub.test",
-		password: "demo-maintenance",
+		email: "admin+tarija-maintenance@innhub.dev",
+		password: "Demo123!",
 	},
 ];
 

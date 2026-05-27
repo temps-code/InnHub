@@ -50,6 +50,23 @@ export const en = {
 			demoSubmit: "Use demo account",
 			demoUnavailable: "Demo account is not configured for this environment.",
 		},
+		demoSelector: {
+			title: "Demo accounts",
+			description: "Select a role to log in with demo credentials",
+			openButton: "Demo accounts",
+		},
+		roles: {
+			administrator: "Administrator",
+			manager: "Manager",
+			receptionist: "Receptionist",
+			housekeeping: "Housekeeping",
+			maintenance: "Maintenance",
+			administrator_desc: "Full access to all modules and settings",
+			manager_desc: "Reports, operations, and staff management",
+			receptionist_desc: "Daily operations: reservations, check-in, billing",
+			housekeeping_desc: "Room cleaning and status management",
+			maintenance_desc: "Maintenance tickets and room repairs",
+		},
 		logout: "Log out",
 		states: {
 			loading: "Checking session",
