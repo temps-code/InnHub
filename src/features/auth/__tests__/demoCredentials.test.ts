@@ -60,7 +60,7 @@ describe("getDemoAccount", () => {
 		(role) => {
 			const result = getDemoAccount(role);
 			expect(result).toBeDefined();
-			expect(result!.email).toContain("@innhub.test");
+			expect(result!.email).toContain("@innhub.dev");
 			expect(typeof result!.password).toBe("string");
 			expect(result!.password.length).toBeGreaterThan(0);
 		},
@@ -80,7 +80,7 @@ describe("getAllDemoAccounts", () => {
 			expect(account).toHaveProperty("role");
 			expect(account).toHaveProperty("email");
 			expect(account).toHaveProperty("password");
-			expect(account.email).toContain("@innhub.test");
+			expect(account.email).toContain("@innhub.dev");
 			expect(typeof account.password).toBe("string");
 			expect(account.password.length).toBeGreaterThan(0);
 		}

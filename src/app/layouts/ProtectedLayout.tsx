@@ -61,7 +61,8 @@ export function ProtectedLayout() {
 	const userRole = state.session.profile.role;
 
 	if (activeRoute && !canAccess(activeRoute.minRole, userRole)) {
-		return <Navigate to="/app/dashboard" replace />;
+		const fallback = allRoutes.find((r) => canAccess(r.minRole, userRole));
+		return <Navigate to={fallback?.href ?? "/app/dashboard"} replace />;
 	}
 
 	const visibleRoutes = allRoutes

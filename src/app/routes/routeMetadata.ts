@@ -57,7 +57,16 @@ export function canAccess(
 	minRole: AppProfileRole,
 	userRole: AppProfileRole,
 ): boolean {
-	return ROLE_ORDER[userRole] >= ROLE_ORDER[minRole];
+	const userLevel = ROLE_ORDER[userRole];
+	const minLevel = ROLE_ORDER[minRole];
+
+	// Same level: only exact role match (prevents peer roles like
+	// housekeeping and maintenance from accessing each other's routes)
+	if (userLevel === minLevel) {
+		return userRole === minRole;
+	}
+
+	return userLevel > minLevel;
 }
 
 export type GroupedRouteItem = {
