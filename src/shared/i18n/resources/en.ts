@@ -95,6 +95,29 @@ export const en = {
 			workspaceLabel: "Authenticated InnHub workspace.",
 		},
 	},
+	roomTypes: {
+		list: {
+			title: "Room Types",
+			loading: "Loading room types...",
+			empty: "No room types found. Create one to get started.",
+			error: "Unable to load room types.",
+		},
+		fields: {
+			name: "Name",
+			description: "Description",
+			capacity: "Capacity",
+			base_price: "Base Price",
+		},
+		create: {
+			title: "Create Room Type",
+			submit: "Create",
+		},
+		edit: {
+			title: "Edit Room Type",
+			submit: "Save Changes",
+		},
+		duplicateName: "A room type with this name already exists.",
+	},
 	properties: {
 		profile: {
 			eyebrow: "Property Profile",
@@ -191,7 +214,7 @@ export const en = {
 			},
 			roomTypes: {
 				label: "Room types",
-				title: "Room types",
+				title: "Room Types",
 				description:
 					"Future room category setup and pricing context will appear here.",
 			},
