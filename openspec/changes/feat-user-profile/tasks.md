@@ -44,17 +44,17 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: Profile Module (TDD per layer)
 
-- [ ] 3.1 RED: Write failing tests for profileService (getProfileData, updateProfileFullName, property fallback)
-- [ ] 3.2 GREEN: Implement profileService with DI + FakeQuery pattern
-- [ ] 3.3 RED: Write failing tests for useCurrentProfile (loading→loaded, loading→error, update success/failure)
-- [ ] 3.4 GREEN: Implement useCurrentProfile hook with stale-request guard
-- [ ] 3.5 RED: Write failing tests for UserProfilePage (read mode, admin edit toggle, non-admin restricted, validation, cancel, backend error preserves form)
-- [ ] 3.6 GREEN: Implement UserProfilePage with read/edit + React Hook Form + Zod
-- [ ] 3.7 REFACTOR: Clean up ProfileData, formSchema, exports, hook state
+- [x] 3.1 RED: Write failing tests for profileService (getProfileData, updateProfileFullName, property fallback)
+- [x] 3.2 GREEN: Implement profileService with DI + FakeQuery pattern
+- [x] 3.3 RED: Write failing tests for useCurrentProfile (loading→loaded, loading→error, update success/failure)
+- [x] 3.4 GREEN: Implement useCurrentProfile hook with stale-request guard
+- [x] 3.5 RED: Write failing tests for UserProfilePage (read mode, admin edit toggle, non-admin restricted, validation, cancel, backend error preserves form)
+- [x] 3.6 GREEN: Implement UserProfilePage with read/edit + React Hook Form + Zod
+- [x] 3.7 REFACTOR: Clean up ProfileData, formSchema, exports, hook state
 
 ## Phase 4: i18n & Integration
 
-- [ ] 4.1 Add i18n keys `routes.protected.profile.*` and `profile.*` to en.ts
-- [ ] 4.2 Add Spanish i18n counterparts to es.ts
-- [ ] 4.3 Swap placeholder import in routes.tsx for real UserProfilePage
-- [ ] 4.4 Run `npm run test:run` and `npm run build`, fix any regressions in routing/sidebar tests
+- [x] 4.1 Add i18n keys `routes.protected.profile.*` and `profile.*` to en.ts
+- [x] 4.2 Add Spanish i18n counterparts to es.ts
+- [x] 4.3 Swap placeholder import in routes.tsx for real UserProfilePage
+- [x] 4.4 Run `npm run test:run` and `npm run build`, fix any regressions in routing/sidebar tests
