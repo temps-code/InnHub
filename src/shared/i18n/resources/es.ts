@@ -52,6 +52,23 @@ export const es = {
 			demoSubmit: "Usar cuenta demo",
 			demoUnavailable: "La cuenta demo no está configurada para este entorno.",
 		},
+		demoSelector: {
+			title: "Cuentas demo",
+			description: "Seleccioná un rol para iniciar sesión con credenciales demo",
+			openButton: "Cuentas demo",
+		},
+		roles: {
+			administrator: "Administrador/a",
+			manager: "Gerente",
+			receptionist: "Recepcionista",
+			housekeeping: "Limpieza",
+			maintenance: "Mantenimiento",
+			administrator_desc: "Acceso completo a todos los módulos y configuraciones",
+			manager_desc: "Reportes, operaciones y gestión de personal",
+			receptionist_desc: "Operaciones diarias: reservas, check-in, facturación",
+			housekeeping_desc: "Limpieza de habitaciones y gestión de estados",
+			maintenance_desc: "Tickets de mantenimiento y reparaciones de habitaciones",
+		},
 		logout: "Cerrar sesión",
 		states: {
 			loading: "Validando sesión",

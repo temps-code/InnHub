@@ -1,11 +1,10 @@
 import { type FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Modal } from "../../../shared/components/organisms/Modal";
 import { useAuthSession } from "../hooks/useAuthSession";
-import {
-	resolveDemoCredentials,
-	type DemoCredentialsResult,
-} from "../services/demoCredentials";
+import type { DemoCredentialsResult } from "../services/demoCredentials";
+import { DemoAccountSelector } from "./DemoAccountSelector";
 
 type LoginFormProps = {
 	readonly onAuthenticated: () => void;
@@ -13,7 +12,6 @@ type LoginFormProps = {
 };
 
 export function LoginForm({
-	demoCredentials = resolveDemoCredentials(),
 	onAuthenticated,
 }: LoginFormProps) {
 	const { t } = useTranslation();
@@ -22,6 +20,7 @@ export function LoginForm({
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	async function submitCredentials(credentials: {
 		readonly email: string;
@@ -54,13 +53,12 @@ export function LoginForm({
 		await submitCredentials({ email: email.trim(), password });
 	}
 
-	async function handleDemoSubmit() {
-		if (demoCredentials.status !== "available") {
-			setError(t("auth.login.demoUnavailable"));
-			return;
-		}
-
-		await submitCredentials(demoCredentials.credentials);
+	async function handleDemoSelect(credentials: {
+		readonly email: string;
+		readonly password: string;
+	}) {
+		setIsModalOpen(false);
+		await submitCredentials(credentials);
 	}
 
 	return (
@@ -115,18 +113,23 @@ export function LoginForm({
 			<div className="grid gap-2 border-t border-[var(--color-border)] pt-4">
 				<button
 					className="inline-flex justify-center rounded-full border border-[var(--color-border)] px-5 py-3 font-bold text-[var(--color-heading)] disabled:cursor-not-allowed disabled:opacity-60"
-					disabled={isSubmitting || demoCredentials.status !== "available"}
-					onClick={handleDemoSubmit}
+					disabled={isSubmitting}
+					onClick={() => setIsModalOpen(true)}
 					type="button"
 				>
-					{t("auth.login.demoSubmit")}
+					{t("auth.demoSelector.openButton")}
 				</button>
-				{demoCredentials.status === "unavailable" ? (
-					<p className="m-0 text-sm text-[var(--color-muted)]">
-						{t("auth.login.demoUnavailable")}
-					</p>
-				) : null}
 			</div>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				title={t("auth.demoSelector.title")}
+			>
+				<p className="mb-4 text-sm text-[var(--color-muted)]">
+					{t("auth.demoSelector.description")}
+				</p>
+				<DemoAccountSelector onSelect={handleDemoSelect} />
+			</Modal>
 		</form>
 	);
 }
