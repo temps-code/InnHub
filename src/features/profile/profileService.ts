@@ -74,7 +74,7 @@ export async function updateProfileFullName(
 ): Promise<ServiceResult<null>> {
 	const from = resolveFrom(deps);
 
-	return withServiceContext(session, async (_ctx) => {
+	return withServiceContext(session, async () => {
 		const query = from("profiles")
 			.update({ fullName })
 			.eq("id", session!.profile.id);
