@@ -161,6 +161,12 @@ export const en = {
 				description:
 					"Future staff and role management will appear here after auth is added.",
 			},
+			profile: {
+				label: "My Profile",
+				title: "My Profile",
+				description:
+					"View and manage your personal information",
+			},
 			rooms: {
 				label: "Rooms",
 				title: "Rooms",

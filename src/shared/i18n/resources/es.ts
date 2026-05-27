@@ -163,6 +163,12 @@ export const es = {
 				description:
 					"Aquí aparecerá la gestión de personal y roles cuando se agregue auth.",
 			},
+			profile: {
+				label: "Mi Perfil",
+				title: "Mi Perfil",
+				description:
+					"Ver y administrar tu información personal",
+			},
 			rooms: {
 				label: "Habitaciones",
 				title: "Habitaciones",

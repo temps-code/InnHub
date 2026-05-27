@@ -4,15 +4,16 @@ import { useTranslation } from "react-i18next";
 import type { GroupedRouteItem } from "../routes/routeMetadata";
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 
-type SidebarNavProps = {
+export type SidebarNavProps = {
 	items: readonly GroupedRouteItem[];
 	onClose?: () => void;
+	pinnedItem?: ProtectedRouteMeta;
 };
 
-export function SidebarNav({ items, onClose }: SidebarNavProps) {
+export function SidebarNav({ items, onClose, pinnedItem }: SidebarNavProps) {
 	const { t } = useTranslation();
 
-	if (items.length === 0) {
+	if (items.length === 0 && !pinnedItem) {
 		return null;
 	}
 
@@ -53,6 +54,31 @@ export function SidebarNav({ items, onClose }: SidebarNavProps) {
 					</ul>
 				</section>
 			))}
+			{pinnedItem ? (
+				<>
+					<hr className="my-3 border-[var(--color-border)]" />
+					<NavLink
+						className={({ isActive }) =>
+							[
+								"flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold no-underline",
+								isActive
+									? "bg-[var(--color-primary-soft)] text-[var(--color-primary)]"
+									: "text-[var(--color-muted)] hover:bg-[var(--color-primary-soft)]",
+							].join(" ")
+						}
+						to={pinnedItem.href}
+						onClick={onClose}
+					>
+						{pinnedItem.icon ? (
+							<pinnedItem.icon
+								aria-hidden="true"
+								size={20}
+							/>
+						) : null}
+						{t(pinnedItem.labelKey)}
+					</NavLink>
+				</>
+			) : null}
 		</nav>
 	);
 }
