@@ -95,7 +95,9 @@ export function useCurrentProfile(
 			return;
 		}
 
-		setState({ status: "loading" });
+		if (mountedRef.current && session === latestSessionRef.current) {
+			setState({ status: "loading" });
+		}
 		await load();
 	}, [load, session]);
 
