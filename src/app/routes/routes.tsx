@@ -6,6 +6,7 @@ import { ModulePlaceholderPage } from "../pages/ModulePlaceholderPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
 import { PropertyProfilePage } from "../../features/properties/PropertyProfilePage";
+import { RoomTypesPage } from "../../features/room-types/RoomTypesPage";
 import { UserProfilePage } from "../../features/profile/UserProfilePage";
 import { APP_BASE_PATH, protectedRoutes, settingsRoutes } from "./routeMetadata";
 import { SettingsLayout } from "./SettingsLayout";
@@ -24,6 +25,8 @@ export const appRoutes: RouteObject[] = [
 				element:
 					route.id === "propertyProfile" ? (
 						<PropertyProfilePage titleKey={route.titleKey} />
+					) : route.id === "roomTypes" ? (
+						<RoomTypesPage />
 					) : (
 						<ModulePlaceholderPage route={route} />
 					),
