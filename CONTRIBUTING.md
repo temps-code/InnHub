@@ -11,9 +11,12 @@ Use this path only after the project owner explicitly approves completing the wo
 3. Run the verification gate: `npm run lint`, `npm run build`, and `npm run test:run`.
 4. Fix blockers, then rerun the affected verification.
 5. Commit on `features` with a Conventional Commit message.
-6. Fast-forward `qa`, `main`, and `refactor` so all permanent branches point to the same commit.
-7. Push `features`, `qa`, `main`, and `refactor`.
-8. Comment evidence on the issue and close it.
+6. Create a pull request from `features` to `qa` with `Closes #N` in the body, then merge it.
+7. Create a pull request from `qa` to `main` with `Closes #N` in the body.
+8. Add an evidence comment on the issue with verification results and key decisions.
+9. Merge the `qa` → `main` pull request (the issue auto-closes via `Closes #N`).
+10. Fast-forward `refactor` to `main`: `git checkout refactor && git merge --ff-only main`.
+11. Push all branches: `git push origin features qa main refactor`.
 
 ## Permanent branches
 
@@ -132,57 +135,87 @@ docs(workflow): add contributor workflow guide
 
 Commit only after verification passes.
 
-### 5. Promote and synchronize branches
+### 5. Promote to qa via pull request
 
-Use fast-forward merges so permanent branches stay aligned:
+Create a pull request from `features` to `qa` linking the issue:
 
 ```bash
-git fetch origin
+gh pr create --base qa --head features \
+  --title "type(scope): short description" \
+  --body "Closes #N
 
-git checkout qa
-git merge --ff-only features
+## Summary
+- <what changed and why>
 
-git checkout main
-git merge --ff-only qa
-
-git checkout refactor
-git merge --ff-only main
-
-git checkout features
-
-git push origin features qa main refactor
+## Evidence
+- npm run lint — clean
+- npm run build — clean
+- npm run test:run — passing"
 ```
 
-Confirm all local and remote permanent branches point to the same commit:
+Review and merge to `qa`:
+
+```bash
+gh pr merge <number> --merge --subject "type(scope): promote features to qa"
+```
+
+### 6. Promote to main via pull request
+
+Create a pull request from `qa` to `main`:
+
+```bash
+gh pr create --base main --head qa \
+  --title "type(scope): promote qa to main" \
+  --body "Closes #N
+
+## Summary
+- Promotes verified work from qa to main
+
+## Related PRs
+- PR #N features -> qa
+
+## Validation
+- npm run lint — clean
+- npm run build — clean
+- npm run test:run — passing"
+```
+
+Add an evidence comment on the issue **before** merging (the merge will auto-close the issue):
+
+```bash
+gh issue comment <issue-number> --body "Completed and promoted through the workflow.
+
+Evidence:
+- Commit: <hash> <message>
+- Review: <fresh review result>
+- Verification passed: npm run lint, npm run build, npm run test:run
+
+Notes:
+- <short summary of important implementation decisions>"
+```
+
+Merge the `qa` → `main` PR (issue auto-closes via `Closes #N` in the body):
+
+```bash
+gh pr merge <number> --merge --subject "type(scope): promote qa to main"
+```
+
+### 7. Synchronize refactor and confirm
+
+```bash
+git checkout refactor
+git merge --ff-only main
+git checkout features
+git push origin refactor
+```
+
+Confirm all local and remote permanent branches are aligned:
 
 ```bash
 git for-each-ref --format='%(refname:short) %(objectname:short)' \
   refs/heads/features refs/heads/qa refs/heads/main refs/heads/refactor \
   refs/remotes/origin/features refs/remotes/origin/qa \
   refs/remotes/origin/main refs/remotes/origin/refactor
-```
-
-### 6. Update and close the issue
-
-Add an evidence comment before closing:
-
-```text
-Completed and promoted through the workflow.
-
-Evidence:
-- Commit: <hash> <message>
-- Branches synchronized: features, qa, refactor, and main all point to <hash>
-- Review: <fresh review result>
-- Verification passed: npm run lint, npm run build, npm run test:run
-
-Notes:
-- <short summary of important implementation decisions>
-```
-
-Then close the issue:
-
-```bash
-gh issue close <issue-number> --comment "Closing after promotion to main and synchronized permanent branches."
 ```
 
 ## Safety rules
