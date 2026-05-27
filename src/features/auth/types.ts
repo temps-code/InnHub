@@ -8,7 +8,8 @@ export type AppProfileRole =
 	| "manager"
 	| "receptionist"
 	| "housekeeping"
-	| "maintenance";
+	| "maintenance"
+	| "any";
 
 export type AppProfileStatus = "active" | "inactive";
 
