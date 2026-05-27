@@ -124,6 +124,22 @@ export const en = {
 		eyebrow: "Module placeholder",
 		note: "Placeholder only. Feature workflows will be implemented in later slices.",
 	},
+	profile: {
+		title: "My Profile",
+		loading: "Loading profile...",
+		loadError: "Unable to load profile.",
+		edit: "Edit Profile",
+		save: "Save Changes",
+		cancel: "Cancel",
+		saved: "Profile updated successfully",
+		updateError: "Could not save changes. Please try again.",
+		fields: {
+			fullName: "Full Name",
+			email: "Email",
+			role: "Role",
+			property: "Property",
+		},
+	},
 	preferences: {
 		theme: {
 			label: "Theme",
@@ -160,6 +176,12 @@ export const en = {
 				title: "Users",
 				description:
 					"Future staff and role management will appear here after auth is added.",
+			},
+			profile: {
+				label: "My Profile",
+				title: "My Profile",
+				description:
+					"View and manage your personal information",
 			},
 			rooms: {
 				label: "Rooms",
