@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
+import type { LucideProps } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, Mail, Shield, User } from "lucide-react";
 
 import { useAuthSession } from "../auth";
 import { Button } from "../../shared/components/atoms/Button";
@@ -16,17 +18,22 @@ function joinClasses(...classes: Array<string | false | undefined>) {
 	return classes.filter(Boolean).join(" ");
 }
 
-/** Render a single read-only field row. */
+/** Render a single read-only field row with optional icon. */
 function ReadOnlyField({
+	icon: Icon,
 	label,
 	value,
 }: {
+	readonly icon?: ComponentType<LucideProps>;
 	readonly label: string;
 	readonly value: string;
 }) {
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-1 sm:gap-2 text-sm">
-			<span className="font-medium text-[var(--color-muted)]">{label}</span>
+		<div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-1 sm:gap-2 text-sm items-center">
+			<span className="flex items-center gap-2 font-medium text-[var(--color-muted)]">
+				{Icon ? <Icon aria-hidden="true" size={16} /> : null}
+				{label}
+			</span>
 			<span className="text-[var(--color-heading)]">{value}</span>
 		</div>
 	);
@@ -198,18 +205,22 @@ export function UserProfilePage({
 		>
 			<div className="flex flex-col gap-4">
 				<ReadOnlyField
+					icon={User}
 					label={t("profile.fields.fullName")}
 					value={profile.fullName ?? ""}
 				/>
 				<ReadOnlyField
+					icon={Mail}
 					label={t("profile.fields.email")}
 					value={profile.email}
 				/>
 				<ReadOnlyField
+					icon={Shield}
 					label={t("profile.fields.role")}
 					value={profile.role}
 				/>
 				<ReadOnlyField
+					icon={Building2}
 					label={t("profile.fields.property")}
 					value={profile.propertyName ?? ""}
 				/>
@@ -282,24 +293,27 @@ function EditForm({
 
 			<div className="flex flex-col gap-6">
 				{/* Read-only fields displayed as text */}
-				<div className="flex flex-col gap-2">
-					<ReadOnlyField
-						label={t("profile.fields.email")}
-						value={"email" in profile ? profile.email : ""}
-					/>
-					<ReadOnlyField
-						label={t("profile.fields.role")}
-						value={"role" in profile ? profile.role : ""}
-					/>
-					<ReadOnlyField
-						label={t("profile.fields.property")}
-						value={
-							"propertyName" in profile
-								? (profile.propertyName ?? "")
-								: ""
-						}
-					/>
-				</div>
+			<div className="flex flex-col gap-2">
+				<ReadOnlyField
+					icon={Mail}
+					label={t("profile.fields.email")}
+					value={"email" in profile ? profile.email : ""}
+				/>
+				<ReadOnlyField
+					icon={Shield}
+					label={t("profile.fields.role")}
+					value={"role" in profile ? profile.role : ""}
+				/>
+				<ReadOnlyField
+					icon={Building2}
+					label={t("profile.fields.property")}
+					value={
+						"propertyName" in profile
+							? (profile.propertyName ?? "")
+							: ""
+					}
+				/>
+			</div>
 
 				<hr className="border-[var(--color-border)]" />
 
