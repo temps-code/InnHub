@@ -6,6 +6,7 @@ import { ModulePlaceholderPage } from "../pages/ModulePlaceholderPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
 import { PropertyProfilePage } from "../../features/properties/PropertyProfilePage";
+import { UserProfilePage } from "../../features/profile/UserProfilePage";
 import { APP_BASE_PATH, protectedRoutes, settingsRoutes } from "./routeMetadata";
 import { SettingsLayout } from "./SettingsLayout";
 
@@ -33,15 +34,17 @@ export const appRoutes: RouteObject[] = [
 				element: <SettingsLayout />,
 				children: settingsRoutes.map((route) => ({
 					path: route.path,
-					element:
-						route.id === "propertyProfile" ? (
-							<PropertyProfilePage titleKey={route.titleKey} />
-						) : (
-							<ModulePlaceholderPage route={route} />
-						),
-				})),
-			},
-			// Old path redirect
+			element:
+				route.id === "propertyProfile" ? (
+					<PropertyProfilePage titleKey={route.titleKey} />
+				) : route.id === "profile" ? (
+					<UserProfilePage titleKey={route.titleKey} />
+				) : (
+					<ModulePlaceholderPage route={route} />
+				),
+		})),
+	},
+	// Old path redirect
 			{ path: "properties", element: <Navigate to="/app/settings/property" /> },
 		],
 	},

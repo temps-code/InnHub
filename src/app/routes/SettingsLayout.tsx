@@ -38,6 +38,21 @@ export function SettingsLayout() {
 							{t("routes.protected.users.label")}
 						</NavLink>
 					</li>
+					<li>
+						<NavLink
+							className={({ isActive }) =>
+								[
+									"text-sm font-bold no-underline",
+									isActive
+										? "text-[var(--color-primary)]"
+										: "text-[var(--color-muted)] hover:text-[var(--color-heading)]",
+								].join(" ")
+							}
+							to="/app/settings/profile"
+						>
+							{t("routes.protected.profile.label")}
+						</NavLink>
+					</li>
 				</ul>
 			</nav>
 			<Outlet />

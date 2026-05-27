@@ -9,6 +9,7 @@ import {
 	Receipt,
 	SprayCan,
 	UserCheck,
+	UserCircle,
 	Users,
 	Wrench,
 } from "lucide-react";
@@ -23,6 +24,7 @@ export type ProtectedRouteId =
 	| "dashboard"
 	| "propertyProfile"
 	| "users"
+	| "profile"
 	| "rooms"
 	| "roomTypes"
 	| "guests"
@@ -50,23 +52,15 @@ const ROLE_ORDER: Record<AppProfileRole, number> = {
 	manager: 80,
 	receptionist: 60,
 	housekeeping: 40,
-	maintenance: 40,
+	maintenance: 30,
+	any: 10,
 };
 
 export function canAccess(
 	minRole: AppProfileRole,
 	userRole: AppProfileRole,
 ): boolean {
-	const userLevel = ROLE_ORDER[userRole];
-	const minLevel = ROLE_ORDER[minRole];
-
-	// Same level: only exact role match (prevents peer roles like
-	// housekeeping and maintenance from accessing each other's routes)
-	if (userLevel === minLevel) {
-		return userRole === minRole;
-	}
-
-	return userLevel > minLevel;
+	return ROLE_ORDER[userRole] >= ROLE_ORDER[minRole];
 }
 
 export type GroupedRouteItem = {
@@ -148,6 +142,7 @@ export const settingsRoutes = [
 		Users,
 		"settings/users",
 	),
+	route("profile", "profile", "settings", 30, "any", UserCircle, "settings/profile"),
 ] as const;
 
 export const allRoutes = [...protectedRoutes, ...settingsRoutes];
