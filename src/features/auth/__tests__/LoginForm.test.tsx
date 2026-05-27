@@ -10,7 +10,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { AuthSessionProvider } from "../AuthSessionProvider";
 import { LoginForm } from "../components/LoginForm";
 import type { AuthSessionGateway } from "../services/authSessionService";
-import type { DemoCredentialsResult } from "../services/demoCredentials";
 import type { AppProfile, AuthGatewayResult, AuthUser } from "../types";
 import { i18n } from "../../../shared/i18n/config";
 
@@ -50,20 +49,15 @@ function createGateway(
 
 function renderLoginForm({
 	gateway = createGateway(),
-	demoCredentials = { status: "unavailable" },
 	onAuthenticated = () => undefined,
 }: {
 	readonly gateway?: AuthSessionGateway;
-	readonly demoCredentials?: DemoCredentialsResult;
 	readonly onAuthenticated?: () => void;
 } = {}) {
 	return render(
 		<I18nextProvider i18n={i18n}>
 			<AuthSessionProvider gateway={gateway}>
-				<LoginForm
-					demoCredentials={demoCredentials}
-					onAuthenticated={onAuthenticated}
-				/>
+				<LoginForm onAuthenticated={onAuthenticated} />
 			</AuthSessionProvider>
 		</I18nextProvider>,
 	);
@@ -133,46 +127,48 @@ describe("LoginForm", () => {
 		});
 	});
 
-	it("submits configured demo credentials through the existing login flow", async () => {
+	it("opens the modal when Demo accounts button is clicked and shows role options", async () => {
+		const user = userEvent.setup();
+		const signInWithPassword = vi.fn(async () => ok(authUser));
+		renderLoginForm({
+			gateway: createGateway({ signInWithPassword }),
+		});
+
+		const openButton = screen.getByRole("button", { name: "Demo accounts" });
+		await user.click(openButton);
+
+		expect(
+			screen.getByRole("heading", { name: "Demo accounts" }),
+		).toBeInTheDocument();
+		expect(
+			screen.getByText("Select a role to log in with demo credentials"),
+		).toBeInTheDocument();
+		expect(screen.getByText("Administrator")).toBeInTheDocument();
+	});
+
+	it("selecting a role from the demo selector triggers authentication through the login flow", async () => {
 		let authenticated = false;
 		const user = userEvent.setup();
 		const signInWithPassword = vi.fn(async () => ok(authUser));
 		renderLoginForm({
 			gateway: createGateway({ signInWithPassword }),
-			demoCredentials: {
-				status: "available",
-				credentials: {
-					email: "demo@innhub.test",
-					password: "demo-password",
-				},
-			},
 			onAuthenticated: () => {
 				authenticated = true;
 			},
 		});
 
-		await user.click(screen.getByRole("button", { name: "Use demo account" }));
+		const openButton = screen.getByRole("button", { name: "Demo accounts" });
+		await user.click(openButton);
+
+		const adminButton = screen.getByRole("button", { name: /administrator/i });
+		await user.click(adminButton);
 
 		await waitFor(() => {
 			expect(signInWithPassword).toHaveBeenCalledWith({
-				email: "demo@innhub.test",
-				password: "demo-password",
+				email: "admin+tarija-admin@innhub.dev",
+				password: "Demo123!",
 			});
 			expect(authenticated).toBe(true);
 		});
-	});
-
-	it("shows a safe unavailable demo action when demo config is missing", () => {
-		renderLoginForm({ demoCredentials: { status: "unavailable" } });
-
-		expect(
-			screen.getByRole("button", { name: "Use demo account" }),
-		).toBeDisabled();
-		expect(
-			screen.getByText("Demo account is not configured for this environment."),
-		).toBeInTheDocument();
-		expect(
-			screen.getByText("Demo account is not configured for this environment."),
-		).not.toHaveTextContent("password");
 	});
 });

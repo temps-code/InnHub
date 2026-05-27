@@ -287,9 +287,9 @@ describe("app routing foundation", () => {
 		expect(canAccess("manager", "receptionist")).toBe(false);
 		expect(canAccess("administrator", "housekeeping")).toBe(false);
 		expect(canAccess("administrator", "maintenance")).toBe(false);
-		// Cross-role: same privileges
-		expect(canAccess("housekeeping", "maintenance")).toBe(true);
-		expect(canAccess("maintenance", "housekeeping")).toBe(true);
+		// Peer roles: cannot access each other's routes
+		expect(canAccess("housekeeping", "maintenance")).toBe(false);
+		expect(canAccess("maintenance", "housekeeping")).toBe(false);
 	});
 
 	it("hides reports and settings groups from receptionist sidebar", async () => {
