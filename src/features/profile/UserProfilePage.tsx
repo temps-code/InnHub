@@ -64,8 +64,8 @@ function FormField({
 						? "border-red-500"
 						: "border-[var(--color-border)] bg-[var(--color-surface)]",
 				)}
-				id={inputProps.id ?? inputProps.name}
 				{...inputProps}
+				id={inputProps.id ?? inputProps.name}
 			/>
 			{error ? (
 				<span className="text-xs text-red-500" role="alert">
@@ -87,7 +87,7 @@ export function UserProfilePage({
 	const { state: authState } = useAuthSession();
 	const session =
 		authState.status === "authenticated" ? authState.session : null;
-	const { state, update } = useCurrentProfile(session);
+	const { state, update, refresh } = useCurrentProfile(session);
 	const [isEditing, setIsEditing] = useState(false);
 
 	// Snapshot the profile when entering edit mode so the form survives
@@ -152,11 +152,12 @@ export function UserProfilePage({
 				saveLabel={t("profile.save")}
 				t={t}
 				updateError={effectiveError}
-				onCancel={() => {
-					setIsEditing(false);
-					setEditSnapshot(null);
-					setUpdateError(null);
-				}}
+			onCancel={async () => {
+				setIsEditing(false);
+				setEditSnapshot(null);
+				setUpdateError(null);
+				await refresh();
+			}}
 				onSubmit={async (data) => {
 					setUpdateError(null);
 					try {
