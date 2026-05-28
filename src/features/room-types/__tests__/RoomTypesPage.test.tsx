@@ -2,7 +2,7 @@
 
 import "@testing-library/jest-dom/vitest";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -67,6 +67,7 @@ const queenRoomType: RoomType = {
 	base_price: 150.0,
 	created_at: "2025-01-01T00:00:00Z",
 	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: null,
 };
 
 const singleRoomType: RoomType = {
@@ -78,6 +79,7 @@ const singleRoomType: RoomType = {
 	base_price: 80.0,
 	created_at: "2025-01-01T00:00:00Z",
 	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: null,
 };
 
 const allRoomTypes = [queenRoomType, singleRoomType];
@@ -127,9 +129,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loading" },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -143,9 +146,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -165,9 +169,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -184,9 +189,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: [] },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -200,9 +206,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: [] },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -223,9 +230,10 @@ describe("RoomTypesPage", () => {
 						message: "Service request could not be completed.",
 					},
 				},
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -245,9 +253,10 @@ describe("RoomTypesPage", () => {
 						message: "token=secret-jwt something failed",
 					},
 				},
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -263,9 +272,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -279,9 +289,10 @@ describe("RoomTypesPage", () => {
 			mockReceptionistAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -295,9 +306,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -310,15 +322,49 @@ describe("RoomTypesPage", () => {
 			mockReceptionistAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
 
 			expect(
 				screen.queryByRole("button", { name: "Edit" }),
+			).not.toBeInTheDocument();
+		});
+
+		it("shows delete button for administrator", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			const deleteButtons = screen.getAllByRole("button", { name: "Delete" });
+			expect(deleteButtons).toHaveLength(2);
+		});
+
+		it("hides delete button for receptionist", async () => {
+			mockReceptionistAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(
+				screen.queryByRole("button", { name: "Delete" }),
 			).not.toBeInTheDocument();
 		});
 	});
@@ -328,9 +374,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -349,9 +396,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -369,9 +417,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -442,9 +491,10 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
-				create: vi.fn(),
-				update: vi.fn(),
-				refresh: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			refresh: vi.fn(),
 			});
 
 			await renderPage();
@@ -498,6 +548,120 @@ describe("RoomTypesPage", () => {
 			await waitFor(() => {
 				expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 			});
+		});
+	});
+
+	describe("delete confirmation flow", () => {
+		it("opens the confirmation modal when Delete is clicked", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getAllByRole("button", { name: "Delete" })[0],
+			);
+
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+			expect(
+				screen.getByText("This will deactivate the room type. It will no longer appear in the list."),
+			).toBeInTheDocument();
+		});
+
+		it("calls remove and closes modal when confirm is clicked", async () => {
+			const mockRemove = vi.fn().mockResolvedValue(undefined);
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: mockRemove,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getAllByRole("button", { name: "Delete" })[0],
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: "Delete" }),
+			);
+
+			await waitFor(() => {
+				expect(mockRemove).toHaveBeenCalledWith("rt-1");
+			});
+
+			await waitFor(() => {
+				expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+			});
+		});
+
+		it("does not call remove when cancel is clicked", async () => {
+			const mockRemove = vi.fn();
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: mockRemove,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getAllByRole("button", { name: "Delete" })[0],
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: "Cancel" }),
+			);
+
+			expect(mockRemove).not.toHaveBeenCalled();
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+		});
+
+		it("shows error alert when remove fails", async () => {
+			const mockRemove = vi.fn().mockRejectedValue({
+				code: "permission-denied",
+				message: "permission-denied",
+			});
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: mockRemove,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getAllByRole("button", { name: "Delete" })[0],
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: "Delete" }),
+			);
+
+			await waitFor(() => {
+				expect(screen.getByRole("alert")).toBeInTheDocument();
+			});
+
+			expect(mockRemove).toHaveBeenCalledWith("rt-1");
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
 		});
 	});
 });

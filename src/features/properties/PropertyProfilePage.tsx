@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthSession } from "../auth";
 import { Button } from "../../shared/components/atoms/Button";
 import { PageSection } from "../../shared/components/organisms/PageSection";
+import { joinClasses } from "../../shared/utils/classNames";
 import type { Property, PropertyFormData } from "./types";
 import { propertyFormSchema } from "./types";
 import { useCurrentProperty } from "./useCurrentProperty";
@@ -49,12 +50,6 @@ const TIMESTAMP_FIELDS: readonly FieldDef[] = [
 		readOnly: true,
 	},
 ];
-
-// ── Helpers ────────────────────────────────────────────────────────
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 /** Render a single read-only field row. */
 function ReadOnlyField({

@@ -117,6 +117,13 @@ export const en = {
 			submit: "Save Changes",
 		},
 		duplicateName: "A room type with this name already exists.",
+		delete: "Delete",
+		deleteConfirmTitle: "Delete Room Type",
+		deleteConfirmMessage: "This will deactivate the room type. It will no longer appear in the list.",
+		deleteConfirmAccept: "Delete",
+		deleteConfirmCancel: "Cancel",
+		deletePermissionError: "You don't have permission to delete room types.",
+		deleteGenericError: "Could not delete the room type. Please try again.",
 	},
 	properties: {
 		profile: {

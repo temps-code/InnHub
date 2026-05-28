@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { joinClasses } from "../../utils/classNames";
+
 type StatusBadgeTone =
 	| "neutral"
 	| "success"
@@ -34,10 +36,6 @@ const sizeClasses: Record<StatusBadgeSize, string> = {
 	sm: "px-2 py-0.5 text-xs",
 	md: "px-3 py-1 text-sm",
 };
-
-function joinClasses(...classes: Array<string | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 export function StatusBadge({
 	className,

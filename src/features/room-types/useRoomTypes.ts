@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ServiceError } from "../../shared/services/serviceResult";
-import { list as listService, create as createService, update as updateService } from "./roomTypeService";
+import { list as listService, create as createService, update as updateService, softDelete as softDeleteService } from "./roomTypeService";
 import type { AppSession } from "../auth/types";
 import type { RoomType, RoomTypeFormData } from "./types";
 
@@ -16,6 +16,7 @@ export type UseRoomTypesResult = {
 	readonly state: RoomTypesState;
 	readonly create: (data: RoomTypeFormData) => Promise<void>;
 	readonly update: (id: string, data: RoomTypeFormData) => Promise<void>;
+	readonly remove: (id: string) => Promise<void>;
 	readonly refresh: () => Promise<void>;
 };
 
@@ -112,6 +113,24 @@ export function useRoomTypes(
 		[session, load],
 	);
 
+	const remove = useCallback(
+		async (id: string) => {
+			const requestSession = session;
+			const result = await softDeleteService(requestSession, id);
+
+			if (!mountedRef.current || requestSession !== latestSessionRef.current) {
+				return;
+			}
+
+			if (result.ok) {
+				await load();
+			} else {
+				throw result.error;
+			}
+		},
+		[session, load],
+	);
+
 	const refresh = useCallback(async () => {
 		if (!mountedRef.current || session !== latestSessionRef.current) {
 			return;
@@ -121,5 +140,5 @@ export function useRoomTypes(
 		await load();
 	}, [load, session]);
 
-	return { state, create, update, refresh };
+	return { state, create, update, remove, refresh };
 }
