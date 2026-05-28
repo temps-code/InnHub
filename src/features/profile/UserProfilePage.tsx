@@ -8,15 +8,12 @@ import { Building2, Mail, Shield, User } from "lucide-react";
 import { useAuthSession } from "../auth";
 import { Button } from "../../shared/components/atoms/Button";
 import { PageSection } from "../../shared/components/organisms/PageSection";
+import { joinClasses } from "../../shared/utils/classNames";
 import { useCurrentProfile } from "./useCurrentProfile";
 import type { ProfileData, ProfileFormData } from "./types";
 import { profileFormSchema } from "./types";
 
 // ── Helpers ────────────────────────────────────────────────────────
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 /** Render a single read-only field row with optional icon. */
 function ReadOnlyField({

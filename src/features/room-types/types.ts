@@ -9,6 +9,7 @@ export type RoomType = {
 	readonly base_price: number;
 	readonly created_at: string;
 	readonly updated_at: string;
+	readonly deleted_at: string | null;
 };
 
 export const roomTypeFormSchema = z.object({

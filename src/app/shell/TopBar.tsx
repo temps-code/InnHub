@@ -51,13 +51,12 @@ export function TopBar({ activeRoute, onToggleSidebar }: TopBarProps) {
 						{profileLabel}
 					</span>
 				) : null}
-				<button
-					className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-2 text-sm font-bold text-[var(--color-heading)]"
+				<Button
 					onClick={() => void logout()}
-					type="button"
+					variant="outline"
 				>
 					{t("auth.logout")}
-				</button>
+				</Button>
 				<PreferenceBar />
 			</div>
 		</header>
