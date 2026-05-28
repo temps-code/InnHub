@@ -93,6 +93,7 @@ type QueryResult<T> = { readonly data: T | null; readonly error: unknown };
 
 class FakeRoomTypeQuery<T> implements PromiseLike<QueryResult<T>> {
 	readonly eqCalls: Array<{ column: string; value: string }> = [];
+	readonly isCalls: Array<{ column: string; value: string | null }> = [];
 	readonly result: QueryResult<T>;
 
 	constructor(result: QueryResult<T>) {
@@ -101,6 +102,11 @@ class FakeRoomTypeQuery<T> implements PromiseLike<QueryResult<T>> {
 
 	eq(column: string, value: string): this {
 		this.eqCalls.push({ column, value });
+		return this;
+	}
+
+	is(column: string, value: string | null): this {
+		this.isCalls.push({ column, value });
 		return this;
 	}
 
@@ -136,6 +142,7 @@ const aRoomType: RoomType = {
 	base_price: 150.0,
 	created_at: "2025-01-01T00:00:00Z",
 	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: null,
 };
 
 const aSession: AppSession = {
@@ -214,6 +221,26 @@ describe("list", () => {
 			},
 		});
 	});
+
+	it("calls .is('deleted_at', null) to exclude soft-deleted records", async () => {
+		const { list } = await import("../roomTypeService");
+		let capturedQuery: FakeRoomTypeQuery<unknown> | undefined;
+
+		const result = await list(aSession, {
+			from: (_table: string) => ({
+				select: (_columns: string) => {
+					capturedQuery = new FakeRoomTypeQuery({ data: [aRoomType], error: null });
+					return capturedQuery;
+				},
+				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+			}),
+		});
+
+		expect(result).toEqual({ ok: true, data: [aRoomType] });
+		expect(capturedQuery).toBeDefined();
+		expect(capturedQuery!.isCalls).toEqual([{ column: "deleted_at", value: null }]);
+	});
 });
 
 // ── getById ───────────────────────────────────────────────────────────────
@@ -259,6 +286,26 @@ describe("getById", () => {
 				message: "The requested record was not found.",
 			},
 		});
+	});
+
+	it("calls .is('deleted_at', null) to exclude soft-deleted records", async () => {
+		const { getById } = await import("../roomTypeService");
+		let capturedQuery: FakeRoomTypeQuery<unknown> | undefined;
+
+		const result = await getById(aSession, "rt-1", {
+			from: (_table: string) => ({
+				select: (_columns: string) => {
+					capturedQuery = new FakeRoomTypeQuery({ data: aRoomType, error: null });
+					return capturedQuery;
+				},
+				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+			}),
+		});
+
+		expect(result).toEqual({ ok: true, data: aRoomType });
+		expect(capturedQuery).toBeDefined();
+		expect(capturedQuery!.isCalls).toEqual([{ column: "deleted_at", value: null }]);
 	});
 });
 
@@ -353,6 +400,22 @@ describe("create", () => {
 				message: "permission-denied",
 			},
 		});
+	});
+
+	it("allows creating a room type with the same name as a soft-deleted one", async () => {
+		const { create } = await import("../roomTypeService");
+
+		const duplicateNameRoomType: RoomType = {
+			...aRoomType,
+			id: "rt-new",
+			name: formData.name,
+		};
+
+		const result = await create(aSession, formData, {
+			from: fakeFrom({ data: duplicateNameRoomType, error: null }),
+		});
+
+		expect(result).toEqual({ ok: true, data: duplicateNameRoomType });
 	});
 });
 
@@ -466,6 +529,117 @@ describe("update", () => {
 			error: {
 				code: "validation-error",
 				message: "permission-denied",
+			},
+		});
+	});
+
+	it("calls .is('deleted_at', null) before .eq('id', id) to guard against soft-deleted records", async () => {
+		const { update } = await import("../roomTypeService");
+		let capturedQuery: FakeRoomTypeQuery<unknown> | undefined;
+
+		const result = await update(aSession, "rt-1", formData, {
+			from: (_table: string) => ({
+				select: (_columns: string) => new FakeRoomTypeQuery({ data: null, error: null }),
+				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				update: (_data: unknown) => {
+					capturedQuery = new FakeRoomTypeQuery({ data: updatedRoomType, error: null });
+					return capturedQuery;
+				},
+			}),
+		});
+
+		expect(result).toEqual({ ok: true, data: updatedRoomType });
+		expect(capturedQuery).toBeDefined();
+		expect(capturedQuery!.isCalls).toEqual([{ column: "deleted_at", value: null }]);
+		expect(capturedQuery!.eqCalls).toContainEqual({ column: "id", value: "rt-1" });
+	});
+
+	it("returns not-found when the room type is soft-deleted", async () => {
+		const { update } = await import("../roomTypeService");
+
+		const result = await update(aSession, "rt-1", formData, {
+			from: (_table: string) => ({
+				select: (_columns: string) => new FakeRoomTypeQuery({ data: null, error: null }),
+				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				update: (_data: unknown) => new FakeRoomTypeQuery({ data: [], error: null }),
+			}),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "not-found",
+				message: "The requested record was not found.",
+			},
+		});
+	});
+});
+
+// ── softDelete ────────────────────────────────────────────────────────────
+
+describe("softDelete", () => {
+	it("returns property-scope-error when session is null", async () => {
+		const { softDelete } = await import("../roomTypeService");
+
+		const result = await softDelete(null, "rt-1", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "property-scope-error",
+				message: "A valid property scope is required.",
+			},
+		});
+	});
+
+	it("soft-deletes and returns the room type", async () => {
+		const { softDelete } = await import("../roomTypeService");
+		const deletedRoomType = { ...aRoomType, deleted_at: "2025-07-01T00:00:00Z" };
+
+		const result = await softDelete(aSession, "rt-1", {
+			from: fakeFrom({ data: deletedRoomType, error: null }),
+		});
+
+		expect(result).toEqual({ ok: true, data: deletedRoomType });
+	});
+
+	it("returns validation-error / permission-denied when user has low-privileged role", async () => {
+		const { softDelete } = await import("../roomTypeService");
+		const lowPrivSession: AppSession = {
+			...aSession,
+			profile: {
+				...aSession.profile,
+				role: "receptionist",
+			},
+		};
+
+		const result = await softDelete(lowPrivSession, "rt-1", {
+			from: fakeFrom({ data: aRoomType, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "validation-error",
+				message: "permission-denied",
+			},
+		});
+	});
+
+	it("returns not-found when the room type does not exist", async () => {
+		const { softDelete } = await import("../roomTypeService");
+
+		const result = await softDelete(aSession, "nonexistent", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "not-found",
+				message: "The requested record was not found.",
 			},
 		});
 	});

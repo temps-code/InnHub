@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { joinClasses } from "../../utils/classNames";
+
 type MetricCardTone = "neutral" | "success" | "warning" | "danger" | "info";
 
 export interface MetricCardProps {
@@ -18,10 +20,6 @@ const toneClasses: Record<MetricCardTone, string> = {
 	danger: "border-red-200",
 	info: "border-sky-200",
 };
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 export function MetricCard({
 	className,

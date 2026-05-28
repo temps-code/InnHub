@@ -1,5 +1,7 @@
 import type { ElementType, ReactNode } from "react";
 
+import { joinClasses } from "../../utils/classNames";
+
 type PageSectionVariant = "panel" | "quiet";
 type PageSectionTitleLevel = 1 | 2 | 3;
 
@@ -26,10 +28,6 @@ const titleClasses: Record<PageSectionTitleLevel, string> = {
 	2: "text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.05] tracking-[-0.04em]",
 	3: "text-[clamp(1.35rem,3vw,2rem)] leading-[1.1] tracking-[-0.03em]",
 };
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 export function PageSection({
 	actions,

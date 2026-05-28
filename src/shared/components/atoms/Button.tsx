@@ -1,6 +1,8 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+import { joinClasses } from "../../utils/classNames";
+
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -23,6 +25,8 @@ const variantClasses: Record<ButtonVariant, string> = {
 		"bg-transparent text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] focus-visible:outline-[var(--color-primary)]",
 	danger:
 		"bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:outline-red-600",
+	outline:
+		"border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-heading)] hover:border-[var(--color-primary)] focus-visible:outline-[var(--color-primary)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -30,10 +34,6 @@ const sizeClasses: Record<ButtonSize, string> = {
 	md: "min-h-11 px-5 text-base",
 	lg: "min-h-12 px-6 text-lg",
 };
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
 
 export function Button({
 	children,

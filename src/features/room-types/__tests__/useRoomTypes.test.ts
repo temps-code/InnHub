@@ -9,16 +9,18 @@ import type { RoomType, RoomTypeFormData } from "../types";
 
 // ── Hoisted mock helpers (run before imports) ───────────────────────────
 
-const { mockList, mockCreate, mockUpdate } = vi.hoisted(() => ({
+const { mockList, mockCreate, mockUpdate, mockSoftDelete } = vi.hoisted(() => ({
 	mockList: vi.fn(),
 	mockCreate: vi.fn(),
 	mockUpdate: vi.fn(),
+	mockSoftDelete: vi.fn(),
 }));
 
 vi.mock("../roomTypeService", () => ({
 	list: mockList,
 	create: mockCreate,
 	update: mockUpdate,
+	softDelete: mockSoftDelete,
 }));
 
 // ── Import AFTER mock is set up ─────────────────────────────────────────
@@ -36,6 +38,7 @@ const queenRoomType: RoomType = {
 	base_price: 150.0,
 	created_at: "2025-01-01T00:00:00Z",
 	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: null,
 };
 
 const singleRoomType: RoomType = {
@@ -47,6 +50,7 @@ const singleRoomType: RoomType = {
 	base_price: 80.0,
 	created_at: "2025-01-01T00:00:00Z",
 	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: null,
 };
 
 const aSession: AppSession = {
@@ -510,6 +514,119 @@ describe("useRoomTypes", () => {
 		// Should re-fetch with the new session
 		await waitFor(() => {
 			expect(mockList).toHaveBeenCalledWith(bSession);
+		});
+	});
+
+	// ── remove() ────────────────────────────────────────────────────────
+
+	describe("remove()", () => {
+		it("calls softDelete service then refreshes on success", async () => {
+			const deletedRoomType = { ...queenRoomType, deleted_at: "2025-07-01T00:00:00Z" };
+			mockSoftDelete.mockResolvedValue({ ok: true, data: deletedRoomType });
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+			expect(mockList).toHaveBeenCalledTimes(1);
+
+			await act(async () => {
+				await result.current.remove("rt-1");
+			});
+
+			expect(mockSoftDelete).toHaveBeenCalledWith(aSession, "rt-1");
+			// After remove success, should have refreshed (second list call)
+			await waitFor(() => {
+				expect(mockList).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		it("throws error when softDelete fails and does not refresh", async () => {
+			mockSoftDelete.mockResolvedValue({
+				ok: false,
+				error: { code: "backend-error", message: "Delete failed." },
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			let removeError: unknown;
+			await act(async () => {
+				try {
+					await result.current.remove("rt-1");
+				} catch (error) {
+					removeError = error;
+				}
+			});
+
+			expect(removeError).toEqual({
+				code: "backend-error",
+				message: "Delete failed.",
+			});
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: allRoomTypes,
+			});
+		});
+
+		it("ignores stale remove results after the session changes", async () => {
+			const removeResult = deferred<{ ok: true; data: RoomType }>();
+			mockList.mockImplementation((session: AppSession) =>
+				Promise.resolve({
+					ok: true,
+					data:
+						session.propertyId === "property-1"
+							? allRoomTypes
+							: [queenRoomType],
+				}),
+			);
+			mockSoftDelete.mockReturnValue(removeResult.promise);
+
+			const { result, rerender } = renderHook(
+				({ session }) => useRoomTypes(session),
+				{ initialProps: { session: aSession } },
+			);
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			const staleRemove = result.current.remove("rt-1");
+			rerender({ session: bSession });
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: [queenRoomType],
+				});
+			});
+
+			await act(async () => {
+				removeResult.resolve({
+					ok: true,
+					data: { ...queenRoomType, deleted_at: "2025-07-01T00:00:00Z" },
+				});
+				await staleRemove;
+			});
+
+			// State should remain with bSession's data
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: [queenRoomType],
+			});
 		});
 	});
 });

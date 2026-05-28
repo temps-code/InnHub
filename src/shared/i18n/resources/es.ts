@@ -119,6 +119,13 @@ export const es = {
 			submit: "Guardar cambios",
 		},
 		duplicateName: "Ya existe un tipo de habitación con ese nombre.",
+		delete: "Eliminar",
+		deleteConfirmTitle: "Eliminar tipo de habitación",
+		deleteConfirmMessage: "Esto desactivará el tipo de habitación. Ya no aparecerá en la lista.",
+		deleteConfirmAccept: "Eliminar",
+		deleteConfirmCancel: "Cancelar",
+		deletePermissionError: "No tenés permiso para eliminar tipos de habitación.",
+		deleteGenericError: "No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
 	},
 	properties: {
 		profile: {

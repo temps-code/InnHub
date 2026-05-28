@@ -20,6 +20,7 @@ export interface RoomTypeServiceDeps {
 
 export interface RoomTypeServiceDepsQuery {
 	readonly eq: (column: string, value: string) => this;
+	readonly is: (column: string, value: string | null) => this;
 	readonly select: () => this;
 	readonly then: <TResult>(
 		onfulfilled?: (value: {
@@ -42,7 +43,7 @@ export async function list(
 		const query = scopeOperationalQuery(
 			from("room_types").select("*"),
 			ctx.propertyScope,
-		);
+		).is("deleted_at", null);
 		return executeServiceQuery<RoomType[]>(query as never);
 	});
 }
@@ -58,7 +59,7 @@ export async function getById(
 		const query = scopeOperationalQuery(
 			from("room_types").select("*"),
 			ctx.propertyScope,
-		).eq("id", id);
+		).is("deleted_at", null).eq("id", id);
 
 		const result = await executeServiceQuery<RoomType | RoomType[]>(
 			query as never,
@@ -120,7 +121,35 @@ export async function update(
 		const query = scopeOperationalQuery(
 			from("room_types").update(updateData).select(),
 			ctx.propertyScope,
-		).eq("id", id);
+		).is("deleted_at", null).eq("id", id);
+
+		const { data: resultData, error } = await query;
+
+		if (error) {
+			return handleDatabaseError(error);
+		}
+
+		return normalizeSingle({ ok: true, data: resultData as RoomType | RoomType[] });
+	});
+}
+
+export async function softDelete(
+	session: AppSession | null,
+	id: string,
+	deps?: RoomTypeServiceDeps,
+): Promise<ServiceResult<RoomType>> {
+	const from = resolveFrom(deps);
+
+	return withServiceContext(session, async (serviceCtx) => {
+		const ctx = { ...serviceCtx, profile: session?.profile };
+		if (!ctx.profile || !canAccess("manager", ctx.profile.role)) {
+			return serviceFailure("validation-error", "permission-denied");
+		}
+
+		const query = scopeOperationalQuery(
+			from("room_types").update({ deleted_at: new Date().toISOString() }).select(),
+			ctx.propertyScope,
+		).is("deleted_at", null).eq("id", id);
 
 		const { data: resultData, error } = await query;
 

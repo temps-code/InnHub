@@ -5,8 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useAuthSession } from "../auth";
 import { Button } from "../../shared/components/atoms/Button";
-import { Modal } from "../../shared/components/organisms/Modal";
 import { PageSection } from "../../shared/components/organisms/PageSection";
+import { ConfirmDialog } from "../../shared/components/organisms/ConfirmDialog";
+import { Modal } from "../../shared/components/organisms/Modal";
+import { FormField, inputClasses, inputDefaultClasses, inputErrorClasses } from "../../shared/components/molecules/FormField";
+import { joinClasses } from "../../shared/utils/classNames";
 import { canAccess } from "../../app/routes/routeMetadata";
 import type { RoomType, RoomTypeFormData } from "./types";
 import { roomTypeFormSchema } from "./types";
@@ -19,12 +22,6 @@ type ModalMode =
 	| { readonly type: "create" }
 	| { readonly type: "edit"; readonly roomType: RoomType };
 
-// ── Helpers ────────────────────────────────────────────────────────
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
-
 // ── Main component ─────────────────────────────────────────────────
 
 export function RoomTypesPage() {
@@ -32,8 +29,11 @@ export function RoomTypesPage() {
 	const { state: authState } = useAuthSession();
 	const session =
 		authState.status === "authenticated" ? authState.session : null;
-	const { state, create, update } = useRoomTypes(session);
+	const { state, create, update, remove } = useRoomTypes(session);
 	const [modalMode, setModalMode] = useState<ModalMode>({ type: "closed" });
+	const [deleteConfirm, setDeleteConfirm] = useState<RoomType | null>(null);
+	const [deleteError, setDeleteError] = useState<string | null>(null);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const userRole = session?.profile.role ?? "any";
 	const canEdit = canAccess("manager", userRole);
@@ -42,6 +42,30 @@ export function RoomTypesPage() {
 
 	function handleModalSuccess() {
 		setModalMode({ type: "closed" });
+	}
+
+	function handleDeleteClose() {
+		setDeleteConfirm(null);
+		setDeleteError(null);
+	}
+
+	async function handleDeleteConfirm() {
+		if (!deleteConfirm || isDeleting) return;
+		setDeleteError(null);
+		setIsDeleting(true);
+		try {
+			await remove(deleteConfirm.id);
+			setDeleteConfirm(null);
+		} catch (error) {
+			const err = error as { code?: string };
+			if (err.code === "permission-denied") {
+				setDeleteError(t("roomTypes.deletePermissionError"));
+			} else {
+				setDeleteError(t("roomTypes.deleteGenericError"));
+			}
+		} finally {
+			setIsDeleting(false);
+		}
 	}
 
 	// ── Loading ──────────────────────────────────────────────────────
@@ -125,6 +149,7 @@ export function RoomTypesPage() {
 							<th className="pb-3 pr-4 font-medium">{t("roomTypes.fields.base_price")}</th>
 							<th className="pb-3 pr-4 font-medium">{t("roomTypes.fields.description")}</th>
 							{canEdit ? <th className="pb-3 w-24" /> : null}
+							{canEdit ? <th className="pb-3 w-24" /> : null}
 						</tr>
 					</thead>
 					<tbody>
@@ -158,6 +183,17 @@ export function RoomTypesPage() {
 										</Button>
 									</td>
 								) : null}
+								{canEdit ? (
+									<td className="py-3">
+										<Button
+											onClick={() => setDeleteConfirm(roomType)}
+											size="sm"
+											variant="ghost"
+										>
+											{t("roomTypes.delete")}
+										</Button>
+									</td>
+								) : null}
 							</tr>
 						))}
 					</tbody>
@@ -182,6 +218,19 @@ export function RoomTypesPage() {
 					update={update}
 				/>
 			) : null}
+
+			{/* Delete confirmation dialog */}
+			<ConfirmDialog
+				cancelLabel={t("roomTypes.deleteConfirmCancel")}
+				confirmLabel={t("roomTypes.deleteConfirmAccept")}
+				error={deleteError}
+				isOpen={deleteConfirm !== null}
+				isProcessing={isDeleting}
+				message={t("roomTypes.deleteConfirmMessage")}
+				onCancel={handleDeleteClose}
+				onConfirm={handleDeleteConfirm}
+				title={t("roomTypes.deleteConfirmTitle")}
+			/>
 		</PageSection>
 	);
 }
@@ -240,9 +289,9 @@ function RoomTypeFormModal({
 			reset();
 			onSuccess();
 		} catch (error) {
-			const err = error as { code?: string; message?: string };
-			if (err.message === "permission-denied") {
-				setSubmitError(t("roomTypes.list.error") || "Permission denied.");
+			const err = error as { code?: string };
+			if (err.code === "permission-denied") {
+				setSubmitError(t("roomTypes.deletePermissionError"));
 			} else if (err.code === "validation-error") {
 				setSubmitError(t("roomTypes.duplicateName"));
 			} else {
@@ -280,97 +329,64 @@ function RoomTypeFormModal({
 				}}
 			>
 				<div className="flex flex-col gap-4">
-					<div className="flex flex-col gap-1">
-						<label
-							className="text-sm font-medium text-[var(--color-muted)]"
-							htmlFor="room-type-name"
-						>
-							{t("roomTypes.fields.name")}
-						</label>
+					<FormField
+						error={errors.name?.message}
+						htmlFor="room-type-name"
+						label={t("roomTypes.fields.name")}
+					>
 						<input
 							className={joinClasses(
-								"rounded-xl border px-4 py-2.5 text-sm text-[var(--color-heading)] outline-none transition",
-								"focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-soft)]",
-								errors.name
-									? "border-red-500"
-									: "border-[var(--color-border)] bg-[var(--color-surface)]",
+								inputClasses,
+								errors.name ? inputErrorClasses : inputDefaultClasses,
 							)}
 							id="room-type-name"
 							{...register("name")}
 						/>
-						{errors.name ? (
-							<span className="text-xs text-red-500" role="alert">
-								{errors.name.message}
-							</span>
-						) : null}
-					</div>
+					</FormField>
 
-					<div className="flex flex-col gap-1">
-						<label
-							className="text-sm font-medium text-[var(--color-muted)]"
-							htmlFor="room-type-description"
-						>
-							{t("roomTypes.fields.description")}
-						</label>
+					<FormField
+						htmlFor="room-type-description"
+						label={t("roomTypes.fields.description")}
+					>
 						<input
-							className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-heading)] outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-soft)]"
+							className={joinClasses(inputClasses, inputDefaultClasses)}
 							id="room-type-description"
 							{...register("description")}
 						/>
-					</div>
+					</FormField>
 
-					<div className="flex flex-col gap-1">
-						<label
-							className="text-sm font-medium text-[var(--color-muted)]"
-							htmlFor="room-type-capacity"
-						>
-							{t("roomTypes.fields.capacity")}
-						</label>
+					<FormField
+						error={errors.capacity?.message}
+						htmlFor="room-type-capacity"
+						label={t("roomTypes.fields.capacity")}
+					>
 						<input
 							className={joinClasses(
-								"rounded-xl border px-4 py-2.5 text-sm text-[var(--color-heading)] outline-none transition",
-								"focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-soft)]",
-								errors.capacity
-									? "border-red-500"
-									: "border-[var(--color-border)] bg-[var(--color-surface)]",
+								inputClasses,
+								errors.capacity ? inputErrorClasses : inputDefaultClasses,
 							)}
 							id="room-type-capacity"
 							type="number"
 							{...register("capacity")}
 						/>
-						{errors.capacity ? (
-							<span className="text-xs text-red-500" role="alert">
-								{errors.capacity.message}
-							</span>
-						) : null}
-					</div>
+					</FormField>
 
-					<div className="flex flex-col gap-1">
-						<label
-							className="text-sm font-medium text-[var(--color-muted)]"
-							htmlFor="room-type-base-price"
-						>
-							{t("roomTypes.fields.base_price")}
-						</label>
+					<FormField
+						error={errors.base_price?.message}
+						htmlFor="room-type-base-price"
+						label={t("roomTypes.fields.base_price")}
+					>
 						<input
 							className={joinClasses(
-								"rounded-xl border px-4 py-2.5 text-sm text-[var(--color-heading)] outline-none transition",
-								"focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-soft)]",
-								errors.base_price
-									? "border-red-500"
-									: "border-[var(--color-border)] bg-[var(--color-surface)]",
+								inputClasses,
+								errors.base_price ? inputErrorClasses : inputDefaultClasses,
 							)}
 							id="room-type-base-price"
 							type="number"
 							step="any"
 							{...register("base_price")}
 						/>
-						{errors.base_price ? (
-							<span className="text-xs text-red-500" role="alert">
-								{errors.base_price.message}
-							</span>
-						) : null}
-					</div>
+					</FormField>
 				</div>
 
 				<div className="mt-6 flex justify-end gap-3">

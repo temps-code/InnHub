@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "../../../shared/components/atoms/Button";
 import { Modal } from "../../../shared/components/organisms/Modal";
 import { useAuthSession } from "../hooks/useAuthSession";
 import type { DemoCredentialsResult } from "../services/demoCredentials";
@@ -103,22 +104,20 @@ export function LoginForm({
 					{error}
 				</p>
 			) : null}
-			<button
-				className="inline-flex justify-center rounded-full bg-[var(--color-primary)] px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
-				disabled={isSubmitting}
+			<Button
+				isLoading={isSubmitting}
 				type="submit"
 			>
 				{isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}
-			</button>
+			</Button>
 			<div className="grid gap-2 border-t border-[var(--color-border)] pt-4">
-				<button
-					className="inline-flex justify-center rounded-full border border-[var(--color-border)] px-5 py-3 font-bold text-[var(--color-heading)] disabled:cursor-not-allowed disabled:opacity-60"
+				<Button
 					disabled={isSubmitting}
 					onClick={() => setIsModalOpen(true)}
-					type="button"
+					variant="secondary"
 				>
 					{t("auth.demoSelector.openButton")}
-				</button>
+				</Button>
 			</div>
 			<Modal
 				isOpen={isModalOpen}

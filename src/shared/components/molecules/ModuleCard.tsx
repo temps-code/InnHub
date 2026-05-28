@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { joinClasses } from "../../utils/classNames";
+
 export interface ModuleCardProps {
 	action?: ReactNode;
 	className?: string;
@@ -7,10 +9,6 @@ export interface ModuleCardProps {
 	eyebrow?: ReactNode;
 	icon?: ReactNode;
 	title: ReactNode;
-}
-
-function joinClasses(...classes: Array<string | false | undefined>) {
-	return classes.filter(Boolean).join(" ");
 }
 
 export function ModuleCard({
