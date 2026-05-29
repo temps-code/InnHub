@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { AppSession } from "../../auth/types";
 import type { RoomType, RoomTypeFormData } from "../types";
+import type { RoomTypeServiceDepsDeleteQuery } from "../roomTypeService";
 
 // ── Type + Schema tests (RED for types.ts) ───────────────────────────────
 // These tests reference roomTypeFormSchema which does NOT exist yet.
@@ -94,6 +95,7 @@ type QueryResult<T> = { readonly data: T | null; readonly error: unknown };
 class FakeRoomTypeQuery<T> implements PromiseLike<QueryResult<T>> {
 	readonly eqCalls: Array<{ column: string; value: string }> = [];
 	readonly isCalls: Array<{ column: string; value: string | null }> = [];
+	readonly neqCalls: Array<{ column: string; value: unknown }> = [];
 	readonly result: QueryResult<T>;
 
 	constructor(result: QueryResult<T>) {
@@ -107,6 +109,11 @@ class FakeRoomTypeQuery<T> implements PromiseLike<QueryResult<T>> {
 
 	is(column: string, value: string | null): this {
 		this.isCalls.push({ column, value });
+		return this;
+	}
+
+	neq(column: string, value: unknown): this {
+		this.neqCalls.push({ column, value });
 		return this;
 	}
 
@@ -128,6 +135,16 @@ function fakeFrom<T>(result: QueryResult<T>) {
 		select: (_columns: string) => new FakeRoomTypeQuery(result),
 		insert: (_data: unknown) => new FakeRoomTypeQuery(result),
 		update: (_data: unknown) => new FakeRoomTypeQuery(result),
+		"delete": () => {
+			const q = new FakeRoomTypeQuery<T | null>(result);
+			return {
+				eq: (column: string, value: string) => {
+					q.eqCalls.push({ column, value });
+					return q;
+				},
+				then: q.then as RoomTypeServiceDepsDeleteQuery["then"],
+			};
+		},
 	});
 }
 
@@ -234,6 +251,10 @@ describe("list", () => {
 				},
 				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
 				update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				"delete": () => ({
+					eq: () => new FakeRoomTypeQuery({ data: null, error: null }),
+					then: (() => Promise.resolve({ data: null, error: null })) as RoomTypeServiceDepsDeleteQuery["then"],
+				}),
 			}),
 		});
 
@@ -300,6 +321,10 @@ describe("getById", () => {
 				},
 				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
 				update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				"delete": () => ({
+					eq: () => new FakeRoomTypeQuery({ data: null, error: null }),
+					then: (() => Promise.resolve({ data: null, error: null })) as RoomTypeServiceDepsDeleteQuery["then"],
+				}),
 			}),
 		});
 
@@ -545,6 +570,10 @@ describe("update", () => {
 					capturedQuery = new FakeRoomTypeQuery({ data: updatedRoomType, error: null });
 					return capturedQuery;
 				},
+				"delete": () => ({
+					eq: () => new FakeRoomTypeQuery({ data: null, error: null }),
+					then: (() => Promise.resolve({ data: null, error: null })) as RoomTypeServiceDepsDeleteQuery["then"],
+				}),
 			}),
 		});
 
@@ -562,6 +591,10 @@ describe("update", () => {
 				select: (_columns: string) => new FakeRoomTypeQuery({ data: null, error: null }),
 				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
 				update: (_data: unknown) => new FakeRoomTypeQuery({ data: [], error: null }),
+				"delete": () => ({
+					eq: () => new FakeRoomTypeQuery({ data: null, error: null }),
+					then: (() => Promise.resolve({ data: null, error: null })) as RoomTypeServiceDepsDeleteQuery["then"],
+				}),
 			}),
 		});
 
@@ -641,6 +674,400 @@ describe("softDelete", () => {
 				code: "not-found",
 				message: "The requested record was not found.",
 			},
+		});
+	});
+});
+
+// ── Test data for archive/restore/purge ─────────────────────────────────
+
+const anArchivedRoomType: RoomType = {
+	...aRoomType,
+	id: "rt-archived",
+	deleted_at: "2025-07-01T00:00:00Z",
+};
+
+const restoredRoomType: RoomType = {
+	...aRoomType,
+	id: "rt-archived",
+	name: "Standard Queen",
+	deleted_at: null,
+};
+
+// Fake that returns different data for load vs update in restore
+function fakeFromForRestore(
+	loadData: RoomType,
+	updateData: RoomType,
+	duplicateData: unknown = [],
+) {
+	return (_table: string) => ({
+		select: (columns: string) => {
+			if (columns === "id") {
+				return new FakeRoomTypeQuery({ data: duplicateData, error: null });
+			}
+			return new FakeRoomTypeQuery({ data: loadData, error: null });
+		},
+		insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+		update: (_data: unknown) => new FakeRoomTypeQuery({ data: updateData, error: null }),
+		"delete": () => {
+			const q = new FakeRoomTypeQuery<null>({ data: null, error: null });
+			return {
+				eq: (column: string, value: string) => {
+					q.eqCalls.push({ column, value });
+					return q;
+				},
+				then: q.then as RoomTypeServiceDepsDeleteQuery["then"],
+			};
+		},
+	});
+}
+
+// Fake that returns data only for room_types table, and per-table FK data
+function fakeFromForPurge(
+	loadData: RoomType,
+	deleteData: unknown = null,
+	fkData: Record<string, unknown> = {},
+) {
+	return (table: string) => ({
+		select: (_columns: string) => {
+			if (table !== "room_types") {
+				return new FakeRoomTypeQuery({ data: fkData[table] ?? [], error: null });
+			}
+			return new FakeRoomTypeQuery({ data: loadData, error: null });
+		},
+		insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+		update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+		"delete": () => {
+			const q = new FakeRoomTypeQuery<unknown>({ data: deleteData, error: null });
+			return {
+				eq: (column: string, value: string) => {
+					q.eqCalls.push({ column, value });
+					return q;
+				},
+				then: q.then as RoomTypeServiceDepsDeleteQuery["then"],
+			};
+		},
+	});
+}
+
+// ── listArchived ────────────────────────────────────────────────────────
+
+describe("listArchived", () => {
+	it("returns property-scope-error when session is null", async () => {
+		const { listArchived } = await import("../roomTypeService");
+
+		const result = await listArchived(null, {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "property-scope-error",
+				message: "A valid property scope is required.",
+			},
+		});
+	});
+
+	it("returns archived room types", async () => {
+		const { listArchived } = await import("../roomTypeService");
+
+		const result = await listArchived(aSession, {
+			from: fakeFrom({ data: [anArchivedRoomType], error: null }),
+		});
+
+		expect(result).toEqual({ ok: true, data: [anArchivedRoomType] });
+	});
+
+	it("returns only soft-deleted records (post-filter)", async () => {
+		const { listArchived } = await import("../roomTypeService");
+
+		const activeRoomType = { ...anArchivedRoomType, id: "rt-active", deleted_at: null };
+		const archivedRoomType = { ...anArchivedRoomType, id: "rt-archived", deleted_at: "2025-07-01T00:00:00Z" };
+
+		const result = await listArchived(aSession, {
+			from: (_table: string) => ({
+				select: (_columns: string) => new FakeRoomTypeQuery({ data: [activeRoomType, archivedRoomType], error: null }),
+				insert: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				update: (_data: unknown) => new FakeRoomTypeQuery({ data: null, error: null }),
+				"delete": () => ({
+					eq: () => new FakeRoomTypeQuery({ data: null, error: null }),
+					then: (() => Promise.resolve({ data: null, error: null })) as RoomTypeServiceDepsDeleteQuery["then"],
+				}),
+			}),
+		});
+
+		expect(result).toEqual({ ok: true, data: [archivedRoomType] });
+	});
+
+	it("returns validation-error / permission-denied for low-privileged role", async () => {
+		const { listArchived } = await import("../roomTypeService");
+		const lowPrivSession: AppSession = {
+			...aSession,
+			profile: { ...aSession.profile, role: "receptionist" },
+		};
+
+		const result = await listArchived(lowPrivSession, {
+			from: fakeFrom({ data: [anArchivedRoomType], error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "validation-error", message: "permission-denied" },
+		});
+	});
+
+	it("returns empty array when no archived room types exist", async () => {
+		const { listArchived } = await import("../roomTypeService");
+
+		const result = await listArchived(aSession, {
+			from: fakeFrom({ data: [], error: null }),
+		});
+
+		expect(result).toEqual({ ok: true, data: [] });
+	});
+
+	it("returns backend-error on query failure", async () => {
+		const { listArchived } = await import("../roomTypeService");
+
+		const result = await listArchived(aSession, {
+			from: fakeFrom({ data: null, error: { message: "connection refused" } }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "backend-error", message: "The service request could not be completed." },
+		});
+	});
+});
+
+// ── restore ─────────────────────────────────────────────────────────────
+
+describe("restore", () => {
+	it("returns property-scope-error when session is null", async () => {
+		const { restore } = await import("../roomTypeService");
+
+		const result = await restore(null, "rt-archived", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "property-scope-error", message: "A valid property scope is required." },
+		});
+	});
+
+	it("restores a soft-deleted room type", async () => {
+		const { restore } = await import("../roomTypeService");
+
+		const result = await restore(aSession, "rt-archived", {
+			from: fakeFromForRestore(anArchivedRoomType, restoredRoomType),
+		});
+
+		expect(result).toEqual({ ok: true, data: restoredRoomType });
+	});
+
+	it("returns validation-error on duplicate active name", async () => {
+		const { restore } = await import("../roomTypeService");
+		const duplicateActiveType: RoomType = { ...aRoomType, id: "rt-other" };
+
+		const result = await restore(aSession, "rt-archived", {
+			from: fakeFromForRestore(anArchivedRoomType, restoredRoomType, [duplicateActiveType]),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "validation-error", message: "A room type with this name already exists." },
+		});
+	});
+
+	it("returns not-found when room type is not soft-deleted", async () => {
+		const { restore } = await import("../roomTypeService");
+
+		const result = await restore(aSession, "rt-1", {
+			from: fakeFrom({ data: aRoomType, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
+		});
+	});
+
+	it("returns not-found when room type belongs to different property", async () => {
+		const { restore } = await import("../roomTypeService");
+		const otherPropertySession: AppSession = {
+			...aSession,
+			propertyId: "property-2",
+			profile: { ...aSession.profile, propertyId: "property-2" },
+		};
+
+		const result = await restore(otherPropertySession, "rt-archived", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
+		});
+	});
+
+	it("returns validation-error / permission-denied for low-privileged role", async () => {
+		const { restore } = await import("../roomTypeService");
+		const lowPrivSession: AppSession = {
+			...aSession,
+			profile: { ...aSession.profile, role: "receptionist" },
+		};
+
+		const result = await restore(lowPrivSession, "rt-archived", {
+			from: fakeFrom({ data: anArchivedRoomType, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "validation-error", message: "permission-denied" },
+		});
+	});
+
+	it("returns not-found when room type does not exist", async () => {
+		const { restore } = await import("../roomTypeService");
+
+		const result = await restore(aSession, "nonexistent", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
+		});
+	});
+});
+
+// ── purge ───────────────────────────────────────────────────────────────
+
+describe("purge", () => {
+	it("returns property-scope-error when session is null", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(null, "rt-archived", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "property-scope-error", message: "A valid property scope is required." },
+		});
+	});
+
+	it("purges a soft-deleted room type with no FK references", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "rt-archived", {
+			from: fakeFromForPurge(anArchivedRoomType, null, {}),
+		});
+
+		expect(result).toEqual({ ok: true, data: anArchivedRoomType });
+	});
+
+	it("returns foreign-key-conflict when rooms reference the type", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "rt-archived", {
+			from: fakeFromForPurge(anArchivedRoomType, null, { rooms: [{ id: "room-1" }] }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "foreign-key-conflict", message: "This record is referenced by other data and cannot be deleted." },
+		});
+	});
+
+	it("returns foreign-key-conflict when reservation_items reference the type", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "rt-archived", {
+			from: fakeFromForPurge(anArchivedRoomType, null, { reservation_items: [{ id: "item-1" }] }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "foreign-key-conflict", message: "This record is referenced by other data and cannot be deleted." },
+		});
+	});
+
+	it("returns foreign-key-conflict when both tables reference the type", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "rt-archived", {
+			from: fakeFromForPurge(anArchivedRoomType, null, {
+				rooms: [{ id: "ref-1" }],
+				reservation_items: [{ id: "ref-1" }],
+			}),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "foreign-key-conflict", message: "This record is referenced by other data and cannot be deleted." },
+		});
+	});
+
+	it("returns not-found when room type is not soft-deleted", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "rt-1", {
+			from: fakeFrom({ data: aRoomType, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
+		});
+	});
+
+	it("returns not-found when room type belongs to different property", async () => {
+		const { purge } = await import("../roomTypeService");
+		const otherPropertySession: AppSession = {
+			...aSession,
+			propertyId: "property-2",
+			profile: { ...aSession.profile, propertyId: "property-2" },
+		};
+
+		const result = await purge(otherPropertySession, "rt-archived", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
+		});
+	});
+
+	it("returns validation-error / permission-denied for low-privileged role", async () => {
+		const { purge } = await import("../roomTypeService");
+		const lowPrivSession: AppSession = {
+			...aSession,
+			profile: { ...aSession.profile, role: "receptionist" },
+		};
+
+		const result = await purge(lowPrivSession, "rt-archived", {
+			from: fakeFrom({ data: anArchivedRoomType, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "validation-error", message: "permission-denied" },
+		});
+	});
+
+	it("returns not-found when room type does not exist", async () => {
+		const { purge } = await import("../roomTypeService");
+
+		const result = await purge(aSession, "nonexistent", {
+			from: fakeFrom({ data: null, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: { code: "not-found", message: "The requested record was not found." },
 		});
 	});
 });
