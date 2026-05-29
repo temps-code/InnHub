@@ -169,6 +169,30 @@ Every operation MUST derive the target property from the authenticated session, 
 - WHEN the service persists the record
 - THEN it MUST associate the record with the session property_id
 
+## Technical Decisions
+
+### SDK Limitation: `.neq(column, null)` not supported
+
+**Context:** InsForge SDK wraps Supabase PostgREST. The `.neq()` operator is for value comparisons only, not null checks. Calling `.neq("deleted_at", null)` returns HTTP 400.
+
+**Decision:** `listArchived` uses a post-filter approach — fetch all room types for the property, then filter in JavaScript: `data.filter(r => r.deleted_at !== null)`.
+
+**Trade-off:** This is a full-table scan. Acceptable for MVP with bounded data volumes. Revisit if InsForge adds `.not.is(column, null)` support or if record counts grow significantly.
+
+**Affects:** Any future service that needs "IS NOT NULL" filtering on nullable columns. Check `openspec/specs/service-layer/spec.md` for SDK limitations.
+
+### Duplicate Name Guard on Restore
+
+**Context:** The partial unique index `room_types_property_name_active_idx` (WHERE deleted_at IS NULL) prevents restoring a room type when an active record shares the same name.
+
+**Decision:** `restore` checks for duplicate active names before restoring. If a duplicate exists, returns `validation-error` with a user-facing message. The user must rename the conflicting active type first.
+
+### FK Check Scope for Purge
+
+**Context:** The issue originally specified checking only `rooms` for FK references. However, `reservation_items.room_type_id` also has ON DELETE RESTRICT.
+
+**Decision:** `purge` checks BOTH `rooms` AND `reservation_items` before physical delete. If either table has active references, returns `foreign-key-conflict` with count details.
+
 ## Acceptance Criteria
 
 - List renders with loading, empty, and error states for the active property.
