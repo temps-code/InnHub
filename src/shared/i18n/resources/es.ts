@@ -147,6 +147,51 @@ export const es = {
 			purgeGenericError: "No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
 		},
 	},
+	rooms: {
+		list: {
+			title: "Habitaciones",
+			loading: "Cargando habitaciones...",
+			empty: "No se encontraron habitaciones. Creá una para empezar.",
+			error: "No se pudieron cargar las habitaciones.",
+		},
+		fields: {
+			identifier: "Identificador",
+			room_type: "Tipo de habitación",
+			floor: "Piso",
+			state: "Estado",
+			description: "Descripción",
+		},
+		states: {
+			available: "Disponible",
+			occupied: "Ocupada",
+			cleaning: "Limpieza",
+			maintenance: "Mantenimiento",
+			inactive: "Inactiva",
+		},
+		filters: {
+			allStatuses: "Todos los estados",
+			allTypes: "Todos los tipos",
+			searchPlaceholder: "Buscar por identificador o descripción...",
+		},
+		create: {
+			title: "Crear habitación",
+			submit: "Crear",
+		},
+		edit: {
+			title: "Editar habitación",
+			submit: "Guardar cambios",
+		},
+		duplicateIdentifier: "Ya existe una habitación con ese identificador.",
+		delete: "Eliminar",
+		deleteConfirmTitle: "Eliminar habitación",
+		deleteConfirmMessage: "Esto desactivará la habitación. Ya no aparecerá en la lista.",
+		deleteConfirmAccept: "Eliminar",
+		deleteConfirmCancel: "Cancelar",
+		deletePermissionError: "No tenés permiso para eliminar habitaciones.",
+		deleteGenericError: "No se pudo eliminar la habitación. Intentá de nuevo.",
+		reservationConflict: "No se puede eliminar la habitación con reservaciones activas.",
+		permissionError: "No tenés permiso para realizar esta acción.",
+	},
 	properties: {
 		profile: {
 			eyebrow: "Perfil de propiedad",

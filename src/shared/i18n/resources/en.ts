@@ -145,6 +145,51 @@ export const en = {
 			purgeGenericError: "Could not delete the room type. Please try again.",
 		},
 	},
+	rooms: {
+		list: {
+			title: "Rooms",
+			loading: "Loading rooms...",
+			empty: "No rooms found. Create one to get started.",
+			error: "Unable to load rooms.",
+		},
+		fields: {
+			identifier: "Identifier",
+			room_type: "Room Type",
+			floor: "Floor",
+			state: "State",
+			description: "Description",
+		},
+		states: {
+			available: "Available",
+			occupied: "Occupied",
+			cleaning: "Cleaning",
+			maintenance: "Maintenance",
+			inactive: "Inactive",
+		},
+		filters: {
+			allStatuses: "All Statuses",
+			allTypes: "All Types",
+			searchPlaceholder: "Search by identifier or description...",
+		},
+		create: {
+			title: "Create Room",
+			submit: "Create",
+		},
+		edit: {
+			title: "Edit Room",
+			submit: "Save Changes",
+		},
+		duplicateIdentifier: "A room with this identifier already exists.",
+		delete: "Delete",
+		deleteConfirmTitle: "Delete Room",
+		deleteConfirmMessage: "This will deactivate the room. It will no longer appear in the list.",
+		deleteConfirmAccept: "Delete",
+		deleteConfirmCancel: "Cancel",
+		deletePermissionError: "You don't have permission to delete rooms.",
+		deleteGenericError: "Could not delete the room. Please try again.",
+		reservationConflict: "Cannot delete room with active reservations.",
+		permissionError: "You don't have permission to perform this action.",
+	},
 	properties: {
 		profile: {
 			eyebrow: "Property Profile",
