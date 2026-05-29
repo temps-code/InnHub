@@ -37,7 +37,7 @@ All 13 operational tables are live with seed data, soft delete, indexes, and for
 | profile | 8 | ✅ Done | Profile page, service, name editing |
 | properties | 8 | ✅ Done | Property profile page, CRUD service |
 | room-types | 8 | ✅ Done | Full CRUD + recycle bin + purge (reference pattern) |
-| rooms | 0 | ❌ Empty | Issue #12 |
+| rooms | 6 | ✅ Done | Issue #12 (PR #91) |
 | guests | 0 | ❌ Empty | Issue #13 |
 | users | 0 | ❌ Empty | Issue #60 |
 | reservations | 0 | ❌ Empty | Issue #14 |
@@ -68,7 +68,7 @@ Key conventions:
 
 ```
                     ┌──────────┐
-                    │ rooms #12│ (HIGH)
+                    │ rooms #12│ (HIGH) ✅ DONE
                     └────┬─────┘
                          │
            ┌─────────────┼──────────────┐
@@ -116,13 +116,11 @@ realtime #63 = scope decision (not blocked)
 
 ### 🔴 HIGH Priority
 
-#### #12 — feat(rooms): manage rooms and physical states
+#### #12 — feat(rooms): manage rooms and physical states ✅ DONE
 - **Backend:** ✅ 17 rooms, schema with `state` enum (`available`, `occupied`, `cleaning`, `maintenance`, `inactive`)
-- **Frontend:** ❌ Empty directory
+- **Frontend:** ✅ Implemented — types, service, hook, page, tests, i18n, route
 - **Dependencies:** room-types (✅ done)
-- **Unlocked:** YES
-- **Scope:** CRUD for rooms, physical state transitions, link to room types
-- **Effort:** Medium — follows established service pattern, state machine logic
+- **Status:** DONE — PR #91, 4 chained commits on `features`
 - **Unblocks:** #14, #15, #16, #17, #18, #19
 
 #### #13 — feat(guests): manage guest records
@@ -226,7 +224,7 @@ realtime #63 = scope decision (not blocked)
 ## Recommended Implementation Order
 
 ### Phase 1 — Foundation (unblocks everything)
-1. **#12 rooms** → unblocks #14, #15, #16, #17, #18, #19
+1. ~~**#12 rooms**~~ ✅ → desbloquea #14, #15, #16, #17, #18, #19
 2. **#13 guests** → unblocks #14
 3. **#60 users** → can run in parallel with #12/#13 (no deps), but is the largest issue
 
