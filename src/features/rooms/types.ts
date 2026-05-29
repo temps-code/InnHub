@@ -7,7 +7,7 @@ export type Room = {
 	readonly property_id: string;
 	readonly room_type_id: string;
 	readonly identifier: string;
-	readonly floor: number | null;
+	readonly floor: string | null;
 	readonly state: RoomState;
 	readonly description: string | null;
 	readonly created_at: string;
@@ -18,7 +18,7 @@ export type Room = {
 export const roomFormSchema = z.object({
 	identifier: z.string().trim().min(1, "Identifier is required"),
 	room_type_id: z.string().trim().min(1, "Room type is required"),
-	floor: z.coerce.number().int().optional(),
+	floor: z.string().optional(),
 	state: z.enum(["available", "occupied", "cleaning", "maintenance", "inactive"]).default("available"),
 	description: z.string().transform((val) => (val === "" ? null : val)).nullable().optional(),
 });

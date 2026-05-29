@@ -67,7 +67,7 @@ const room1: Room = {
 	property_id: "property-1",
 	room_type_id: "rt-1",
 	identifier: "101",
-	floor: 1,
+	floor: "1",
 	state: "available",
 	description: null,
 	created_at: "2025-01-01T00:00:00Z",
@@ -80,7 +80,7 @@ const room2: Room = {
 	property_id: "property-1",
 	room_type_id: "rt-2",
 	identifier: "102",
-	floor: 1,
+	floor: "1",
 	state: "occupied",
 	description: "Corner room",
 	created_at: "2025-01-01T00:00:00Z",
@@ -115,14 +115,14 @@ const bSession: AppSession = {
 const formData: RoomFormData = {
 	identifier: "201",
 	room_type_id: "rt-1",
-	floor: 2,
+	floor: "2",
 	state: "available",
 };
 
 const updatedFormData: RoomFormData = {
 	identifier: "101-updated",
 	room_type_id: "rt-1",
-	floor: 1,
+	floor: "1",
 	state: "occupied",
 	description: "Updated room",
 };

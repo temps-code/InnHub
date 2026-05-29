@@ -200,18 +200,54 @@ export async function softDelete(
 			return loaded;
 		}
 
-		// Check for active reservations
-		const reservationsQuery = scopeOperationalQuery(
-			from("reservations").select("id"),
+		// Check for active reservations via reservation_items (which has room_id)
+		// A room is blocked if it has reservation_items linked to reservations
+		// with status IN ('confirmed','checked_in') and planned_check_out_date >= today
+		const reservationItemsQuery = scopeOperationalQuery(
+			from("reservation_items").select("id, reservation_id"),
 			ctx.propertyScope,
-		).eq("room_id", id).neq("status", "cancelled");
+		).eq("room_id", id).is("deleted_at", null);
 
-		const reservationsResult = await executeServiceQuery<{ id: string } | { id: string }[]>(
-			reservationsQuery as never,
-		);
+		const reservationItemsResult = await executeServiceQuery<
+			{ id: string; reservation_id: string } | { id: string; reservation_id: string }[]
+		>(reservationItemsQuery as never);
 
-		if (reservationsResult.ok && !isResultEmpty(reservationsResult.data)) {
-			return serviceFailure("validation-error", "Cannot delete room with active reservations");
+		if (reservationItemsResult.ok && !isResultEmpty(reservationItemsResult.data)) {
+			const items = Array.isArray(reservationItemsResult.data)
+				? reservationItemsResult.data
+				: [reservationItemsResult.data];
+
+			// Check each linked reservation for active status
+			for (const item of items) {
+				const reservationQuery = scopeOperationalQuery(
+					from("reservations").select("id, status, planned_check_out_date"),
+					ctx.propertyScope,
+				).eq("id", item.reservation_id).is("deleted_at", null);
+
+				const reservationResult = await executeServiceQuery<
+					{ id: string; status: string; planned_check_out_date: string } | { id: string; status: string; planned_check_out_date: string }[]
+				>(reservationQuery as never);
+
+				if (reservationResult.ok && !isResultEmpty(reservationResult.data)) {
+					const reservations = Array.isArray(reservationResult.data)
+						? reservationResult.data
+						: [reservationResult.data];
+
+					const today = new Date().toISOString().split("T")[0];
+					const hasActive = reservations.some(
+						(r) =>
+							(r.status === "confirmed" || r.status === "checked_in") &&
+							r.planned_check_out_date >= today,
+					);
+
+					if (hasActive) {
+						return serviceFailure(
+							"validation-error",
+							"Cannot delete room with active reservations",
+						);
+					}
+				}
+			}
 		}
 
 		// Soft delete
@@ -354,17 +390,17 @@ export async function purge(
 			return serviceFailure("not-found");
 		}
 
-		// Check reservations FK
-		const reservationsQuery = scopeOperationalQuery(
-			from("reservations").select("id"),
+		// Check reservation_items FK (reservation_items has room_id)
+		const reservationItemsQuery = scopeOperationalQuery(
+			from("reservation_items").select("id"),
 			ctx.propertyScope,
-		).eq("room_id", id);
+		).eq("room_id", id).is("deleted_at", null);
 
-		const reservationsResult = await executeServiceQuery<{ id: string } | { id: string }[]>(
-			reservationsQuery as never,
+		const reservationItemsResult = await executeServiceQuery<{ id: string } | { id: string }[]>(
+			reservationItemsQuery as never,
 		);
 
-		if (reservationsResult.ok && !isResultEmpty(reservationsResult.data)) {
+		if (reservationItemsResult.ok && !isResultEmpty(reservationItemsResult.data)) {
 			return serviceFailure(
 				"foreign-key-conflict",
 				"This record is referenced by other data and cannot be deleted.",

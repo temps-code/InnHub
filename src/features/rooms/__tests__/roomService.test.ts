@@ -13,7 +13,7 @@ describe("roomFormSchema", () => {
 		const input = {
 			identifier: "101",
 			room_type_id: "rt-1",
-			floor: 1,
+			floor: "1",
 			state: "available" as const,
 			description: "A cozy room",
 		};
@@ -23,7 +23,7 @@ describe("roomFormSchema", () => {
 		if (result.success) {
 			expect(result.data.identifier).toBe("101");
 			expect(result.data.room_type_id).toBe("rt-1");
-			expect(result.data.floor).toBe(1);
+			expect(result.data.floor).toBe("1");
 			expect(result.data.state).toBe("available");
 			expect(result.data.description).toBe("A cozy room");
 		}
@@ -134,7 +134,7 @@ const aRoom: Room = {
 	property_id: "property-1",
 	room_type_id: "rt-1",
 	identifier: "101",
-	floor: 1,
+	floor: "1",
 	state: "available",
 	description: "A cozy room",
 	created_at: "2025-01-01T00:00:00Z",
@@ -157,7 +157,7 @@ const aSession: AppSession = {
 const roomFormData: RoomFormData = {
 	identifier: "101",
 	room_type_id: "rt-1",
-	floor: 1,
+	floor: "1",
 	state: "available",
 	description: "A cozy room",
 };
@@ -479,7 +479,7 @@ describe("create", () => {
 describe("update", () => {
 	const updatedRoom: Room = {
 		...aRoom,
-		floor: 2,
+		floor: "2",
 		state: "occupied",
 	};
 
@@ -600,7 +600,7 @@ describe("softDelete", () => {
 
 		const result = await softDelete(aSession, "room-1", {
 			from: (_table: string) => {
-				if (_table === "reservations") {
+				if (_table === "reservation_items") {
 					return {
 						select: (_columns: string) => new FakeRoomQuery({ data: [], error: null }),
 						insert: (_data: unknown) => new FakeRoomQuery({ data: null, error: null }),
@@ -652,6 +652,9 @@ describe("softDelete", () => {
 	it("returns validation-error when room has active reservations", async () => {
 		const { softDelete } = await import("../roomService");
 
+		const today = new Date().toISOString().split("T")[0];
+		const activeReservation = { id: "res-1", status: "confirmed", planned_check_out_date: today };
+
 		const result = await softDelete(aSession, "room-1", {
 			from: (_table: string) => {
 				if (_table === "rooms") {
@@ -665,9 +668,20 @@ describe("softDelete", () => {
 						}),
 					};
 				}
+				if (_table === "reservation_items") {
+					return {
+						select: (_columns: string) => new FakeRoomQuery({ data: [{ id: "item-1", reservation_id: "res-1" }], error: null }),
+						insert: (_data: unknown) => new FakeRoomQuery({ data: null, error: null }),
+						update: (_data: unknown) => new FakeRoomQuery({ data: null, error: null }),
+						"delete": () => ({
+							eq: () => new FakeRoomQuery({ data: null, error: null }),
+							then: (() => Promise.resolve({ data: null, error: null })) as RoomServiceDepsDeleteQuery["then"],
+						}),
+					};
+				}
 				if (_table === "reservations") {
 					return {
-						select: (_columns: string) => new FakeRoomQuery({ data: [{ id: "res-1" }], error: null }),
+						select: (_columns: string) => new FakeRoomQuery({ data: activeReservation, error: null }),
 						insert: (_data: unknown) => new FakeRoomQuery({ data: null, error: null }),
 						update: (_data: unknown) => new FakeRoomQuery({ data: null, error: null }),
 						"delete": () => ({
@@ -1001,11 +1015,11 @@ describe("purge", () => {
 		expect(result).toEqual({ ok: true, data: anArchivedRoom });
 	});
 
-	it("returns foreign-key-conflict when reservations reference the room", async () => {
+	it("returns foreign-key-conflict when reservation_items reference the room", async () => {
 		const { purge } = await import("../roomService");
 
 		const result = await purge(aSession, "room-archived", {
-			from: fakeFromForPurge(anArchivedRoom, null, { reservations: [{ id: "res-1" }] }),
+			from: fakeFromForPurge(anArchivedRoom, null, { reservation_items: [{ id: "item-1" }] }),
 		});
 
 		expect(result).toEqual({
