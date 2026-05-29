@@ -174,6 +174,22 @@ The service-layer foundation MUST satisfy strict TDD and project validation befo
 - THEN the change MUST NOT include feature CRUD, UI workflow behavior, seed data, Storage, realtime, schema migrations, remote policy/RLS changes, or broad architecture rewrites
 - AND final validation SHOULD include `npm run test:run`, `npm run lint`, and `npm run build` when TypeScript/runtime code changes
 
+## InsForge SDK Limitations
+
+### `.neq(column, null)` not supported
+
+**Discovery (Issue #84):** InsForge SDK wraps Supabase PostgREST. The `.neq()` operator is for value comparisons only — calling `.neq("deleted_at", null)` returns HTTP 400.
+
+**Workaround:** For "IS NOT NULL" queries, fetch all records and post-filter in JavaScript:
+```typescript
+const result = await executeServiceQuery(query);
+const filtered = result.data.filter(r => r.deleted_at !== null);
+```
+
+**Affected modules:** Any feature that needs to query for non-null values on nullable columns (e.g., archived records, optional foreign keys). Check this spec before implementing "not null" filters.
+
+**Status:** No server-side workaround available in current InsForge SDK version. Monitor SDK changelog for `.not.is(column, null)` or equivalent support.
+
 ## Acceptance Criteria
 
 - Shared service result and safe error conventions are defined for future InsForge-backed services.
