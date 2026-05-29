@@ -84,6 +84,20 @@ const singleRoomType: RoomType = {
 
 const allRoomTypes = [queenRoomType, singleRoomType];
 
+const archivedRoomType: RoomType = {
+	id: "rt-3",
+	property_id: "property-1",
+	name: "Archived Suite",
+	description: "An archived room type",
+	capacity: 3,
+	base_price: 200.0,
+	created_at: "2025-01-01T00:00:00Z",
+	updated_at: "2025-06-01T00:00:00Z",
+	deleted_at: "2025-07-01T00:00:00Z",
+};
+
+const archivedRoomTypes = [archivedRoomType];
+
 // ── Default mock auth (admin) ───────────────────────────────────────
 
 function mockAdminAuth() {
@@ -129,9 +143,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loading" },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -146,9 +164,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -169,9 +191,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -189,9 +215,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: [] },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -206,9 +236,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: [] },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -230,9 +264,13 @@ describe("RoomTypesPage", () => {
 						message: "Service request could not be completed.",
 					},
 				},
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -253,9 +291,13 @@ describe("RoomTypesPage", () => {
 						message: "token=secret-jwt something failed",
 					},
 				},
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -272,9 +314,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -289,9 +335,13 @@ describe("RoomTypesPage", () => {
 			mockReceptionistAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -306,9 +356,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -322,9 +376,13 @@ describe("RoomTypesPage", () => {
 			mockReceptionistAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -339,9 +397,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -355,9 +417,13 @@ describe("RoomTypesPage", () => {
 			mockReceptionistAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -374,9 +440,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -396,9 +466,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -417,9 +491,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -443,8 +521,12 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: mockCreate,
 				update: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -491,9 +573,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+			showArchived: false,
 			create: vi.fn(),
 			update: vi.fn(),
 			remove: vi.fn(),
+			toggleArchived: vi.fn(),
+			restore: vi.fn(),
+			purge: vi.fn(),
 			refresh: vi.fn(),
 			});
 
@@ -516,8 +602,12 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: mockUpdate,
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -556,9 +646,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -579,9 +673,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: mockRemove,
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -610,9 +708,13 @@ describe("RoomTypesPage", () => {
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: mockRemove,
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -633,15 +735,19 @@ describe("RoomTypesPage", () => {
 
 		it("shows error alert when remove fails", async () => {
 			const mockRemove = vi.fn().mockRejectedValue({
-				code: "permission-denied",
+				code: "validation-error",
 				message: "permission-denied",
 			});
 			mockAdminAuth();
 			mockUseRoomTypes.mockReturnValue({
 				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: mockRemove,
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
 				refresh: vi.fn(),
 			});
 
@@ -662,6 +768,408 @@ describe("RoomTypesPage", () => {
 
 			expect(mockRemove).toHaveBeenCalledWith("rt-1");
 			expect(screen.getByRole("dialog")).toBeInTheDocument();
+		});
+	});
+
+	describe("archive toggle", () => {
+		it("shows toggle button for administrator", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(
+				screen.getByRole("button", { name: /view recycle bin/i }),
+			).toBeInTheDocument();
+		});
+
+		it("hides toggle button for receptionist", async () => {
+			mockReceptionistAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(
+				screen.queryByRole("button", { name: /view recycle bin/i }),
+			).not.toBeInTheDocument();
+		});
+
+		it("calls toggleArchived when toggle is clicked", async () => {
+			const mockToggle = vi.fn();
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: allRoomTypes },
+				showArchived: false,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: mockToggle,
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /view recycle bin/i }),
+			);
+
+			expect(mockToggle).toHaveBeenCalledOnce();
+		});
+
+		it("shows 'View Active' label when in archived mode", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(
+				screen.getByRole("button", { name: /view active/i }),
+			).toBeInTheDocument();
+		});
+	});
+
+	describe("archived table", () => {
+		it("renders archived room types with restore and purge buttons", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(screen.getByText("Archived Suite")).toBeInTheDocument();
+			expect(screen.getByText("3")).toBeInTheDocument();
+			expect(screen.getByText("200.00")).toBeInTheDocument();
+			expect(screen.getByText("An archived room type")).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: /restore/i }),
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: /purge/i }),
+			).toBeInTheDocument();
+		});
+
+		it("renders empty state when no archived room types exist", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: [] },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			expect(
+				screen.getByText(/no archived room types/i),
+			).toBeInTheDocument();
+		});
+	});
+
+	describe("restore flow", () => {
+		it("opens restore dialog when Restore is clicked", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /restore/i }),
+			);
+
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+			expect(
+				screen.getByText(/restore this room type/i),
+			).toBeInTheDocument();
+		});
+
+		it("calls restore and closes dialog on confirm", async () => {
+			const mockRestore = vi.fn().mockResolvedValue(undefined);
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: mockRestore,
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /restore/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /restore/i }),
+			);
+
+			await waitFor(() => {
+				expect(mockRestore).toHaveBeenCalledWith("rt-3");
+			});
+
+			await waitFor(() => {
+				expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+			});
+		});
+
+		it("shows duplicate name error when restore fails", async () => {
+			const mockRestore = vi.fn().mockRejectedValue({
+				code: "validation-error",
+				message: "A room type with this name already exists.",
+			});
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: mockRestore,
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /restore/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /restore/i }),
+			);
+
+			await waitFor(() => {
+				expect(screen.getByRole("alert")).toBeInTheDocument();
+			});
+
+			expect(mockRestore).toHaveBeenCalledWith("rt-3");
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+		});
+	});
+
+	describe("purge flow", () => {
+		it("opens purge dialog when Purge is clicked", async () => {
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /purge/i }),
+			);
+
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+			expect(
+				screen.getByRole("heading", { name: /permanently delete/i }),
+			).toBeInTheDocument();
+		});
+
+		it("calls purge and closes dialog on confirm", async () => {
+			const mockPurge = vi.fn().mockResolvedValue(undefined);
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: mockPurge,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /purge/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /purge/i }),
+			);
+
+			await waitFor(() => {
+				expect(mockPurge).toHaveBeenCalledWith("rt-3");
+			});
+
+			await waitFor(() => {
+				expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+			});
+		});
+
+		it("shows FK conflict error when purge fails", async () => {
+			const mockPurge = vi.fn().mockRejectedValue({
+				code: "foreign-key-conflict",
+				message: "This room type is referenced by rooms or reservations.",
+			});
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: mockPurge,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /purge/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /purge/i }),
+			);
+
+			await waitFor(() => {
+				expect(screen.getByRole("alert")).toBeInTheDocument();
+			});
+
+			expect(mockPurge).toHaveBeenCalledWith("rt-3");
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+		});
+	});
+
+	describe("cancel dismisses without calling service", () => {
+		it("does not call restore when cancel is clicked in restore dialog", async () => {
+			const mockRestore = vi.fn();
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: mockRestore,
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /restore/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /cancel/i }),
+			);
+
+			expect(mockRestore).not.toHaveBeenCalled();
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+		});
+
+		it("does not call purge when cancel is clicked in purge dialog", async () => {
+			const mockPurge = vi.fn();
+			mockAdminAuth();
+			mockUseRoomTypes.mockReturnValue({
+				state: { status: "loaded", roomTypes: archivedRoomTypes },
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: mockPurge,
+				refresh: vi.fn(),
+			});
+
+			await renderPage();
+
+			await userEvent.setup().click(
+				screen.getByRole("button", { name: /purge/i }),
+			);
+
+			const dialog = screen.getByRole("dialog");
+			await userEvent.setup().click(
+				within(dialog).getByRole("button", { name: /cancel/i }),
+			);
+
+			expect(mockPurge).not.toHaveBeenCalled();
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 		});
 	});
 });

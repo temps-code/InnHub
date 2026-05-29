@@ -4,6 +4,7 @@ export type ServiceErrorCode =
 	| "validation-error"
 	| "property-scope-error"
 	| "not-found"
+	| "foreign-key-conflict"
 	| "unknown-error";
 
 export type ServiceError = {
@@ -30,6 +31,7 @@ const defaultErrorMessages: Record<ServiceErrorCode, string> = {
 	"validation-error": "The service request is invalid.",
 	"property-scope-error": "A valid property scope is required.",
 	"not-found": "The requested record was not found.",
+	"foreign-key-conflict": "This record is referenced by other data and cannot be deleted.",
 	"unknown-error": "An unexpected service error occurred.",
 };
 

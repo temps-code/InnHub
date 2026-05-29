@@ -9,11 +9,14 @@ import type { RoomType, RoomTypeFormData } from "../types";
 
 // ── Hoisted mock helpers (run before imports) ───────────────────────────
 
-const { mockList, mockCreate, mockUpdate, mockSoftDelete } = vi.hoisted(() => ({
+const { mockList, mockCreate, mockUpdate, mockSoftDelete, mockListArchived, mockRestore, mockPurge } = vi.hoisted(() => ({
 	mockList: vi.fn(),
 	mockCreate: vi.fn(),
 	mockUpdate: vi.fn(),
 	mockSoftDelete: vi.fn(),
+	mockListArchived: vi.fn(),
+	mockRestore: vi.fn(),
+	mockPurge: vi.fn(),
 }));
 
 vi.mock("../roomTypeService", () => ({
@@ -21,6 +24,9 @@ vi.mock("../roomTypeService", () => ({
 	create: mockCreate,
 	update: mockUpdate,
 	softDelete: mockSoftDelete,
+	listArchived: mockListArchived,
+	restore: mockRestore,
+	purge: mockPurge,
 }));
 
 // ── Import AFTER mock is set up ─────────────────────────────────────────
@@ -91,7 +97,13 @@ const updatedFormData: RoomTypeFormData = {
 	base_price: 180.0,
 };
 
+const archivedQueenRoomType: RoomType = {
+	...queenRoomType,
+	deleted_at: "2025-07-01T00:00:00Z",
+};
+
 const allRoomTypes = [queenRoomType, singleRoomType];
+const archivedRoomTypes = [archivedQueenRoomType];
 
 function deferred<T>() {
 	let resolve!: (value: T) => void;
@@ -626,6 +638,516 @@ describe("useRoomTypes", () => {
 			expect(result.current.state).toEqual({
 				status: "loaded",
 				roomTypes: [queenRoomType],
+			});
+		});
+	});
+
+	// ── toggleArchived() ────────────────────────────────────────────────
+
+	describe("toggleArchived()", () => {
+		beforeEach(() => {
+			mockListArchived.mockResolvedValue({ ok: true, data: archivedRoomTypes });
+		});
+
+		it("starts with showArchived = false", async () => {
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			expect(result.current.showArchived).toBe(false);
+		});
+
+		it("toggleArchived switches to archived view and calls listArchived", async () => {
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+			expect(mockList).toHaveBeenCalledTimes(1);
+
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			expect(result.current.showArchived).toBe(true);
+			expect(mockListArchived).toHaveBeenCalledWith(aSession);
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+		});
+
+		it("toggleArchived switches back to active view and calls list", async () => {
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			expect(result.current.showArchived).toBe(true);
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+
+			// Toggle back to active
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			expect(result.current.showArchived).toBe(false);
+			expect(mockList).toHaveBeenCalledTimes(2);
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+		});
+	});
+
+	// ── refresh() respects current mode ──────────────────────────────────
+
+	describe("refresh() respects current mode", () => {
+		beforeEach(() => {
+			mockListArchived.mockResolvedValue({ ok: true, data: archivedRoomTypes });
+		});
+
+		it("refresh() calls listArchived when showArchived is true", async () => {
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			const refreshedArchived = [{ ...archivedQueenRoomType, id: "rt-5" }];
+			mockListArchived.mockResolvedValue({ ok: true, data: refreshedArchived });
+
+			await act(async () => {
+				await result.current.refresh();
+			});
+
+			expect(mockListArchived).toHaveBeenCalledTimes(2);
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: refreshedArchived,
+			});
+		});
+
+		it("refresh() calls list when showArchived is false", async () => {
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			const refreshed = [singleRoomType];
+			mockList.mockResolvedValue({ ok: true, data: refreshed });
+
+			await act(async () => {
+				await result.current.refresh();
+			});
+
+			expect(mockList).toHaveBeenCalledTimes(2);
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: refreshed,
+			});
+		});
+	});
+
+	// ── restore() ────────────────────────────────────────────────────────
+
+	describe("restore()", () => {
+		beforeEach(() => {
+			mockListArchived.mockResolvedValue({ ok: true, data: archivedRoomTypes });
+		});
+
+		it("restore() calls service then refreshes archived view on success", async () => {
+			mockRestore.mockResolvedValue({
+				ok: true,
+				data: { ...archivedQueenRoomType, deleted_at: null },
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+
+			// Restore
+			await act(async () => {
+				await result.current.restore("rt-1");
+			});
+
+			expect(mockRestore).toHaveBeenCalledWith(aSession, "rt-1");
+			// After restore, archived list refreshes
+			await waitFor(() => {
+				expect(mockListArchived).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		it("restore() throws error on failure and does not refresh", async () => {
+			mockRestore.mockResolvedValue({
+				ok: false,
+				error: {
+					code: "validation-error",
+					message: "A room type with this name already exists.",
+				},
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			let restoreError: unknown;
+			await act(async () => {
+				try {
+					await result.current.restore("rt-1");
+				} catch (error) {
+					restoreError = error;
+				}
+			});
+
+			expect(restoreError).toEqual({
+				code: "validation-error",
+				message: "A room type with this name already exists.",
+			});
+			// Should NOT have refreshed
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+		});
+
+		it("ignores stale restore results after session changes", async () => {
+			const restoreResult = deferred<{ ok: true; data: RoomType }>();
+			mockRestore.mockReturnValue(restoreResult.promise);
+			// Make listArchived session-aware: bSession returns active data (showArchived=false after rerender)
+			mockListArchived.mockImplementation((session: AppSession) =>
+				Promise.resolve({
+					ok: true,
+					data:
+						session.propertyId === "property-1"
+							? archivedRoomTypes
+							: allRoomTypes,
+				}),
+			);
+
+			const { result, rerender } = renderHook(
+				({ session }) => useRoomTypes(session),
+				{ initialProps: { session: aSession } },
+			);
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			const staleRestore = result.current.restore("rt-1");
+			rerender({ session: bSession });
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			await act(async () => {
+				restoreResult.resolve({
+					ok: true,
+					data: { ...archivedQueenRoomType, deleted_at: null },
+				});
+				await staleRestore;
+			});
+
+			// State should NOT be updated with stale data
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: allRoomTypes,
+			});
+		});
+	});
+
+	// ── purge() ──────────────────────────────────────────────────────────
+
+	describe("purge()", () => {
+		beforeEach(() => {
+			mockListArchived.mockResolvedValue({ ok: true, data: archivedRoomTypes });
+		});
+
+		it("purge() calls service then refreshes archived view on success", async () => {
+			mockPurge.mockResolvedValue({
+				ok: true,
+				data: archivedQueenRoomType,
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+
+			// Purge
+			await act(async () => {
+				await result.current.purge("rt-1");
+			});
+
+			expect(mockPurge).toHaveBeenCalledWith(aSession, "rt-1");
+			// After purge, archived list refreshes
+			await waitFor(() => {
+				expect(mockListArchived).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		it("purge() throws foreign-key-conflict error and does not refresh", async () => {
+			mockPurge.mockResolvedValue({
+				ok: false,
+				error: {
+					code: "foreign-key-conflict",
+					message: "This record is referenced by other data and cannot be deleted.",
+				},
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			let purgeError: unknown;
+			await act(async () => {
+				try {
+					await result.current.purge("rt-1");
+				} catch (error) {
+					purgeError = error;
+				}
+			});
+
+			expect(purgeError).toEqual({
+				code: "foreign-key-conflict",
+				message: "This record is referenced by other data and cannot be deleted.",
+			});
+			// Should NOT have refreshed
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+		});
+
+		it("purge() throws non-FK error (e.g. permission-denied) and does not refresh", async () => {
+			mockPurge.mockResolvedValue({
+				ok: false,
+				error: { code: "validation-error", message: "permission-denied" },
+			});
+
+			const { result } = renderHook(() => useRoomTypes(aSession));
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			let purgeError: unknown;
+			await act(async () => {
+				try {
+					await result.current.purge("rt-1");
+				} catch (error) {
+					purgeError = error;
+				}
+			});
+
+			expect(purgeError).toEqual({
+				code: "validation-error",
+				message: "permission-denied",
+			});
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: archivedRoomTypes,
+			});
+			expect(mockListArchived).toHaveBeenCalledTimes(1);
+		});
+
+		it("ignores stale purge results after session changes", async () => {
+			const purgeResult = deferred<{ ok: true; data: RoomType }>();
+			mockPurge.mockReturnValue(purgeResult.promise);
+			// Make listArchived session-aware: bSession returns active data
+			mockListArchived.mockImplementation((session: AppSession) =>
+				Promise.resolve({
+					ok: true,
+					data:
+						session.propertyId === "property-1"
+							? archivedRoomTypes
+							: allRoomTypes,
+				}),
+			);
+
+			const { result, rerender } = renderHook(
+				({ session }) => useRoomTypes(session),
+				{ initialProps: { session: aSession } },
+			);
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			// Toggle to archived
+			await act(async () => {
+				result.current.toggleArchived();
+			});
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: archivedRoomTypes,
+				});
+			});
+
+			const stalePurge = result.current.purge("rt-1");
+			rerender({ session: bSession });
+
+			await waitFor(() => {
+				expect(result.current.state).toEqual({
+					status: "loaded",
+					roomTypes: allRoomTypes,
+				});
+			});
+
+			await act(async () => {
+				purgeResult.resolve({
+					ok: true,
+					data: archivedQueenRoomType,
+				});
+				await stalePurge;
+			});
+
+			// State should NOT be updated with stale data
+			expect(result.current.state).toEqual({
+				status: "loaded",
+				roomTypes: allRoomTypes,
 			});
 		});
 	});
