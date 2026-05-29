@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ServiceError } from "../../shared/services/serviceResult";
-import { list as listService, create as createService, update as updateService, softDelete as softDeleteService } from "./roomTypeService";
+import { list as listService, create as createService, update as updateService, softDelete as softDeleteService, listArchived as listArchivedService, restore as restoreService, purge as purgeService } from "./roomTypeService";
 import type { AppSession } from "../auth/types";
 import type { RoomType, RoomTypeFormData } from "./types";
 
@@ -14,9 +14,13 @@ export type RoomTypesState =
 
 export type UseRoomTypesResult = {
 	readonly state: RoomTypesState;
+	readonly showArchived: boolean;
 	readonly create: (data: RoomTypeFormData) => Promise<void>;
 	readonly update: (id: string, data: RoomTypeFormData) => Promise<void>;
 	readonly remove: (id: string) => Promise<void>;
+	readonly toggleArchived: () => void;
+	readonly restore: (id: string) => Promise<void>;
+	readonly purge: (id: string) => Promise<void>;
 	readonly refresh: () => Promise<void>;
 };
 
@@ -28,6 +32,7 @@ export function useRoomTypes(
 	const [state, setState] = useState<RoomTypesState>({
 		status: "loading",
 	});
+	const [showArchived, setShowArchived] = useState(false);
 
 	const mountedRef = useRef(true);
 	const requestIdRef = useRef(0);
@@ -36,23 +41,28 @@ export function useRoomTypes(
 	/**
 	 * Core fetch function. Must only be called from a microtask or user
 	 * callback so that setState never runs synchronously inside an effect.
+	 * When called from restore/purge, pass the current session so the stale
+	 * guard uses the latest session, not the one captured in the closure.
 	 */
-	const load = useCallback(async () => {
+	const load = useCallback(async (overrideSession?: AppSession | null) => {
 		if (!mountedRef.current) {
 			return;
 		}
-		if (!session) {
+		const currentSession = overrideSession ?? session;
+		if (!currentSession) {
 			setState({ status: "loaded", roomTypes: [] });
 			return;
 		}
 		const requestId = ++requestIdRef.current;
-		const requestSession = session;
-		const result = await listService(requestSession);
+		const isArchived = showArchived;
+		const result = isArchived
+			? await listArchivedService(currentSession)
+			: await listService(currentSession);
 
 		if (
 			!mountedRef.current ||
 			requestId !== requestIdRef.current ||
-			requestSession !== latestSessionRef.current
+			currentSession !== latestSessionRef.current
 		) {
 			return;
 		}
@@ -62,7 +72,7 @@ export function useRoomTypes(
 		} else {
 			setState({ status: "error", error: result.error });
 		}
-	}, [session]);
+	}, [session, showArchived]);
 
 	// Schedule the initial load on the next microtask so the effect body
 	// never calls setState synchronously (satisfies react-hooks rules).
@@ -140,5 +150,45 @@ export function useRoomTypes(
 		await load();
 	}, [load, session]);
 
-	return { state, create, update, remove, refresh };
+	const toggleArchived = useCallback(() => {
+		setShowArchived((prev) => !prev);
+	}, []);
+
+	const restore = useCallback(
+		async (id: string) => {
+			const requestSession = session;
+			const result = await restoreService(requestSession, id);
+
+			if (!mountedRef.current || requestSession !== latestSessionRef.current) {
+				return;
+			}
+
+			if (result.ok) {
+				await load(latestSessionRef.current);
+			} else {
+				throw result.error;
+			}
+		},
+		[session, load],
+	);
+
+	const purge = useCallback(
+		async (id: string) => {
+			const requestSession = session;
+			const result = await purgeService(requestSession, id);
+
+			if (!mountedRef.current || requestSession !== latestSessionRef.current) {
+				return;
+			}
+
+			if (result.ok) {
+				await load(latestSessionRef.current);
+			} else {
+				throw result.error;
+			}
+		},
+		[session, load],
+	);
+
+	return { state, showArchived, create, update, remove, toggleArchived, restore, purge, refresh };
 }
