@@ -198,7 +198,6 @@ export const en = {
 			restoreConfirmTitle: "Restore Room",
 			restoreConfirmMessage: "This will restore the room to the active list.",
 			restoreGenericError: "Could not restore the room. Please try again.",
-			restoreDuplicateIdentifier: "Cannot restore: another active room with this identifier already exists.",
 			purge: "Delete Permanently",
 			purgeConfirmTitle: "Permanently Delete Room",
 			purgeConfirmMessage: "This action cannot be undone. The room will be permanently deleted.",
