@@ -10,11 +10,14 @@ import type { RoomType } from "../../room-types/types";
 
 // ── Hoisted mock helpers (run before imports) ───────────────────────────
 
-const { mockList, mockCreate, mockUpdate, mockSoftDelete } = vi.hoisted(() => ({
+const { mockList, mockCreate, mockUpdate, mockSoftDelete, mockListArchived, mockRestore, mockPurge } = vi.hoisted(() => ({
 	mockList: vi.fn(),
 	mockCreate: vi.fn(),
 	mockUpdate: vi.fn(),
 	mockSoftDelete: vi.fn(),
+	mockListArchived: vi.fn(),
+	mockRestore: vi.fn(),
+	mockPurge: vi.fn(),
 }));
 
 const { mockListRoomTypes } = vi.hoisted(() => ({
@@ -26,6 +29,9 @@ vi.mock("../roomService", () => ({
 	create: mockCreate,
 	update: mockUpdate,
 	softDelete: mockSoftDelete,
+	listArchived: mockListArchived,
+	restore: mockRestore,
+	purge: mockPurge,
 }));
 
 vi.mock("../../room-types/roomTypeService", () => ({
@@ -145,6 +151,9 @@ describe("useRooms", () => {
 	beforeEach(() => {
 		mockList.mockResolvedValue({ ok: true, data: allRooms });
 		mockListRoomTypes.mockResolvedValue({ ok: true, data: allRoomTypes });
+		mockListArchived.mockResolvedValue({ ok: true, data: [] });
+		mockRestore.mockResolvedValue({ ok: true, data: {} });
+		mockPurge.mockResolvedValue({ ok: true, data: {} });
 	});
 
 	afterEach(() => {
@@ -716,5 +725,50 @@ describe("useRooms", () => {
 				rooms: [room1],
 			});
 		});
+	});
+
+	// ── Archive / recycle bin ────────────────────────────────────────────
+
+	it("showArchived defaults to false", async () => {
+		const { result } = renderHook(() => useRooms(aSession));
+		await waitFor(() => expect(result.current.state.status).toBe("loaded"));
+		expect(result.current.showArchived).toBe(false);
+	});
+
+	it("toggleArchived toggles showArchived", async () => {
+		const { result } = renderHook(() => useRooms(aSession));
+		await waitFor(() => expect(result.current.state.status).toBe("loaded"));
+		expect(result.current.showArchived).toBe(false);
+		act(() => result.current.toggleArchived());
+		expect(result.current.showArchived).toBe(true);
+		act(() => result.current.toggleArchived());
+		expect(result.current.showArchived).toBe(false);
+	});
+
+	it("calls listArchivedService when showArchived is true", async () => {
+		const { result } = renderHook(() => useRooms(aSession));
+		await waitFor(() => expect(result.current.state.status).toBe("loaded"));
+		act(() => result.current.toggleArchived());
+		await waitFor(() => {
+			expect(mockListArchived).toHaveBeenCalled();
+		});
+	});
+
+	it("restore calls restoreService and refreshes", async () => {
+		const { result } = renderHook(() => useRooms(aSession));
+		await waitFor(() => expect(result.current.state.status).toBe("loaded"));
+		await act(async () => {
+			await result.current.restore("room-1");
+		});
+		expect(mockRestore).toHaveBeenCalledWith(aSession, "room-1");
+	});
+
+	it("purge calls purgeService and refreshes", async () => {
+		const { result } = renderHook(() => useRooms(aSession));
+		await waitFor(() => expect(result.current.state.status).toBe("loaded"));
+		await act(async () => {
+			await result.current.purge("room-1");
+		});
+		expect(mockPurge).toHaveBeenCalledWith(aSession, "room-1");
 	});
 });

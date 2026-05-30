@@ -150,9 +150,13 @@ function mockLoadedRooms(overrides?: { rooms?: Room[]; roomTypes?: RoomType[] })
 	mockUseRooms.mockReturnValue({
 		state: { status: "loaded", rooms: overrides?.rooms ?? allRooms },
 		roomTypes: overrides?.roomTypes ?? allRoomTypes,
+		showArchived: false,
 		create: vi.fn(),
 		update: vi.fn(),
 		remove: vi.fn(),
+		toggleArchived: vi.fn(),
+		restore: vi.fn(),
+		purge: vi.fn(),
 		refresh: vi.fn(),
 	});
 }
@@ -797,6 +801,40 @@ describe("RoomsPage", () => {
 			expect(
 				screen.queryByRole("button", { name: "Delete" }),
 			).not.toBeInTheDocument();
+		});
+	});
+
+	describe("recycle bin toggle", () => {
+		it("renders archive toggle button for manager", async () => {
+			mockAdminAuth();
+			mockLoadedRooms();
+			await renderPage();
+			expect(screen.getByRole("button", { name: /view recycle bin|ver papelera/i })).toBeInTheDocument();
+		});
+
+		it("hides archive toggle for receptionist", async () => {
+			mockReceptionistAuth();
+			mockLoadedRooms();
+			await renderPage();
+			expect(screen.queryByRole("button", { name: /recycle bin|papelera/i })).not.toBeInTheDocument();
+		});
+
+		it("toggle shows archived view", async () => {
+			mockAdminAuth();
+			mockUseRooms.mockReturnValue({
+				state: { status: "loaded", rooms: [] },
+				roomTypes: [],
+				showArchived: true,
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+				toggleArchived: vi.fn(),
+				restore: vi.fn(),
+				purge: vi.fn(),
+				refresh: vi.fn(),
+			});
+			await renderPage();
+			expect(screen.getByText(/recycle bin|papelera/i)).toBeInTheDocument();
 		});
 	});
 });

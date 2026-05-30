@@ -30,11 +30,19 @@ export function RoomsPage() {
 	const { state: authState } = useAuthSession();
 	const session =
 		authState.status === "authenticated" ? authState.session : null;
-	const { state, roomTypes, create, update, remove } = useRooms(session);
+	const { state, roomTypes, showArchived, create, update, remove, toggleArchived, restore, purge } = useRooms(session);
 	const [modalMode, setModalMode] = useState<ModalMode>({ type: "closed" });
 	const [deleteConfirm, setDeleteConfirm] = useState<Room | null>(null);
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+
+	const [restoreConfirm, setRestoreConfirm] = useState<Room | null>(null);
+	const [restoreError, setRestoreError] = useState<string | null>(null);
+	const [isRestoring, setIsRestoring] = useState(false);
+
+	const [purgeConfirm, setPurgeConfirm] = useState<Room | null>(null);
+	const [purgeError, setPurgeError] = useState<string | null>(null);
+	const [isPurging, setIsPurging] = useState(false);
 
 	// ── Filters ───────────────────────────────────────────────────────
 	const [statusFilter, setStatusFilter] = useState<RoomState | "">("");
@@ -110,6 +118,56 @@ export function RoomsPage() {
 		}
 	}
 
+	function handleRestoreClose() {
+		setRestoreConfirm(null);
+		setRestoreError(null);
+	}
+
+	async function handleRestoreConfirm() {
+		if (!restoreConfirm || isRestoring) return;
+		setRestoreError(null);
+		setIsRestoring(true);
+		try {
+			await restore(restoreConfirm.id);
+			setRestoreConfirm(null);
+		} catch (error) {
+			const err = error as { code?: string; message?: string };
+			if (err.code === "validation-error" && err.message === "permission-denied") {
+				setRestoreError(t("rooms.permissionError"));
+			} else {
+				setRestoreError(t("rooms.archive.restoreGenericError"));
+			}
+		} finally {
+			setIsRestoring(false);
+		}
+	}
+
+	function handlePurgeClose() {
+		setPurgeConfirm(null);
+		setPurgeError(null);
+	}
+
+	async function handlePurgeConfirm() {
+		if (!purgeConfirm || isPurging) return;
+		setPurgeError(null);
+		setIsPurging(true);
+		try {
+			await purge(purgeConfirm.id);
+			setPurgeConfirm(null);
+		} catch (error) {
+			const err = error as { code?: string; message?: string };
+			if (err.code === "validation-error" && err.message === "permission-denied") {
+				setPurgeError(t("rooms.permissionError"));
+			} else if (err.code === "foreign-key-conflict") {
+				setPurgeError(t("rooms.archive.purgeForeignKeyConflict"));
+			} else {
+				setPurgeError(t("rooms.archive.purgeGenericError"));
+			}
+		} finally {
+			setIsPurging(false);
+		}
+	}
+
 	// ── Loading ──────────────────────────────────────────────────────
 
 	if (state.status === "loading") {
@@ -138,7 +196,7 @@ export function RoomsPage() {
 
 	// ── Empty ────────────────────────────────────────────────────────
 
-	if (state.status === "loaded" && state.rooms.length === 0) {
+	if (state.status === "loaded" && state.rooms.length === 0 && !showArchived) {
 		return (
 			<PageSection
 				actions={
@@ -146,6 +204,11 @@ export function RoomsPage() {
 						{canEdit ? (
 							<Button onClick={() => setModalMode({ type: "create" })}>
 								{t("rooms.create.title")}
+							</Button>
+						) : null}
+						{canEdit ? (
+							<Button onClick={toggleArchived} size="sm" variant="ghost">
+								{t("rooms.archive.toggle")}
 							</Button>
 						) : null}
 					</div>
@@ -181,56 +244,23 @@ export function RoomsPage() {
 							{t("rooms.create.title")}
 						</Button>
 					) : null}
+					{canEdit ? (
+						<Button onClick={toggleArchived} size="sm" variant="ghost">
+							{showArchived ? t("rooms.archive.toggleActive") : t("rooms.archive.toggle")}
+						</Button>
+					) : null}
 				</div>
 			}
-			title={t("rooms.list.title")}
+			title={showArchived ? t("rooms.archive.title") : t("rooms.list.title")}
 		>
-			{/* ── Filter Bar ───────────────────────────────────────── */}
-			<div className="mb-6 flex flex-wrap items-center gap-3">
-				<select
-					aria-label="Status filter"
-					className={joinClasses(inputClasses, inputDefaultClasses)}
-					value={statusFilter}
-					onChange={(e) => setStatusFilter(e.target.value as RoomState | "")}
-				>
-					<option value="">{t("rooms.filters.allStatuses")}</option>
-					<option value="available">{t("rooms.states.available")}</option>
-					<option value="occupied">{t("rooms.states.occupied")}</option>
-					<option value="cleaning">{t("rooms.states.cleaning")}</option>
-					<option value="maintenance">{t("rooms.states.maintenance")}</option>
-					<option value="inactive">{t("rooms.states.inactive")}</option>
-				</select>
-
-				<select
-					aria-label="Room type filter"
-					className={joinClasses(inputClasses, inputDefaultClasses)}
-					value={roomTypeFilter}
-					onChange={(e) => setRoomTypeFilter(e.target.value)}
-				>
-					<option value="">{t("rooms.filters.allTypes")}</option>
-					{roomTypes.map((rt) => (
-						<option key={rt.id} value={rt.id}>
-							{rt.name}
-						</option>
-					))}
-				</select>
-
-				<input
-					aria-label={t("rooms.filters.searchPlaceholder")}
-					className={joinClasses(inputClasses, inputDefaultClasses)}
-					placeholder={t("rooms.filters.searchPlaceholder")}
-					type="text"
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-				/>
-			</div>
-
-			{/* ── Table ─────────────────────────────────────────────── */}
 			{filteredRooms.length === 0 ? (
 				<p className="m-0 text-[var(--color-muted)]">
-					{t("rooms.list.empty")}
+					{showArchived
+						? t("rooms.archive.empty")
+						: t("rooms.list.empty")}
 				</p>
-			) : (
+			) : showArchived ? (
+				/* ── Archived table ────────────────────────────────── */
 				<div className="overflow-x-auto">
 					<table className="w-full text-left text-sm">
 						<thead>
@@ -238,8 +268,7 @@ export function RoomsPage() {
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.identifier")}</th>
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.room_type")}</th>
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.floor")}</th>
-								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.state")}</th>
-								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.description")}</th>
+								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.deletedAt")}</th>
 								{canEdit ? <th className="pb-3 w-24" /> : null}
 								{canEdit ? <th className="pb-3 w-24" /> : null}
 							</tr>
@@ -259,37 +288,30 @@ export function RoomsPage() {
 									<td className="py-3 pr-4 text-[var(--color-heading)]">
 										{room.floor ?? "—"}
 									</td>
-									<td className="py-3 pr-4">
-										<StatusBadge
-											label={t(`rooms.states.${room.state}`)}
-											size="sm"
-											tone={ROOM_STATE_TONE_MAP[room.state] as "success" | "info" | "warning" | "danger" | "neutral"}
-										/>
-									</td>
 									<td className="py-3 pr-4 text-[var(--color-muted)]">
-										{room.description || "—"}
+										{room.deleted_at
+											? new Date(room.deleted_at).toLocaleDateString()
+											: "—"}
 									</td>
 									{canEdit ? (
 										<td className="py-3">
 											<Button
-												onClick={() =>
-													setModalMode({ type: "edit", room })
-												}
+												onClick={() => setRestoreConfirm(room)}
 												size="sm"
 												variant="ghost"
 											>
-												{t("properties.profile.editButton")}
+												{t("rooms.archive.restore")}
 											</Button>
 										</td>
 									) : null}
 									{canEdit ? (
 										<td className="py-3">
 											<Button
-												onClick={() => setDeleteConfirm(room)}
+												onClick={() => setPurgeConfirm(room)}
 												size="sm"
-												variant="ghost"
+												variant="danger"
 											>
-												{t("rooms.delete")}
+												{t("rooms.archive.purge")}
 											</Button>
 										</td>
 									) : null}
@@ -298,6 +320,118 @@ export function RoomsPage() {
 						</tbody>
 					</table>
 				</div>
+			) : (
+				/* ── Active table ────────────────────────────────── */
+				<>
+					{/* ── Filter Bar ───────────────────────────────────────── */}
+					<div className="mb-6 flex flex-wrap items-center gap-3">
+						<select
+							aria-label="Status filter"
+							className={joinClasses(inputClasses, inputDefaultClasses)}
+							value={statusFilter}
+							onChange={(e) => setStatusFilter(e.target.value as RoomState | "")}
+						>
+							<option value="">{t("rooms.filters.allStatuses")}</option>
+							<option value="available">{t("rooms.states.available")}</option>
+							<option value="occupied">{t("rooms.states.occupied")}</option>
+							<option value="cleaning">{t("rooms.states.cleaning")}</option>
+							<option value="maintenance">{t("rooms.states.maintenance")}</option>
+							<option value="inactive">{t("rooms.states.inactive")}</option>
+						</select>
+
+						<select
+							aria-label="Room type filter"
+							className={joinClasses(inputClasses, inputDefaultClasses)}
+							value={roomTypeFilter}
+							onChange={(e) => setRoomTypeFilter(e.target.value)}
+						>
+							<option value="">{t("rooms.filters.allTypes")}</option>
+							{roomTypes.map((rt) => (
+								<option key={rt.id} value={rt.id}>
+									{rt.name}
+								</option>
+							))}
+						</select>
+
+						<input
+							aria-label={t("rooms.filters.searchPlaceholder")}
+							className={joinClasses(inputClasses, inputDefaultClasses)}
+							placeholder={t("rooms.filters.searchPlaceholder")}
+							type="text"
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
+					</div>
+
+					{/* ── Table ─────────────────────────────────────────────── */}
+					<div className="overflow-x-auto">
+						<table className="w-full text-left text-sm">
+							<thead>
+								<tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
+									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.identifier")}</th>
+									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.room_type")}</th>
+									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.floor")}</th>
+									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.state")}</th>
+									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.description")}</th>
+									{canEdit ? <th className="pb-3 w-24" /> : null}
+									{canEdit ? <th className="pb-3 w-24" /> : null}
+								</tr>
+							</thead>
+							<tbody>
+								{filteredRooms.map((room) => (
+									<tr
+										key={room.id}
+										className="border-b border-[var(--color-border)] last:border-b-0"
+									>
+										<td className="py-3 pr-4 text-[var(--color-heading)]">
+											{room.identifier}
+										</td>
+										<td className="py-3 pr-4 text-[var(--color-heading)]">
+											{roomTypeMap.get(room.room_type_id) ?? "—"}
+										</td>
+										<td className="py-3 pr-4 text-[var(--color-heading)]">
+											{room.floor ?? "—"}
+										</td>
+										<td className="py-3 pr-4">
+											<StatusBadge
+												label={t(`rooms.states.${room.state}`)}
+												size="sm"
+												tone={ROOM_STATE_TONE_MAP[room.state] as "success" | "info" | "warning" | "danger" | "neutral"}
+											/>
+										</td>
+										<td className="py-3 pr-4 text-[var(--color-muted)]">
+											{room.description || "—"}
+										</td>
+										{canEdit ? (
+											<td className="py-3">
+												<Button
+													onClick={() =>
+														setModalMode({ type: "edit", room })
+													}
+													size="sm"
+													variant="ghost"
+												>
+													{t("properties.profile.editButton")}
+												</Button>
+											</td>
+										) : null}
+										{canEdit ? (
+											<td className="py-3">
+												<Button
+													onClick={() => setDeleteConfirm(room)}
+													size="sm"
+													variant="ghost"
+												>
+													{t("rooms.delete")}
+												</Button>
+											</td>
+										) : null}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</>
 			)}
 
 			{/* Modal for create or edit */}
@@ -332,6 +466,34 @@ export function RoomsPage() {
 				onCancel={handleDeleteClose}
 				onConfirm={handleDeleteConfirm}
 				title={t("rooms.deleteConfirmTitle")}
+			/>
+
+			{/* Restore confirmation dialog */}
+			<ConfirmDialog
+				cancelLabel={t("rooms.deleteConfirmCancel")}
+				confirmLabel={t("rooms.archive.restore")}
+				error={restoreError}
+				isOpen={restoreConfirm !== null}
+				isProcessing={isRestoring}
+				message={t("rooms.archive.restoreConfirmMessage")}
+				onCancel={handleRestoreClose}
+				onConfirm={handleRestoreConfirm}
+				title={t("rooms.archive.restoreConfirmTitle")}
+				variant="primary"
+			/>
+
+			{/* Purge confirmation dialog */}
+			<ConfirmDialog
+				cancelLabel={t("rooms.deleteConfirmCancel")}
+				confirmLabel={t("rooms.archive.purge")}
+				error={purgeError}
+				isOpen={purgeConfirm !== null}
+				isProcessing={isPurging}
+				message={t("rooms.archive.purgeConfirmMessage")}
+				onCancel={handlePurgeClose}
+				onConfirm={handlePurgeConfirm}
+				title={t("rooms.archive.purgeConfirmTitle")}
+				variant="danger"
 			/>
 		</PageSection>
 	);

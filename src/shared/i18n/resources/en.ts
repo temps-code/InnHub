@@ -189,6 +189,22 @@ export const en = {
 		deleteGenericError: "Could not delete the room. Please try again.",
 		reservationConflict: "Cannot delete room with active reservations.",
 		permissionError: "You don't have permission to perform this action.",
+		archive: {
+			title: "Recycle Bin",
+			toggle: "View Recycle Bin",
+			toggleActive: "View Active Rooms",
+			empty: "No archived rooms.",
+			restore: "Restore",
+			restoreConfirmTitle: "Restore Room",
+			restoreConfirmMessage: "This will restore the room to the active list.",
+			restoreGenericError: "Could not restore the room. Please try again.",
+			purge: "Delete Permanently",
+			purgeConfirmTitle: "Permanently Delete Room",
+			purgeConfirmMessage: "This action cannot be undone. The room will be permanently deleted.",
+			purgeForeignKeyConflict: "This room cannot be deleted because it is referenced by reservation records.",
+			purgeGenericError: "Could not delete the room. Please try again.",
+		},
+		deletedAt: "Deleted At",
 	},
 	properties: {
 		profile: {

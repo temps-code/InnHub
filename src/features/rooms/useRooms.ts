@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ServiceError } from "../../shared/services/serviceResult";
-import { list as listService, create as createService, update as updateService, softDelete as softDeleteService } from "./roomService";
+import { list as listService, create as createService, update as updateService, softDelete as softDeleteService, listArchived as listArchivedService, restore as restoreService, purge as purgeService } from "./roomService";
 import { list as listRoomTypesService } from "../room-types/roomTypeService";
 import type { AppSession } from "../auth/types";
 import type { Room, RoomFormData } from "./types";
@@ -17,9 +17,13 @@ export type RoomsState =
 export type UseRoomsResult = {
 	readonly state: RoomsState;
 	readonly roomTypes: RoomType[];
+	readonly showArchived: boolean;
 	readonly create: (data: RoomFormData) => Promise<void>;
 	readonly update: (id: string, data: RoomFormData) => Promise<void>;
 	readonly remove: (id: string) => Promise<void>;
+	readonly toggleArchived: () => void;
+	readonly restore: (id: string) => Promise<void>;
+	readonly purge: (id: string) => Promise<void>;
 	readonly refresh: () => Promise<void>;
 };
 
@@ -32,6 +36,7 @@ export function useRooms(
 		status: "loading",
 	});
 	const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
+	const [showArchived, setShowArchived] = useState(false);
 
 	const mountedRef = useRef(true);
 	const requestIdRef = useRef(0);
@@ -52,8 +57,9 @@ export function useRooms(
 			return;
 		}
 		const requestId = ++requestIdRef.current;
+		const isArchived = showArchived;
 		const [roomsResult, roomTypesResult] = await Promise.all([
-			listService(currentSession),
+			isArchived ? listArchivedService(currentSession) : listService(currentSession),
 			listRoomTypesService(currentSession),
 		]);
 
@@ -74,45 +80,14 @@ export function useRooms(
 		if (roomTypesResult.ok) {
 			setRoomTypes(roomTypesResult.data);
 		}
-	}, [session]);
+	}, [session, showArchived]);
 
 	// Schedule the initial load on the next microtask so the effect body
 	// never calls setState synchronously (satisfies react-hooks rules).
 	useEffect(() => {
 		latestSessionRef.current = session;
 		mountedRef.current = true;
-		Promise.resolve().then(async () => {
-			if (!mountedRef.current) return;
-			const currentSession = session;
-			if (!currentSession) {
-				setState({ status: "loaded", rooms: [] });
-				setRoomTypes([]);
-				return;
-			}
-			const requestId = ++requestIdRef.current;
-			const [roomsResult, roomTypesResult] = await Promise.all([
-				listService(currentSession),
-				listRoomTypesService(currentSession),
-			]);
-
-			if (
-				!mountedRef.current ||
-				requestId !== requestIdRef.current ||
-				currentSession !== latestSessionRef.current
-			) {
-				return;
-			}
-
-			if (roomsResult.ok) {
-				setState({ status: "loaded", rooms: roomsResult.data });
-			} else {
-				setState({ status: "error", error: roomsResult.error });
-			}
-
-			if (roomTypesResult.ok) {
-				setRoomTypes(roomTypesResult.data);
-			}
-		});
+		Promise.resolve().then(() => load());
 
 		return () => {
 			mountedRef.current = false;
@@ -183,5 +158,45 @@ export function useRooms(
 		await load();
 	}, [load, session]);
 
-	return { state, roomTypes, create, update, remove, refresh };
+	const toggleArchived = useCallback(() => {
+		setShowArchived((prev) => !prev);
+	}, []);
+
+	const restore = useCallback(
+		async (id: string) => {
+			const requestSession = session;
+			const result = await restoreService(requestSession, id);
+
+			if (!mountedRef.current || requestSession !== latestSessionRef.current) {
+				return;
+			}
+
+			if (result.ok) {
+				await load(latestSessionRef.current);
+			} else {
+				throw result.error;
+			}
+		},
+		[session, load],
+	);
+
+	const purge = useCallback(
+		async (id: string) => {
+			const requestSession = session;
+			const result = await purgeService(requestSession, id);
+
+			if (!mountedRef.current || requestSession !== latestSessionRef.current) {
+				return;
+			}
+
+			if (result.ok) {
+				await load(latestSessionRef.current);
+			} else {
+				throw result.error;
+			}
+		},
+		[session, load],
+	);
+
+	return { state, roomTypes, showArchived, create, update, remove, toggleArchived, restore, purge, refresh };
 }

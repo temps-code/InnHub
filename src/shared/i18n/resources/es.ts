@@ -191,6 +191,22 @@ export const es = {
 		deleteGenericError: "No se pudo eliminar la habitación. Intentá de nuevo.",
 		reservationConflict: "No se puede eliminar la habitación con reservaciones activas.",
 		permissionError: "No tenés permiso para realizar esta acción.",
+		archive: {
+			title: "Papelera",
+			toggle: "Ver Papelera",
+			toggleActive: "Ver Activos",
+			empty: "No hay habitaciones archivadas.",
+			restore: "Restaurar",
+			restoreConfirmTitle: "Restaurar Habitación",
+			restoreConfirmMessage: "Esto restaurará la habitación a la lista activa.",
+			restoreGenericError: "No se pudo restaurar la habitación. Intente de nuevo.",
+			purge: "Eliminar Permanentemente",
+			purgeConfirmTitle: "Eliminar Habitación Permanentemente",
+			purgeConfirmMessage: "Esta acción no se puede deshacer. La habitación será eliminada permanentemente.",
+			purgeForeignKeyConflict: "Esta habitación no puede eliminarse porque tiene registros de reservas asociados.",
+			purgeGenericError: "No se pudo eliminar la habitación. Intente de nuevo.",
+		},
+		deletedAt: "Eliminada",
 	},
 	properties: {
 		profile: {
