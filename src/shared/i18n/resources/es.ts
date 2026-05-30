@@ -200,7 +200,6 @@ export const es = {
 			restoreConfirmTitle: "Restaurar Habitación",
 			restoreConfirmMessage: "Esto restaurará la habitación a la lista activa.",
 			restoreGenericError: "No se pudo restaurar la habitación. Intente de nuevo.",
-			restoreDuplicateIdentifier: "No se puede restaurar: ya existe otra habitación activa con este identificador.",
 			purge: "Eliminar Permanentemente",
 			purgeConfirmTitle: "Eliminar Habitación Permanentemente",
 			purgeConfirmMessage: "Esta acción no se puede deshacer. La habitación será eliminada permanentemente.",

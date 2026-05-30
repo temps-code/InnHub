@@ -135,8 +135,6 @@ export function RoomsPage() {
 			const err = error as { code?: string; message?: string };
 			if (err.code === "validation-error" && err.message === "permission-denied") {
 				setRestoreError(t("rooms.permissionError"));
-			} else if (err.code === "validation-error" && err.message?.includes("already exists")) {
-				setRestoreError(t("rooms.archive.restoreDuplicateIdentifier"));
 			} else {
 				setRestoreError(t("rooms.archive.restoreGenericError"));
 			}
