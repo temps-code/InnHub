@@ -52,7 +52,10 @@ export function useRooms(
 			return;
 		}
 		const requestId = ++requestIdRef.current;
-		const result = await listService(currentSession);
+		const [roomsResult, roomTypesResult] = await Promise.all([
+			listService(currentSession),
+			listRoomTypesService(currentSession),
+		]);
 
 		if (
 			!mountedRef.current ||
@@ -62,10 +65,14 @@ export function useRooms(
 			return;
 		}
 
-		if (result.ok) {
-			setState({ status: "loaded", rooms: result.data });
+		if (roomsResult.ok) {
+			setState({ status: "loaded", rooms: roomsResult.data });
 		} else {
-			setState({ status: "error", error: result.error });
+			setState({ status: "error", error: roomsResult.error });
+		}
+
+		if (roomTypesResult.ok) {
+			setRoomTypes(roomTypesResult.data);
 		}
 	}, [session]);
 

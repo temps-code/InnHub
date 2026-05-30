@@ -18,7 +18,7 @@ export type Room = {
 export const roomFormSchema = z.object({
 	identifier: z.string().trim().min(1, "Identifier is required"),
 	room_type_id: z.string().trim().min(1, "Room type is required"),
-	floor: z.string().optional(),
+	floor: z.string().transform((val) => (val === "" ? null : val)).nullable().optional(),
 	state: z.enum(["available", "occupied", "cleaning", "maintenance", "inactive"]).default("available"),
 	description: z.string().transform((val) => (val === "" ? null : val)).nullable().optional(),
 });

@@ -23,6 +23,7 @@ export interface RoomServiceDepsQuery {
 	readonly eq: (column: string, value: string) => this;
 	readonly is: (column: string, value: string | null) => this;
 	readonly neq: (column: string, value: unknown) => this;
+	readonly in: (column: string, values: string[]) => this;
 	readonly select: () => this;
 	readonly then: <TResult>(
 		onfulfilled?: (value: {
@@ -116,7 +117,7 @@ export async function create(
 
 	return withServiceContext(session, async (serviceCtx) => {
 		const ctx = { ...serviceCtx, profile: session?.profile };
-		if (!ctx.profile || !canAccess("receptionist", ctx.profile.role)) {
+		if (!ctx.profile || !canAccess("manager", ctx.profile.role)) {
 			return serviceFailure("validation-error", "permission-denied");
 		}
 
@@ -146,7 +147,7 @@ export async function update(
 
 	return withServiceContext(session, async (serviceCtx) => {
 		const ctx = { ...serviceCtx, profile: session?.profile };
-		if (!ctx.profile || !canAccess("receptionist", ctx.profile.role)) {
+		if (!ctx.profile || !canAccess("manager", ctx.profile.role)) {
 			return serviceFailure("validation-error", "permission-denied");
 		}
 
@@ -217,35 +218,41 @@ export async function softDelete(
 				? reservationItemsResult.data
 				: [reservationItemsResult.data];
 
-			// Check each linked reservation for active status
-			for (const item of items) {
-				const reservationQuery = scopeOperationalQuery(
-					from("reservations").select("id, status, planned_check_out_date"),
-					ctx.propertyScope,
-				).eq("id", item.reservation_id).is("deleted_at", null);
+			// Batch-query all linked reservations to avoid N+1
+			const reservationIds = [...new Set(items.map((item) => item.reservation_id))];
 
-				const reservationResult = await executeServiceQuery<
-					{ id: string; status: string; planned_check_out_date: string } | { id: string; status: string; planned_check_out_date: string }[]
-				>(reservationQuery as never);
+			const reservationQuery = scopeOperationalQuery(
+				from("reservations").select("id, status, planned_check_out_date"),
+				ctx.propertyScope,
+			).is("deleted_at", null);
 
-				if (reservationResult.ok && !isResultEmpty(reservationResult.data)) {
-					const reservations = Array.isArray(reservationResult.data)
-						? reservationResult.data
-						: [reservationResult.data];
+			// Apply .in filter via the query interface
+			const inQuery = (reservationQuery as RoomServiceDepsQuery).in("id", reservationIds);
+			const reservationResult = await executeServiceQuery<
+				{ id: string; status: string; planned_check_out_date: string } | { id: string; status: string; planned_check_out_date: string }[]
+			>(inQuery as never);
 
-					const today = new Date().toISOString().split("T")[0];
-					const hasActive = reservations.some(
-						(r) =>
-							(r.status === "confirmed" || r.status === "checked_in") &&
-							r.planned_check_out_date >= today,
+			if (!reservationResult.ok) {
+				return serviceFailure("backend-error");
+			}
+
+			if (!isResultEmpty(reservationResult.data)) {
+				const reservations = Array.isArray(reservationResult.data)
+					? reservationResult.data
+					: [reservationResult.data];
+
+				const today = new Date().toISOString().split("T")[0];
+				const hasActive = reservations.some(
+					(r) =>
+						(r.status === "confirmed" || r.status === "checked_in") &&
+						r.planned_check_out_date >= today,
+				);
+
+				if (hasActive) {
+					return serviceFailure(
+						"validation-error",
+						"Cannot delete room with active reservations",
 					);
-
-					if (hasActive) {
-						return serviceFailure(
-							"validation-error",
-							"Cannot delete room with active reservations",
-						);
-					}
 				}
 			}
 		}

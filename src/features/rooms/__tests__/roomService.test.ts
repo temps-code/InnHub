@@ -75,6 +75,7 @@ class FakeRoomQuery<T> implements PromiseLike<QueryResult<T>> {
 	readonly eqCalls: Array<{ column: string; value: string }> = [];
 	readonly isCalls: Array<{ column: string; value: string | null }> = [];
 	readonly neqCalls: Array<{ column: string; value: unknown }> = [];
+	readonly inCalls: Array<{ column: string; values: string[] }> = [];
 	readonly result: QueryResult<T>;
 
 	constructor(result: QueryResult<T>) {
@@ -93,6 +94,11 @@ class FakeRoomQuery<T> implements PromiseLike<QueryResult<T>> {
 
 	neq(column: string, value: unknown): this {
 		this.neqCalls.push({ column, value });
+		return this;
+	}
+
+	in(column: string, values: string[]): this {
+		this.inCalls.push({ column, values });
 		return this;
 	}
 
