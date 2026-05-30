@@ -47,15 +47,15 @@ Cada ruta protegida en `ProtectedRouteMeta` referencia un componente de ícono d
 
 ## Configuración de autenticación demo
 
-La pantalla de login puede exponer una cuenta demo opcional para validar el MVP cuando `VITE_DEMO_LOGIN_EMAIL` y `VITE_DEMO_LOGIN_PASSWORD` están configuradas. Como las variables frontend de Vite se incluyen en el navegador, estos valores son credenciales públicas solo para demo, no secretos. Nunca commitear credenciales de producción, cuentas personales, API keys, JWTs ni tokens privados.
+La pantalla de login incluye un selector de cuentas demo con 5 roles pre-configurados (administrator, manager, receptionist, housekeeping, maintenance). Las credenciales demo están hardcodeadas en `src/features/auth/services/demoCredentials.ts` y no requieren variables de entorno.
 
 El login demo sigue usando el flujo normal de autenticación de InsForge. Para que funcione, el entorno backend debe contener previamente:
 
-- un usuario de InsForge Auth para las credenciales demo;
-- una fila activa en `profiles` cuyo `auth_user_id` coincida con ese usuario Auth;
-- un `property_id` válido en ese perfil que referencie una propiedad existente.
+- usuarios de InsForge Auth para cada rol demo;
+- filas activas en `profiles` cuyo `auth_user_id` coincida con esos usuarios Auth;
+- valores de `property_id` válidos en esos perfiles que referencien una propiedad existente.
 
-El código del repositorio no provisiona el usuario Auth externo ni crea seed data de producción como parte del login demo.
+El código del repositorio no provisiona los usuarios Auth externos ni crea seed data de producción como parte del login demo.
 
 ## Estrategia de storage
 

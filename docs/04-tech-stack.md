@@ -47,15 +47,15 @@ Each protected route in `ProtectedRouteMeta` references a Lucide icon component.
 
 ## Demo Authentication Setup
 
-The login screen may expose an optional demo account for MVP validation when `VITE_DEMO_LOGIN_EMAIL` and `VITE_DEMO_LOGIN_PASSWORD` are configured. Because Vite frontend variables are bundled into the browser, these values are public demo-only credentials, not secrets. Never commit production credentials, personal accounts, API keys, JWTs, or private tokens.
+The login screen includes a demo account selector with 5 pre-configured roles (administrator, manager, receptionist, housekeeping, maintenance). Demo credentials are hardcoded in `src/features/auth/services/demoCredentials.ts` and do not require environment variables.
 
-Demo login still uses the normal InsForge authentication flow. Before it works, the backend environment must already contain:
+Demo login uses the normal InsForge authentication flow. Before it works, the backend environment must already contain:
 
-- an InsForge Auth user for the demo credentials;
-- an active `profiles` row whose `auth_user_id` matches that Auth user;
-- a valid `property_id` on that profile that references an existing property.
+- InsForge Auth users for each demo role;
+- active `profiles` rows whose `auth_user_id` matches those Auth users;
+- valid `property_id` values on those profiles that reference an existing property.
 
-Repository code does not provision the external Auth user or create production seed data as part of demo login.
+Repository code does not provision the external Auth users or create production seed data as part of demo login.
 
 ## Storage Strategy
 
