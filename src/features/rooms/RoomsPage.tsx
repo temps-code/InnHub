@@ -50,7 +50,8 @@ export function RoomsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const userRole = session?.profile.role ?? "any";
-	const canEdit = canAccess("manager", userRole);
+	const canCreate = canAccess("manager", userRole);
+	const canEdit = canAccess("receptionist", userRole);
 
 	// ── Filtered rooms ────────────────────────────────────────────────
 	const filteredRooms = useMemo(() => {
@@ -201,12 +202,12 @@ export function RoomsPage() {
 			<PageSection
 				actions={
 					<div className="flex items-center gap-2">
-						{canEdit ? (
+						{canCreate ? (
 							<Button onClick={() => setModalMode({ type: "create" })}>
 								{t("rooms.create.title")}
 							</Button>
 						) : null}
-						{canEdit ? (
+						{canCreate ? (
 							<Button onClick={toggleArchived} size="sm" variant="ghost">
 								{t("rooms.archive.toggle")}
 							</Button>
@@ -239,12 +240,12 @@ export function RoomsPage() {
 		<PageSection
 			actions={
 				<div className="flex items-center gap-2">
-					{canEdit ? (
+					{canCreate ? (
 						<Button onClick={() => setModalMode({ type: "create" })}>
 							{t("rooms.create.title")}
 						</Button>
 					) : null}
-					{canEdit ? (
+					{canCreate ? (
 						<Button onClick={toggleArchived} size="sm" variant="ghost">
 							{showArchived ? t("rooms.archive.toggleActive") : t("rooms.archive.toggle")}
 						</Button>
@@ -269,8 +270,8 @@ export function RoomsPage() {
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.room_type")}</th>
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.floor")}</th>
 								<th className="pb-3 pr-4 font-medium">{t("rooms.fields.deletedAt")}</th>
-								{canEdit ? <th className="pb-3 w-24" /> : null}
-								{canEdit ? <th className="pb-3 w-24" /> : null}
+								{canCreate ? <th className="pb-3 w-24" /> : null}
+								{canCreate ? <th className="pb-3 w-24" /> : null}
 							</tr>
 						</thead>
 						<tbody>
@@ -293,7 +294,7 @@ export function RoomsPage() {
 											? new Date(room.deleted_at).toLocaleDateString()
 											: "—"}
 									</td>
-									{canEdit ? (
+									{canCreate ? (
 										<td className="py-3">
 											<Button
 												onClick={() => setRestoreConfirm(room)}
@@ -304,7 +305,7 @@ export function RoomsPage() {
 											</Button>
 										</td>
 									) : null}
-									{canEdit ? (
+									{canCreate ? (
 										<td className="py-3">
 											<Button
 												onClick={() => setPurgeConfirm(room)}
@@ -373,8 +374,8 @@ export function RoomsPage() {
 									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.floor")}</th>
 									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.state")}</th>
 									<th className="pb-3 pr-4 font-medium">{t("rooms.fields.description")}</th>
-									{canEdit ? <th className="pb-3 w-24" /> : null}
-									{canEdit ? <th className="pb-3 w-24" /> : null}
+								{canEdit ? <th className="pb-3 w-24" /> : null}
+								{canCreate ? <th className="pb-3 w-24" /> : null}
 								</tr>
 							</thead>
 							<tbody>
@@ -415,17 +416,17 @@ export function RoomsPage() {
 												</Button>
 											</td>
 										) : null}
-										{canEdit ? (
-											<td className="py-3">
-												<Button
-													onClick={() => setDeleteConfirm(room)}
-													size="sm"
-													variant="ghost"
-												>
-													{t("rooms.delete")}
-												</Button>
-											</td>
-										) : null}
+									{canCreate ? (
+										<td className="py-3">
+											<Button
+												onClick={() => setDeleteConfirm(room)}
+												size="sm"
+												variant="ghost"
+											>
+												{t("rooms.delete")}
+											</Button>
+										</td>
+									) : null}
 									</tr>
 								))}
 							</tbody>

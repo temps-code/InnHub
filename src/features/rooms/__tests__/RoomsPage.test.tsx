@@ -472,15 +472,14 @@ describe("RoomsPage", () => {
 			expect(editButtons).toHaveLength(3);
 		});
 
-		it("hides edit buttons for receptionist", async () => {
+		it("shows edit buttons for receptionist", async () => {
 			mockReceptionistAuth();
 			mockLoadedRooms();
 
 			await renderPage();
 
-			expect(
-				screen.queryByRole("button", { name: "Edit" }),
-			).not.toBeInTheDocument();
+			const editButtons = screen.getAllByRole("button", { name: "Edit" });
+			expect(editButtons).toHaveLength(3);
 		});
 
 		it("shows delete buttons on each row for administrator", async () => {

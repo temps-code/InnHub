@@ -174,7 +174,7 @@ describe("list", () => {
 	it("returns property-scope-error when session is null", async () => {
 		const { list } = await import("../roomService");
 
-		const result = await list(null, undefined, {
+		const result = await list(null, {
 			from: fakeFrom({ data: null, error: null }),
 		});
 
@@ -190,7 +190,7 @@ describe("list", () => {
 	it("returns list of rooms for a valid session", async () => {
 		const { list } = await import("../roomService");
 
-		const result = await list(aSession, undefined, {
+		const result = await list(aSession, {
 			from: fakeFrom({ data: [aRoom], error: null }),
 		});
 
@@ -200,7 +200,7 @@ describe("list", () => {
 	it("returns empty array when no rooms exist", async () => {
 		const { list } = await import("../roomService");
 
-		const result = await list(aSession, undefined, {
+		const result = await list(aSession, {
 			from: fakeFrom({ data: [], error: null }),
 		});
 
@@ -210,7 +210,7 @@ describe("list", () => {
 	it("returns a safe backend-error on query failure", async () => {
 		const { list } = await import("../roomService");
 
-		const result = await list(aSession, undefined, {
+		const result = await list(aSession, {
 			from: fakeFrom({
 				data: null,
 				error: { message: "connection refused" },
@@ -230,7 +230,7 @@ describe("list", () => {
 		const { list } = await import("../roomService");
 		let capturedQuery: FakeRoomQuery<unknown> | undefined;
 
-		const result = await list(aSession, undefined, {
+		const result = await list(aSession, {
 			from: (_table: string) => ({
 				select: (_columns: string) => {
 					capturedQuery = new FakeRoomQuery({ data: [aRoom], error: null });
@@ -250,70 +250,7 @@ describe("list", () => {
 		expect(capturedQuery!.isCalls).toEqual([{ column: "deleted_at", value: null }]);
 	});
 
-	it("filters by status (state) client-side", async () => {
-		const { list } = await import("../roomService");
 
-		const room2: Room = { ...aRoom, id: "room-2", identifier: "102", state: "occupied" };
-		const allRooms = [aRoom, room2];
-
-		const result = await list(aSession, { status: "occupied" }, {
-			from: fakeFrom({ data: allRooms, error: null }),
-		});
-
-		expect(result).toEqual({ ok: true, data: [room2] });
-	});
-
-	it("filters by room_type_id client-side", async () => {
-		const { list } = await import("../roomService");
-
-		const room2: Room = { ...aRoom, id: "room-2", identifier: "102", room_type_id: "rt-2" };
-		const allRooms = [aRoom, room2];
-
-		const result = await list(aSession, { room_type_id: "rt-2" }, {
-			from: fakeFrom({ data: allRooms, error: null }),
-		});
-
-		expect(result).toEqual({ ok: true, data: [room2] });
-	});
-
-	it("filters by search term matching identifier", async () => {
-		const { list } = await import("../roomService");
-
-		const room2: Room = { ...aRoom, id: "room-2", identifier: "202", description: null };
-		const allRooms = [aRoom, room2];
-
-		const result = await list(aSession, { search: "101" }, {
-			from: fakeFrom({ data: allRooms, error: null }),
-		});
-
-		expect(result).toEqual({ ok: true, data: [aRoom] });
-	});
-
-	it("filters by search term matching description", async () => {
-		const { list } = await import("../roomService");
-
-		const room2: Room = { ...aRoom, id: "room-2", identifier: "202", description: "A big suite" };
-		const allRooms = [aRoom, room2];
-
-		const result = await list(aSession, { search: "suite" }, {
-			from: fakeFrom({ data: allRooms, error: null }),
-		});
-
-		expect(result).toEqual({ ok: true, data: [room2] });
-	});
-
-	it("search is case-insensitive", async () => {
-		const { list } = await import("../roomService");
-
-		const room2: Room = { ...aRoom, id: "room-2", identifier: "202", description: "Deluxe Suite" };
-		const allRooms = [aRoom, room2];
-
-		const result = await list(aSession, { search: "DELUXE" }, {
-			from: fakeFrom({ data: allRooms, error: null }),
-		});
-
-		expect(result).toEqual({ ok: true, data: [room2] });
-	});
 });
 
 // ── getById ───────────────────────────────────────────────────────────────
@@ -578,6 +515,46 @@ describe("update", () => {
 				message: "The requested record was not found.",
 			},
 		});
+	});
+
+	it("returns permission-denied for low-privileged role", async () => {
+		const { update } = await import("../roomService");
+		const lowPrivSession: AppSession = {
+			...aSession,
+			profile: {
+				...aSession.profile,
+				role: "housekeeping",
+			},
+		};
+
+		const result = await update(lowPrivSession, "room-1", roomFormData, {
+			from: fakeFrom({ data: updatedRoom, error: null }),
+		});
+
+		expect(result).toEqual({
+			ok: false,
+			error: {
+				code: "validation-error",
+				message: "permission-denied",
+			},
+		});
+	});
+
+	it("allows receptionist role to update rooms", async () => {
+		const { update } = await import("../roomService");
+		const receptionistSession: AppSession = {
+			...aSession,
+			profile: {
+				...aSession.profile,
+				role: "receptionist",
+			},
+		};
+
+		const result = await update(receptionistSession, "room-1", roomFormData, {
+			from: fakeFrom({ data: updatedRoom, error: null }),
+		});
+
+		expect(result).toEqual({ ok: true, data: updatedRoom });
 	});
 });
 

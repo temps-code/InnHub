@@ -6,7 +6,7 @@ import { createInsForgeClient } from "../../shared/services/insforgeClient";
 import { serviceFailure, serviceSuccess } from "../../shared/services/serviceResult";
 import type { ServiceResult } from "../../shared/services/serviceResult";
 import type { AppSession } from "../auth/types";
-import type { Room, RoomFormData, RoomFilters } from "./types";
+import type { Room, RoomFormData } from "./types";
 
 // ── Minimal query interface for dependency injection ───────────────────
 
@@ -49,7 +49,6 @@ export interface RoomServiceDepsDeleteQuery {
 
 export async function list(
 	session: AppSession | null,
-	filters?: RoomFilters,
 	deps?: RoomServiceDeps,
 ): Promise<ServiceResult<Room[]>> {
 	const from = resolveFrom(deps);
@@ -59,32 +58,7 @@ export async function list(
 			from("rooms").select("*"),
 			ctx.propertyScope,
 		).is("deleted_at", null);
-		const result = await executeServiceQuery<Room[]>(query as never);
-
-		if (!result.ok) {
-			return result;
-		}
-
-		let rooms = result.data;
-
-		if (filters?.status) {
-			rooms = rooms.filter((r) => r.state === filters.status);
-		}
-
-		if (filters?.room_type_id) {
-			rooms = rooms.filter((r) => r.room_type_id === filters.room_type_id);
-		}
-
-		if (filters?.search) {
-			const term = filters.search.toLowerCase();
-			rooms = rooms.filter(
-				(r) =>
-					r.identifier.toLowerCase().includes(term) ||
-					(r.description?.toLowerCase().includes(term) ?? false),
-			);
-		}
-
-		return serviceSuccess(rooms);
+		return executeServiceQuery<Room[]>(query as never);
 	});
 }
 
@@ -147,7 +121,7 @@ export async function update(
 
 	return withServiceContext(session, async (serviceCtx) => {
 		const ctx = { ...serviceCtx, profile: session?.profile };
-		if (!ctx.profile || !canAccess("manager", ctx.profile.role)) {
+		if (!ctx.profile || !canAccess("receptionist", ctx.profile.role)) {
 			return serviceFailure("validation-error", "permission-denied");
 		}
 
