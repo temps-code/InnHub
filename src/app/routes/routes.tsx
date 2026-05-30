@@ -7,6 +7,7 @@ import { NotFoundPage } from "../pages/NotFoundPage";
 import { PublicHomePage } from "../pages/PublicHomePage";
 import { PropertyProfilePage } from "../../features/properties/PropertyProfilePage";
 import { RoomTypesPage } from "../../features/room-types/RoomTypesPage";
+import { RoomsPage } from "../../features/rooms/RoomsPage";
 import { UserProfilePage } from "../../features/profile/UserProfilePage";
 import { APP_BASE_PATH, protectedRoutes, settingsRoutes } from "./routeMetadata";
 import { SettingsLayout } from "./SettingsLayout";
@@ -27,6 +28,8 @@ export const appRoutes: RouteObject[] = [
 						<PropertyProfilePage titleKey={route.titleKey} />
 					) : route.id === "roomTypes" ? (
 						<RoomTypesPage />
+					) : route.id === "rooms" ? (
+						<RoomsPage />
 					) : (
 						<ModulePlaceholderPage route={route} />
 					),
