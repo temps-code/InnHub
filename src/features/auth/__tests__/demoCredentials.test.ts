@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
 	getAllDemoAccounts,
+	getAllDemoProperties,
 	getDemoAccount,
+	getDemoAccountForProperty,
+	getDemoAccountsForProperty,
 	resolveDemoCredentials,
 } from "../services/demoCredentials";
 import type { AppProfileRole } from "../types";
@@ -46,53 +49,77 @@ describe("resolveDemoCredentials", () => {
 	});
 });
 
-describe("getDemoAccount", () => {
-	const ALL_ROLES: AppProfileRole[] = [
-		"administrator",
-		"manager",
-		"receptionist",
-		"housekeeping",
-		"maintenance",
-	];
+const ALL_ROLES: AppProfileRole[] = [
+	"administrator",
+	"manager",
+	"receptionist",
+	"housekeeping",
+	"maintenance",
+];
 
-	it.each(ALL_ROLES)(
-		"returns LoginCredentials for %s role",
-		(role) => {
-			const result = getDemoAccount(role);
-			expect(result).toBeDefined();
-			expect(result!.email).toContain("@innhub.dev");
-			expect(typeof result!.password).toBe("string");
-			expect(result!.password.length).toBeGreaterThan(0);
-		},
-	);
+describe("getAllDemoProperties", () => {
+	it("returns the two seeded demo properties", () => {
+		expect(getAllDemoProperties()).toEqual([
+			{
+				id: "hotel-tarija",
+				nameKey: "auth.demoSelector.properties.hotelTarija",
+			},
+			{
+				id: "hostal-los-chapacos",
+				nameKey: "auth.demoSelector.properties.hostalLosChapacos",
+			},
+		]);
+	});
+});
+
+describe("getDemoAccount", () => {
+	it.each(
+		ALL_ROLES,
+	)("returns Hotel Tarija LoginCredentials by default for %s role", (role) => {
+		const result = getDemoAccount(role);
+		expect(result).toBeDefined();
+		expect(result!.email).toContain("admin+tarija-");
+		expect(result!.email).toContain("@innhub.dev");
+		expect(result!.password).toBe("Demo123!");
+	});
 
 	it("returns undefined for role without configured credentials", () => {
 		expect(getDemoAccount("unknown" as AppProfileRole)).toBeUndefined();
 	});
 });
 
-describe("getAllDemoAccounts", () => {
-	it("returns 5 demo accounts with correct DemoAccount shape", () => {
+describe("property-aware demo accounts", () => {
+	it("returns 10 demo accounts with property-aware DemoAccount shape", () => {
 		const accounts = getAllDemoAccounts();
-		expect(accounts).toHaveLength(5);
+		expect(accounts).toHaveLength(10);
 
 		for (const account of accounts) {
+			expect(account).toHaveProperty("propertyId");
 			expect(account).toHaveProperty("role");
 			expect(account).toHaveProperty("email");
 			expect(account).toHaveProperty("password");
 			expect(account.email).toContain("@innhub.dev");
-			expect(typeof account.password).toBe("string");
-			expect(account.password.length).toBeGreaterThan(0);
+			expect(account.password).toBe("Demo123!");
 		}
 	});
 
-	it("contains one account per AppProfileRole", () => {
-		const accounts = getAllDemoAccounts();
-		const roles = accounts.map((a) => a.role);
-		expect(roles).toContain("administrator");
-		expect(roles).toContain("manager");
-		expect(roles).toContain("receptionist");
-		expect(roles).toContain("housekeeping");
-		expect(roles).toContain("maintenance");
+	it.each([
+		"hotel-tarija",
+		"hostal-los-chapacos",
+	] as const)("contains five roles for %s", (propertyId) => {
+		const accounts = getDemoAccountsForProperty(propertyId);
+		expect(accounts).toHaveLength(5);
+		expect(accounts.map((account) => account.role).sort()).toEqual(
+			[...ALL_ROLES].sort(),
+		);
+	});
+
+	it("resolves Hostal Los Chapacos Manager credentials", () => {
+		expect(getDemoAccountForProperty("hostal-los-chapacos", "manager")).toEqual(
+			{
+				email: "admin+loschapacos-manager@innhub.dev",
+				password: "Demo123!",
+			},
+		);
 	});
 });

@@ -127,7 +127,7 @@ describe("LoginForm", () => {
 		});
 	});
 
-	it("opens the modal when Demo accounts button is clicked and shows role options", async () => {
+	it("opens the modal when Demo accounts button is clicked and shows property and role options", async () => {
 		const user = userEvent.setup();
 		const signInWithPassword = vi.fn(async () => ok(authUser));
 		renderLoginForm({
@@ -141,7 +141,14 @@ describe("LoginForm", () => {
 			screen.getByRole("heading", { name: "Demo accounts" }),
 		).toBeInTheDocument();
 		expect(
-			screen.getByText("Select a role to log in with demo credentials"),
+			screen.getByText(/Choose a demo property and role/),
+		).toBeInTheDocument();
+		expect(screen.getByText("Choose demo property")).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: /hotel tarija/i }),
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: /hostal los chapacos/i }),
 		).toBeInTheDocument();
 		expect(screen.getByText("Administrator")).toBeInTheDocument();
 	});
@@ -166,6 +173,32 @@ describe("LoginForm", () => {
 		await waitFor(() => {
 			expect(signInWithPassword).toHaveBeenCalledWith({
 				email: "admin+tarija-admin@innhub.dev",
+				password: "Demo123!",
+			});
+			expect(authenticated).toBe(true);
+		});
+	});
+
+	it("selecting Hostal Los Chapacos Manager authenticates with Hostal credentials", async () => {
+		let authenticated = false;
+		const user = userEvent.setup();
+		const signInWithPassword = vi.fn(async () => ok(authUser));
+		renderLoginForm({
+			gateway: createGateway({ signInWithPassword }),
+			onAuthenticated: () => {
+				authenticated = true;
+			},
+		});
+
+		await user.click(screen.getByRole("button", { name: "Demo accounts" }));
+		await user.click(
+			screen.getByRole("button", { name: /hostal los chapacos/i }),
+		);
+		await user.click(screen.getByRole("button", { name: /manager/i }));
+
+		await waitFor(() => {
+			expect(signInWithPassword).toHaveBeenCalledWith({
+				email: "admin+loschapacos-manager@innhub.dev",
 				password: "Demo123!",
 			});
 			expect(authenticated).toBe(true);

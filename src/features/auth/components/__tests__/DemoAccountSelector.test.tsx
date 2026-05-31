@@ -12,76 +12,64 @@ import { DemoAccountSelector } from "../DemoAccountSelector";
 
 afterEach(cleanup);
 
+function renderSelector(onSelect = vi.fn()) {
+	render(
+		<I18nextProvider i18n={i18n}>
+			<DemoAccountSelector onSelect={onSelect} />
+		</I18nextProvider>,
+	);
+	return onSelect;
+}
+
 describe("DemoAccountSelector", () => {
-	it("renders all 5 roles from getAllDemoAccounts()", () => {
-		const onSelect = vi.fn();
-
-		render(
-			<I18nextProvider i18n={i18n}>
-				<DemoAccountSelector onSelect={onSelect} />
-			</I18nextProvider>,
-		);
-
-		expect(screen.getByText("Administrator")).toBeInTheDocument();
-		expect(screen.getByText("Manager")).toBeInTheDocument();
-		expect(screen.getByText("Receptionist")).toBeInTheDocument();
-		expect(screen.getByText("Housekeeping")).toBeInTheDocument();
-		expect(screen.getByText("Maintenance")).toBeInTheDocument();
-	});
-
-	it("each role button is clickable and calls onSelect with LoginCredentials", async () => {
-		const onSelect = vi.fn();
+	it("renders property controls, defaults to Tarija, and submits Tarija Admin", async () => {
+		const onSelect = renderSelector();
 		const user = userEvent.setup();
 
-		render(
-			<I18nextProvider i18n={i18n}>
-				<DemoAccountSelector onSelect={onSelect} />
-			</I18nextProvider>,
-		);
+		expect(
+			screen.getByRole("button", { name: /hotel tarija/i }),
+		).toHaveAttribute("aria-pressed", "true");
+		expect(
+			screen.getByRole("button", { name: /hostal los chapacos/i }),
+		).toHaveAttribute("aria-pressed", "false");
+		for (const role of [
+			"Administrator",
+			"Manager",
+			"Receptionist",
+			"Housekeeping",
+			"Maintenance",
+		]) {
+			expect(screen.getByText(role)).toBeInTheDocument();
+		}
 
-		const adminButton = screen.getByRole("button", { name: /administrator/i });
-		await user.click(adminButton);
-
-		expect(onSelect).toHaveBeenCalledTimes(1);
+		await user.click(screen.getByRole("button", { name: /administrator/i }));
 		expect(onSelect).toHaveBeenCalledWith({
 			email: "admin+tarija-admin@innhub.dev",
 			password: "Demo123!",
 		});
 	});
 
-	it("selecting a different role calls onSelect with correct credentials", async () => {
-		const onSelect = vi.fn();
+	it("selects Hostal Los Chapacos and submits only LoginCredentials", async () => {
+		const onSelect = renderSelector();
 		const user = userEvent.setup();
 
-		render(
-			<I18nextProvider i18n={i18n}>
-				<DemoAccountSelector onSelect={onSelect} />
-			</I18nextProvider>,
+		await user.click(
+			screen.getByRole("button", { name: /hostal los chapacos/i }),
 		);
-
-		const receptionistButton = screen.getByRole("button", {
-			name: /receptionist/i,
-		});
-		await user.click(receptionistButton);
+		expect(
+			screen.getByRole("button", { name: /hostal los chapacos/i }),
+		).toHaveAttribute("aria-pressed", "true");
+		await user.click(screen.getByRole("button", { name: /manager/i }));
 
 		expect(onSelect).toHaveBeenCalledTimes(1);
 		expect(onSelect).toHaveBeenCalledWith({
-			email: "admin+tarija-reception@innhub.dev",
+			email: "admin+loschapacos-manager@innhub.dev",
 			password: "Demo123!",
 		});
-	});
-
-	it("does not make network calls (no real auth)", () => {
-		const onSelect = vi.fn();
-
-		render(
-			<I18nextProvider i18n={i18n}>
-				<DemoAccountSelector onSelect={onSelect} />
-			</I18nextProvider>,
-		);
-
-		expect(screen.getByRole("button", { name: /administrator/i }));
-		// No fetch/spy setup needed — component only calls onSelect on click
-		expect(onSelect).not.toHaveBeenCalled();
+		expect(onSelect).not.toHaveBeenCalledWith({
+			email: "admin+tarija-manager@innhub.dev",
+			password: "Demo123!",
+		});
+		expect(onSelect.mock.calls[0][0]).not.toHaveProperty("propertyId");
 	});
 });

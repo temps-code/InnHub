@@ -54,8 +54,15 @@ export const es = {
 		},
 		demoSelector: {
 			title: "Cuentas demo",
-			description: "Seleccioná un rol para iniciar sesión con credenciales demo",
+			description:
+				"Elegí una propiedad demo y un rol. El perfil autenticado determina el alcance real de la propiedad.",
 			openButton: "Cuentas demo",
+			propertyLabel: "Elegí propiedad demo",
+			roleLabel: "Elegí rol",
+			properties: {
+				hotelTarija: "Hotel Tarija",
+				hostalLosChapacos: "Hostal Los Chapacos",
+			},
 		},
 		roles: {
 			administrator: "Administrador/a",
@@ -63,11 +70,13 @@ export const es = {
 			receptionist: "Recepcionista",
 			housekeeping: "Limpieza",
 			maintenance: "Mantenimiento",
-			administrator_desc: "Acceso completo a todos los módulos y configuraciones",
+			administrator_desc:
+				"Acceso completo a todos los módulos y configuraciones",
 			manager_desc: "Reportes, operaciones y gestión de personal",
 			receptionist_desc: "Operaciones diarias: reservas, check-in, facturación",
 			housekeeping_desc: "Limpieza de habitaciones y gestión de estados",
-			maintenance_desc: "Tickets de mantenimiento y reparaciones de habitaciones",
+			maintenance_desc:
+				"Tickets de mantenimiento y reparaciones de habitaciones",
 		},
 		logout: "Cerrar sesión",
 		states: {
@@ -122,12 +131,15 @@ export const es = {
 		duplicateName: "Ya existe un tipo de habitación con ese nombre.",
 		delete: "Eliminar",
 		deleteConfirmTitle: "Eliminar tipo de habitación",
-		deleteConfirmMessage: "Esto desactivará el tipo de habitación. Ya no aparecerá en la lista.",
+		deleteConfirmMessage:
+			"Esto desactivará el tipo de habitación. Ya no aparecerá en la lista.",
 		deleteConfirmAccept: "Eliminar",
 		deleteConfirmCancel: "Cancelar",
-		deletePermissionError: "No tenés permiso para eliminar tipos de habitación.",
+		deletePermissionError:
+			"No tenés permiso para eliminar tipos de habitación.",
 		permissionError: "No tenés permiso para realizar esta acción.",
-		deleteGenericError: "No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
+		deleteGenericError:
+			"No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
 		archive: {
 			toggle: "Ver papelera",
 			toggleActive: "Ver activos",
@@ -135,16 +147,22 @@ export const es = {
 			empty: "No hay tipos de habitación archivados.",
 			restore: "Restaurar",
 			restoreConfirmTitle: "Restaurar tipo de habitación",
-			restoreConfirmMessage: "¿Restaurar este tipo de habitación? Volverá a aparecer en la lista activa.",
+			restoreConfirmMessage:
+				"¿Restaurar este tipo de habitación? Volverá a aparecer en la lista activa.",
 			restoreSuccess: "Tipo de habitación restaurado correctamente.",
-			restoreDuplicateName: "No se puede restaurar: ya existe un tipo de habitación con ese nombre.",
-			restoreGenericError: "No se pudo restaurar el tipo de habitación. Intentá de nuevo.",
+			restoreDuplicateName:
+				"No se puede restaurar: ya existe un tipo de habitación con ese nombre.",
+			restoreGenericError:
+				"No se pudo restaurar el tipo de habitación. Intentá de nuevo.",
 			purge: "Eliminar permanentemente",
 			purgeConfirmTitle: "Eliminar tipo de habitación permanentemente",
-			purgeConfirmMessage: "Esta acción es irreversible. El tipo de habitación se eliminará permanentemente.",
+			purgeConfirmMessage:
+				"Esta acción es irreversible. El tipo de habitación se eliminará permanentemente.",
 			purgeSuccess: "Tipo de habitación eliminado permanentemente.",
-			purgeForeignKeyConflict: "No se puede eliminar: este tipo de habitación está referenciado por habitaciones o reservaciones existentes.",
-			purgeGenericError: "No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
+			purgeForeignKeyConflict:
+				"No se puede eliminar: este tipo de habitación está referenciado por habitaciones o reservaciones existentes.",
+			purgeGenericError:
+				"No se pudo eliminar el tipo de habitación. Intentá de nuevo.",
 		},
 	},
 	rooms: {
@@ -184,12 +202,14 @@ export const es = {
 		duplicateIdentifier: "Ya existe una habitación con ese identificador.",
 		delete: "Eliminar",
 		deleteConfirmTitle: "Eliminar habitación",
-		deleteConfirmMessage: "Esto desactivará la habitación. Ya no aparecerá en la lista.",
+		deleteConfirmMessage:
+			"Esto desactivará la habitación. Ya no aparecerá en la lista.",
 		deleteConfirmAccept: "Eliminar",
 		deleteConfirmCancel: "Cancelar",
 		deletePermissionError: "No tenés permiso para eliminar habitaciones.",
 		deleteGenericError: "No se pudo eliminar la habitación. Intentá de nuevo.",
-		reservationConflict: "No se puede eliminar la habitación con reservaciones activas.",
+		reservationConflict:
+			"No se puede eliminar la habitación con reservaciones activas.",
 		permissionError: "No tenés permiso para realizar esta acción.",
 		archive: {
 			title: "Papelera",
@@ -199,12 +219,16 @@ export const es = {
 			restore: "Restaurar",
 			restoreConfirmTitle: "Restaurar Habitación",
 			restoreConfirmMessage: "Esto restaurará la habitación a la lista activa.",
-			restoreGenericError: "No se pudo restaurar la habitación. Intente de nuevo.",
-			restoreDuplicateIdentifier: "No se puede restaurar: ya existe otra habitación activa con este identificador.",
+			restoreGenericError:
+				"No se pudo restaurar la habitación. Intente de nuevo.",
+			restoreDuplicateIdentifier:
+				"No se puede restaurar: ya existe otra habitación activa con este identificador.",
 			purge: "Eliminar Permanentemente",
 			purgeConfirmTitle: "Eliminar Habitación Permanentemente",
-			purgeConfirmMessage: "Esta acción no se puede deshacer. La habitación será eliminada permanentemente.",
-			purgeForeignKeyConflict: "Esta habitación no puede eliminarse porque tiene registros de reservas asociados.",
+			purgeConfirmMessage:
+				"Esta acción no se puede deshacer. La habitación será eliminada permanentemente.",
+			purgeForeignKeyConflict:
+				"Esta habitación no puede eliminarse porque tiene registros de reservas asociados.",
 			purgeGenericError: "No se pudo eliminar la habitación. Intente de nuevo.",
 		},
 		deletedAt: "Eliminada",
@@ -294,8 +318,7 @@ export const es = {
 			profile: {
 				label: "Mi Perfil",
 				title: "Mi Perfil",
-				description:
-					"Ver y administrar tu información personal",
+				description: "Ver y administrar tu información personal",
 			},
 			rooms: {
 				label: "Habitaciones",

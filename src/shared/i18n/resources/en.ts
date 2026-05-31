@@ -52,8 +52,15 @@ export const en = {
 		},
 		demoSelector: {
 			title: "Demo accounts",
-			description: "Select a role to log in with demo credentials",
+			description:
+				"Choose a demo property and role. The signed-in profile determines the actual property scope.",
 			openButton: "Demo accounts",
+			propertyLabel: "Choose demo property",
+			roleLabel: "Choose role",
+			properties: {
+				hotelTarija: "Hotel Tarija",
+				hostalLosChapacos: "Hostal Los Chapacos",
+			},
 		},
 		roles: {
 			administrator: "Administrator",
@@ -120,7 +127,8 @@ export const en = {
 		duplicateName: "A room type with this name already exists.",
 		delete: "Delete",
 		deleteConfirmTitle: "Delete Room Type",
-		deleteConfirmMessage: "This will deactivate the room type. It will no longer appear in the list.",
+		deleteConfirmMessage:
+			"This will deactivate the room type. It will no longer appear in the list.",
 		deleteConfirmAccept: "Delete",
 		deleteConfirmCancel: "Cancel",
 		deletePermissionError: "You don't have permission to delete room types.",
@@ -133,15 +141,19 @@ export const en = {
 			empty: "No archived room types.",
 			restore: "Restore",
 			restoreConfirmTitle: "Restore Room Type",
-			restoreConfirmMessage: "Restore this room type? It will reappear in the active list.",
+			restoreConfirmMessage:
+				"Restore this room type? It will reappear in the active list.",
 			restoreSuccess: "Room type restored successfully.",
-			restoreDuplicateName: "Cannot restore: a room type with this name already exists.",
+			restoreDuplicateName:
+				"Cannot restore: a room type with this name already exists.",
 			restoreGenericError: "Could not restore the room type. Please try again.",
 			purge: "Purge",
 			purgeConfirmTitle: "Permanently Delete Room Type",
-			purgeConfirmMessage: "This action is irreversible. The room type will be permanently deleted.",
+			purgeConfirmMessage:
+				"This action is irreversible. The room type will be permanently deleted.",
 			purgeSuccess: "Room type permanently deleted.",
-			purgeForeignKeyConflict: "Cannot delete: this room type is referenced by existing rooms or reservations.",
+			purgeForeignKeyConflict:
+				"Cannot delete: this room type is referenced by existing rooms or reservations.",
 			purgeGenericError: "Could not delete the room type. Please try again.",
 		},
 	},
@@ -182,7 +194,8 @@ export const en = {
 		duplicateIdentifier: "A room with this identifier already exists.",
 		delete: "Delete",
 		deleteConfirmTitle: "Delete Room",
-		deleteConfirmMessage: "This will deactivate the room. It will no longer appear in the list.",
+		deleteConfirmMessage:
+			"This will deactivate the room. It will no longer appear in the list.",
 		deleteConfirmAccept: "Delete",
 		deleteConfirmCancel: "Cancel",
 		deletePermissionError: "You don't have permission to delete rooms.",
@@ -198,11 +211,14 @@ export const en = {
 			restoreConfirmTitle: "Restore Room",
 			restoreConfirmMessage: "This will restore the room to the active list.",
 			restoreGenericError: "Could not restore the room. Please try again.",
-			restoreDuplicateIdentifier: "Cannot restore: another active room with this identifier already exists.",
+			restoreDuplicateIdentifier:
+				"Cannot restore: another active room with this identifier already exists.",
 			purge: "Delete Permanently",
 			purgeConfirmTitle: "Permanently Delete Room",
-			purgeConfirmMessage: "This action cannot be undone. The room will be permanently deleted.",
-			purgeForeignKeyConflict: "This room cannot be deleted because it is referenced by reservation records.",
+			purgeConfirmMessage:
+				"This action cannot be undone. The room will be permanently deleted.",
+			purgeForeignKeyConflict:
+				"This room cannot be deleted because it is referenced by reservation records.",
 			purgeGenericError: "Could not delete the room. Please try again.",
 		},
 		deletedAt: "Deleted At",
@@ -292,8 +308,7 @@ export const en = {
 			profile: {
 				label: "My Profile",
 				title: "My Profile",
-				description:
-					"View and manage your personal information",
+				description: "View and manage your personal information",
 			},
 			rooms: {
 				label: "Rooms",
