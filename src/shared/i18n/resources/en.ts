@@ -1,15 +1,9 @@
 export const en = {
 	hero: {
 		eyebrow: "Accommodation management MVP",
-		title: "InnHub",
+		title: "Run your accommodation business with clarity",
 		description:
-			"A foundation for managing properties, rooms, guests, reservations, operations, billing, and reporting in one hospitality workspace.",
-	},
-	foundation: {
-		eyebrow: "Foundation status",
-		title: "Ready for the first implementation slice",
-		description:
-			"The default starter has been replaced with an InnHub-specific shell. Reusable UI and routing foundations are now in place; backend integration remains intentionally out of scope for this step.",
+			"InnHub centralizes rooms, reservations, guests, housekeeping, maintenance, billing, and reports in one operational workspace.",
 	},
 	modules: {
 		ariaLabel: "Planned InnHub modules",
@@ -19,14 +13,57 @@ export const en = {
 			guests: "Guests",
 			reservations: "Reservations",
 			operations: "Operations",
+			housekeeping: "Housekeeping",
+			maintenance: "Maintenance",
 			billing: "Billing",
 			reports: "Reports",
 		},
 	},
 	public: {
 		home: {
-			loginLink: "Sign in",
-			previewLink: "Open app preview",
+			loginLink: "Open demo",
+			previewLink: "View modules",
+			nav: {
+				ariaLabel: "Public navigation",
+				product: "Product",
+				modules: "Modules",
+				demo: "Demo",
+			},
+			preview: {
+				title: "Dashboard preview",
+				subtitle: "Operational overview",
+				sidebarAria: "Preview sidebar modules",
+				statsAria: "Preview headline metrics",
+				opsAria: "Preview operational metrics",
+				sidebar: {
+					dashboard: "Dashboard",
+					rooms: "Rooms",
+					reservations: "Reservations",
+					guests: "Guests",
+					housekeeping: "Housekeeping",
+					maintenance: "Maintenance",
+					billing: "Billing",
+					reports: "Reports",
+				},
+				stats: {
+					rooms: "Rooms",
+					roomsSub: "Total rooms",
+					reservations: "Reservations",
+					reservationsSub: "Today",
+					guests: "Guests",
+					guestsSub: "In-house",
+				},
+				ops: {
+					housekeeping: "Housekeeping",
+					housekeepingSub: "To clean",
+					maintenance: "Maintenance",
+					maintenanceSub: "Open tasks",
+					billing: "Billing",
+					billingSub: "Pending invoices",
+					reports: "Reports",
+					reportsSub: "Available reports",
+				},
+			},
 		},
 		notFound: {
 			title: "Page not found",
@@ -49,6 +86,28 @@ export const en = {
 			genericError: "Invalid email or password.",
 			demoSubmit: "Use demo account",
 			demoUnavailable: "Demo account is not configured for this environment.",
+		},
+		loginShowcase: {
+			headlinePrimary: "Operational clarity.",
+			headlineAccent: "Better outcomes.",
+			description:
+				"InnHub centralizes internal operations so your team can focus on what matters most.",
+			coreModules: "Core modules",
+			operationsOverview: "Operations overview",
+			today: "Today",
+			deltaLabel: "vs yesterday",
+			modules: {
+				rooms: "Rooms",
+				reservations: "Reservations",
+				guests: "Guests",
+				billing: "Billing",
+			},
+			stats: {
+				occupancy: "Occupancy",
+				reservations: "Reservations",
+				housekeeping: "Housekeeping",
+				outOfOrder: "Out of order",
+			},
 		},
 		demoSelector: {
 			title: "Demo accounts",
@@ -94,12 +153,22 @@ export const en = {
 				reports: "Reports",
 				settings: "Settings",
 			},
+			property: {
+				ariaLabel: "Current property context",
+				name: "InnHub Hotel",
+				location: "Downtown",
+			},
 		},
 		workspace: { ariaLabel: "{{title}} workspace" },
 		topbar: {
 			eyebrow: "Property workspace",
 			fallbackTitle: "App workspace",
 			workspaceLabel: "Authenticated InnHub workspace.",
+			dateLabel: "May 15, 2024",
+			notificationsLabel: "Notifications",
+			avatarAriaLabel: "Current user",
+			propertyAriaLabel: "Current property",
+			propertyLabel: "InnHub Hotel",
 		},
 	},
 	roomTypes: {

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
+import { Building2, ChevronDown, X } from "lucide-react";
 
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 import type { GroupedRouteItem } from "../routes/routeMetadata";
@@ -15,7 +15,12 @@ type AppShellProps = {
 	pinnedItem?: ProtectedRouteMeta;
 };
 
-export function AppShell({ activeRoute, children, items, pinnedItem }: AppShellProps) {
+export function AppShell({
+	activeRoute,
+	children,
+	items,
+	pinnedItem,
+}: AppShellProps) {
 	const { t } = useTranslation();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const workspaceLabel = activeRoute
@@ -23,35 +28,35 @@ export function AppShell({ activeRoute, children, items, pinnedItem }: AppShellP
 		: undefined;
 
 	return (
-		<div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] md:grid md:grid-cols-[240px_1fr]">
+		<div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] md:grid md:grid-cols-[280px_1fr]">
 			{/* Backdrop Overlay */}
 			{isSidebarOpen && (
 				<div
 					data-testid="sidebar-backdrop"
-					className="fixed inset-0 z-40 bg-black/50 md:hidden"
+					className="fixed inset-0 z-40 bg-[rgb(15_23_42_/_52%)] backdrop-blur-[1px] md:hidden"
 					onClick={() => setIsSidebarOpen(false)}
 				/>
 			)}
 
 			<aside
-				className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col h-full transform transition-transform duration-300 ease-in-out md:static md:w-auto md:translate-x-0 ${
+				className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[var(--shadow-panel)] flex h-full flex-col transform transition-transform duration-300 ease-in-out md:static md:w-[280px] md:translate-x-0 ${
 					isSidebarOpen ? "translate-x-0" : "-translate-x-full"
 				}`}
 			>
-				<div className="mb-8 flex items-center justify-between gap-3 font-bold text-[var(--color-heading)] px-5 pt-5">
+				<div className="mb-6 flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 pb-4 pt-5 font-bold text-[var(--color-heading)]">
 					<div className="flex items-center gap-3">
 						<img
-							className="h-9 w-9 rounded-xl"
+							className="h-10 w-10 rounded-xl"
 							src="/innhub-app-icon.svg"
 							alt=""
 							aria-hidden="true"
 						/>
-						<span>InnHub</span>
+						<span className="text-xl tracking-tight">InnHub</span>
 					</div>
 					{/* Close button in mobile drawer header */}
 					<Button
 						aria-label="Close navigation menu"
-						className="md:hidden h-8 w-8 p-0 flex items-center justify-center"
+						className="h-8 w-8 p-0 md:hidden"
 						onClick={() => setIsSidebarOpen(false)}
 						variant="ghost"
 						size="sm"
@@ -59,8 +64,35 @@ export function AppShell({ activeRoute, children, items, pinnedItem }: AppShellP
 						<X size={16} />
 					</Button>
 				</div>
-				<div className="flex-1 overflow-y-auto min-h-0 px-5">
-					<SidebarNav items={items} onClose={() => setIsSidebarOpen(false)} pinnedItem={pinnedItem} />
+				<div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-2">
+					<SidebarNav
+						items={items}
+						onClose={() => setIsSidebarOpen(false)}
+						pinnedItem={pinnedItem}
+					/>
+				</div>
+				<div
+					aria-label={t("shell.sidebar.property.ariaLabel")}
+					className="mx-4 mb-4 flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3.5 py-3"
+				>
+					<div className="flex items-center gap-2.5">
+						<span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
+							<Building2 aria-hidden="true" size={16} />
+						</span>
+						<div>
+							<p className="m-0 text-sm font-semibold text-[var(--color-heading)]">
+								{t("shell.sidebar.property.name")}
+							</p>
+							<p className="m-0 text-xs text-[var(--color-muted)]">
+								{t("shell.sidebar.property.location")}
+							</p>
+						</div>
+					</div>
+					<ChevronDown
+						aria-hidden="true"
+						className="text-[var(--color-muted)]"
+						size={16}
+					/>
 				</div>
 			</aside>
 
@@ -71,7 +103,7 @@ export function AppShell({ activeRoute, children, items, pinnedItem }: AppShellP
 				/>
 				<main
 					id="app-workspace"
-					className="p-6 md:p-8"
+					className="mx-auto w-full max-w-[1240px] px-4 py-5 sm:px-5 md:px-8 md:py-7"
 					aria-label={workspaceLabel}
 				>
 					{children}

@@ -17,6 +17,9 @@
 	--color-primary: #7c3aed;
 	--color-primary-soft: #ede9fe;
 	--color-border: #e2e8f0;
+	--color-border-strong: #cbd5e1;
+	--color-surface-raised: #f8f7ff;
+	--color-focus-ring: #7c3aed;
 	--shadow-panel: 0 24px 80px rgb(15 23 42 / 8%);
 	color-scheme: light;
 }
@@ -30,6 +33,9 @@
 	--color-primary: #b982ff;
 	--color-primary-soft: #2e1065;
 	--color-border: #1e293b;
+	--color-border-strong: #334155;
+	--color-surface-raised: #1e293b;
+	--color-focus-ring: #b982ff;
 	--shadow-panel: 0 24px 80px rgb(0 0 0 / 28%);
 	color-scheme: dark;
 }

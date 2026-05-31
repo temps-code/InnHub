@@ -10,20 +10,20 @@ import { App } from "../App";
 import { AppProviders } from "../providers/AppProviders";
 
 const englishModules = [
-	"Properties",
 	"Rooms",
-	"Guests",
 	"Reservations",
-	"Operations",
+	"Guests",
+	"Housekeeping",
+	"Maintenance",
 	"Billing",
 	"Reports",
 ];
 const spanishModules = [
-	"Propiedades",
 	"Habitaciones",
-	"Huéspedes",
 	"Reservas",
-	"Operaciones",
+	"Huéspedes",
+	"Limpieza",
+	"Mantenimiento",
 	"Facturación",
 	"Reportes",
 ];
@@ -42,7 +42,7 @@ function installMemoryStorage() {
 
 function expectModuleLabels(labels: string[]) {
 	for (const label of labels) {
-		expect(screen.getByText(label)).toBeTruthy();
+		expect(screen.getAllByText(label).length).toBeGreaterThan(0);
 	}
 }
 
@@ -62,9 +62,10 @@ describe("App i18n rendering", () => {
 			</AppProviders>,
 		);
 
-		expect(screen.getByText("Accommodation management MVP")).toBeTruthy();
 		expect(
-			screen.getByText("Ready for the first implementation slice"),
+			screen.getByRole("heading", {
+				name: "Run your accommodation business with clarity",
+			}),
 		).toBeTruthy();
 		expect(
 			screen.getByRole("list", { name: "Planned InnHub modules" }),
@@ -80,9 +81,10 @@ describe("App i18n rendering", () => {
 			</AppProviders>,
 		);
 
-		expect(screen.getByText("MVP de gestión de alojamientos")).toBeTruthy();
 		expect(
-			screen.getByText("Listo para el primer incremento de implementación"),
+			screen.getByRole("heading", {
+				name: "Gestioná tu negocio de hospedaje con claridad",
+			}),
 		).toBeTruthy();
 		expect(
 			screen.getByRole("list", { name: "Módulos planificados de InnHub" }),
@@ -98,8 +100,12 @@ describe("App i18n rendering", () => {
 			</I18nextProvider>,
 		);
 
-		expect(screen.getByText("MVP de gestión de alojamientos")).toBeTruthy();
-		expect(screen.getByText("Facturación")).toBeTruthy();
+		expect(
+			screen.getByRole("heading", {
+				name: "Gestioná tu negocio de hospedaje con claridad",
+			}),
+		).toBeTruthy();
+		expect(screen.getAllByText("Facturación").length).toBeGreaterThan(0);
 	});
 
 	it("falls back to English when the persisted locale is invalid", () => {
@@ -110,7 +116,11 @@ describe("App i18n rendering", () => {
 			</I18nextProvider>,
 		);
 
-		expect(screen.getByText("Accommodation management MVP")).toBeTruthy();
-		expect(screen.getByText("Billing")).toBeTruthy();
+		expect(
+			screen.getByRole("heading", {
+				name: "Run your accommodation business with clarity",
+			}),
+		).toBeTruthy();
+		expect(screen.getAllByText("Billing").length).toBeGreaterThan(0);
 	});
 });
