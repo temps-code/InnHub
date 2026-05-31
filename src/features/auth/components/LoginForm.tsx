@@ -12,9 +12,7 @@ type LoginFormProps = {
 	readonly demoCredentials?: DemoCredentialsResult;
 };
 
-export function LoginForm({
-	onAuthenticated,
-}: LoginFormProps) {
+export function LoginForm({ onAuthenticated }: LoginFormProps) {
 	const { t } = useTranslation();
 	const { login } = useAuthSession();
 	const [email, setEmail] = useState("");
@@ -66,13 +64,13 @@ export function LoginForm({
 		<form className="mt-6 grid gap-4" onSubmit={handleSubmit} noValidate>
 			<div className="grid gap-2">
 				<label
-					className="text-sm font-bold text-[var(--color-heading)]"
+					className="text-sm font-semibold text-[var(--color-heading)]"
 					htmlFor="login-email"
 				>
 					{t("auth.login.emailLabel")}
 				</label>
 				<input
-					className="rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 text-[var(--color-heading)]"
+					className="h-11 rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-surface-raised)] px-4 text-[var(--color-heading)] outline-none transition focus:border-[var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]/35"
 					autoComplete="email"
 					id="login-email"
 					onChange={(event) => setEmail(event.target.value)}
@@ -82,13 +80,13 @@ export function LoginForm({
 			</div>
 			<div className="grid gap-2">
 				<label
-					className="text-sm font-bold text-[var(--color-heading)]"
+					className="text-sm font-semibold text-[var(--color-heading)]"
 					htmlFor="login-password"
 				>
 					{t("auth.login.passwordLabel")}
 				</label>
 				<input
-					className="rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 text-[var(--color-heading)]"
+					className="h-11 rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-surface-raised)] px-4 text-[var(--color-heading)] outline-none transition focus:border-[var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]/35"
 					autoComplete="current-password"
 					id="login-password"
 					onChange={(event) => setPassword(event.target.value)}
@@ -98,13 +96,14 @@ export function LoginForm({
 			</div>
 			{error ? (
 				<p
-					className="m-0 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+					className="m-0 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
 					role="alert"
 				>
 					{error}
 				</p>
 			) : null}
 			<Button
+				className="h-11 rounded-xl"
 				isLoading={isSubmitting}
 				type="submit"
 			>
@@ -112,6 +111,7 @@ export function LoginForm({
 			</Button>
 			<div className="grid gap-2 border-t border-[var(--color-border)] pt-4">
 				<Button
+					className="h-11 rounded-xl"
 					disabled={isSubmitting}
 					onClick={() => setIsModalOpen(true)}
 					variant="secondary"

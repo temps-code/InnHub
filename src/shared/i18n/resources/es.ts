@@ -3,15 +3,9 @@ import type { AppTranslationResource } from "./index";
 export const es = {
 	hero: {
 		eyebrow: "MVP de gestión de alojamientos",
-		title: "InnHub",
+		title: "Gestioná tu negocio de hospedaje con claridad",
 		description:
-			"Una base para gestionar propiedades, habitaciones, huéspedes, reservas, operaciones, facturación y reportes en un solo espacio de trabajo hotelero.",
-	},
-	foundation: {
-		eyebrow: "Estado de la base",
-		title: "Listo para el primer incremento de implementación",
-		description:
-			"El starter por defecto fue reemplazado por una estructura propia de InnHub. La UI reutilizable y la base de routing ya están incorporadas; la integración backend queda intencionalmente fuera del alcance de este paso.",
+			"InnHub centraliza habitaciones, reservas, huéspedes, limpieza, mantenimiento, facturación y reportes en un solo espacio operativo.",
 	},
 	modules: {
 		ariaLabel: "Módulos planificados de InnHub",
@@ -21,14 +15,57 @@ export const es = {
 			guests: "Huéspedes",
 			reservations: "Reservas",
 			operations: "Operaciones",
+			housekeeping: "Limpieza",
+			maintenance: "Mantenimiento",
 			billing: "Facturación",
 			reports: "Reportes",
 		},
 	},
 	public: {
 		home: {
-			loginLink: "Iniciar sesión",
-			previewLink: "Abrir vista previa de la app",
+			loginLink: "Abrir demo",
+			previewLink: "Ver módulos",
+			nav: {
+				ariaLabel: "Navegación pública",
+				product: "Producto",
+				modules: "Módulos",
+				demo: "Demo",
+			},
+			preview: {
+				title: "Vista previa del dashboard",
+				subtitle: "Resumen operativo",
+				sidebarAria: "Módulos de la barra lateral de la vista previa",
+				statsAria: "Métricas principales de vista previa",
+				opsAria: "Métricas operativas de vista previa",
+				sidebar: {
+					dashboard: "Dashboard",
+					rooms: "Habitaciones",
+					reservations: "Reservas",
+					guests: "Huéspedes",
+					housekeeping: "Limpieza",
+					maintenance: "Mantenimiento",
+					billing: "Facturación",
+					reports: "Reportes",
+				},
+				stats: {
+					rooms: "Habitaciones",
+					roomsSub: "Habitaciones totales",
+					reservations: "Reservas",
+					reservationsSub: "Hoy",
+					guests: "Huéspedes",
+					guestsSub: "Alojados",
+				},
+				ops: {
+					housekeeping: "Limpieza",
+					housekeepingSub: "Por limpiar",
+					maintenance: "Mantenimiento",
+					maintenanceSub: "Tareas abiertas",
+					billing: "Facturación",
+					billingSub: "Facturas pendientes",
+					reports: "Reportes",
+					reportsSub: "Reportes disponibles",
+				},
+			},
 		},
 		notFound: {
 			title: "Página no encontrada",
@@ -51,6 +88,28 @@ export const es = {
 			genericError: "Correo o contraseña inválidos.",
 			demoSubmit: "Usar cuenta demo",
 			demoUnavailable: "La cuenta demo no está configurada para este entorno.",
+		},
+		loginShowcase: {
+			headlinePrimary: "Claridad operativa.",
+			headlineAccent: "Mejores resultados.",
+			description:
+				"InnHub centraliza operaciones internas para que tu equipo se enfoque en lo que más importa.",
+			coreModules: "Módulos clave",
+			operationsOverview: "Resumen operativo",
+			today: "Hoy",
+			deltaLabel: "vs ayer",
+			modules: {
+				rooms: "Habitaciones",
+				reservations: "Reservas",
+				guests: "Huéspedes",
+				billing: "Facturación",
+			},
+			stats: {
+				occupancy: "Ocupación",
+				reservations: "Reservas",
+				housekeeping: "Limpieza",
+				outOfOrder: "Fuera de servicio",
+			},
 		},
 		demoSelector: {
 			title: "Cuentas demo",
@@ -98,12 +157,22 @@ export const es = {
 				reports: "Reportes",
 				settings: "Configuración",
 			},
+			property: {
+				ariaLabel: "Contexto de la propiedad actual",
+				name: "InnHub Hotel",
+				location: "Downtown",
+			},
 		},
 		workspace: { ariaLabel: "Espacio de trabajo: {{title}}" },
 		topbar: {
 			eyebrow: "Espacio de propiedad",
 			fallbackTitle: "Espacio de trabajo",
 			workspaceLabel: "Espacio autenticado de InnHub.",
+			dateLabel: "15 de mayo de 2024",
+			notificationsLabel: "Notificaciones",
+			avatarAriaLabel: "Usuario actual",
+			propertyAriaLabel: "Propiedad actual",
+			propertyLabel: "InnHub Hotel",
 		},
 	},
 	roomTypes: {
