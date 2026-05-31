@@ -79,7 +79,9 @@ Los services operativos deben derivar el scope de propiedad desde la sesión aut
 
 Usar filtros por `property_id` para tablas operativas asociadas a propiedad y limitar la raíz `properties` con `id = session.propertyId`. Si un payload incluye un `property_id` diferente al scope de sesión, los services deben rechazarlo en lugar de confiar en input de UI.
 
-Estos helpers de repositorio son el patrón requerido en frontend/services, pero no equivalen a aislamiento completo a nivel base de datos. Las policies remotas de InsForge/PostgreSQL requieren un slice separado, aprobado, versionado y validado.
+Estos helpers de repositorio son el patrón requerido en frontend/services, y PostgreSQL RLS es el límite de enforcement a nivel base de datos. Las policies de RLS derivan el perfil activo del usuario autenticado mediante `auth.uid()`, limitan `properties` por el `property_id` de ese perfil activo y limitan las tablas operativas comparando el `property_id` de cada fila con ese scope activo.
+
+La implementación actual de RLS aplica solo aislamiento por tenant. Los guards de rutas y services de features siguen siendo responsables de permisos finos por rol, como quién puede crear, editar, archivar, restaurar o purgar registros. No eliminar filtros de propiedad en services solo porque exista RLS; siguen siendo parte del contrato de defensa en profundidad y mantienen las queries explícitas.
 
 ## Uso de Atomic Design
 

@@ -57,6 +57,20 @@ Demo login uses the normal InsForge authentication flow. Before it works, the ba
 
 Repository code does not provision the external Auth users or create production seed data as part of demo login.
 
+## Database Security Strategy
+
+InnHub uses PostgreSQL Row Level Security (RLS) as the database-level tenant isolation boundary. The frontend still filters every operational query by the authenticated session's `property_id`, but RLS is the authoritative fallback that prevents a signed-in user from reading or mutating rows outside their active profile's property.
+
+The initial RLS slice is intentionally tenant-scoped, not a complete database RBAC model:
+
+- active authenticated users can access rows whose `property_id` matches their active `profiles.property_id`;
+- `properties` is constrained by `properties.id = active profiles.property_id`;
+- profile bootstrap is allowed through `profiles.auth_user_id = auth.uid()` so the app can derive the session property;
+- unauthenticated clients have no public table access;
+- fine-grained role permissions remain enforced in route guards and feature services until a dedicated RBAC hardening slice.
+
+RLS changes are versioned under `database/migrations/003_enable_tenant_rls.sql` and must be applied through controlled database migration or InsForge MCP execution, not as untracked dashboard edits.
+
 ## Storage Strategy
 
 InsForge Storage is part of the selected backend capability, but it is deferred for the current MVP implementation until a concrete file workflow needs it.

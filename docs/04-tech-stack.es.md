@@ -57,6 +57,20 @@ El login demo sigue usando el flujo normal de autenticación de InsForge. Para q
 
 El código del repositorio no provisiona los usuarios Auth externos ni crea seed data de producción como parte del login demo.
 
+## Estrategia de seguridad de base de datos
+
+InnHub usa Row Level Security (RLS) de PostgreSQL como límite de aislamiento por tenant a nivel base de datos. El frontend sigue filtrando cada query operativa por el `property_id` de la sesión autenticada, pero RLS es el respaldo autoritativo que impide que un usuario autenticado lea o modifique filas fuera de la propiedad de su perfil activo.
+
+El primer slice de RLS es intencionalmente de aislamiento por tenant, no un modelo RBAC completo en base de datos:
+
+- los usuarios autenticados activos pueden acceder a filas cuyo `property_id` coincide con `profiles.property_id` de su perfil activo;
+- `properties` se limita con `properties.id = profiles.property_id` del perfil activo;
+- el bootstrap del perfil se permite mediante `profiles.auth_user_id = auth.uid()` para que la app derive la propiedad de sesión;
+- clientes no autenticados no tienen acceso a tablas públicas;
+- los permisos finos por rol siguen en guards de rutas y services de features hasta un slice dedicado de endurecimiento RBAC.
+
+Los cambios de RLS se versionan en `database/migrations/003_enable_tenant_rls.sql` y deben aplicarse mediante migración controlada o ejecución por MCP de InsForge, no como cambios sueltos en dashboard.
+
 ## Estrategia de storage
 
 InsForge Storage forma parte de la capacidad backend seleccionada, pero queda diferido para la implementación actual del MVP hasta que un flujo concreto de archivos lo necesite.

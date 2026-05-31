@@ -17,6 +17,7 @@ InnHub uses a property-scoped PostgreSQL model. The ERD separates planned bookin
 | Area | Decision |
 | --- | --- |
 | Property scope | Every operational table includes `property_id`. |
+| Tenant isolation | PostgreSQL RLS policies constrain authenticated access to the active profile's property. |
 | Staff identity | `profiles.id` is InnHub's internal user identity; `auth_user_id` links to the external auth provider. |
 | Room categories | `room_types` stores categories/templates, not inventory counts. Real inventory is derived from `rooms`. |
 | Room identifier | `rooms.identifier` accepts numbers, letters, or mixed labels such as `101`, `A1`, or `PB-03`. |
@@ -115,6 +116,18 @@ Important rules:
 | `invoice_status` | `pending`, `partial`, `paid`, `void` |
 | `payment_method` | `cash`, `card`, `bank_transfer`, `other` |
 | `payment_status` | `recorded`, `voided` |
+
+## Row Level Security
+
+RLS is enabled by `database/migrations/003_enable_tenant_rls.sql` for the 13 MVP tables. The policy model is tenant-scoped:
+
+- `profiles` can bootstrap the current session through `auth_user_id = auth.uid()` and then expose same-property profiles to active users;
+- `properties` is visible only when `properties.id` matches the active profile's `property_id`;
+- every property-owned operational table is visible and mutable only when row `property_id` matches the active profile's `property_id`;
+- unauthenticated clients do not receive public table policies;
+- role-specific authorization is intentionally left to application services for this slice.
+
+This complements, but does not replace, service-layer `property_id` filters.
 
 ## Implementation Notes
 

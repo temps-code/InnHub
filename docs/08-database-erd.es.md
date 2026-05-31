@@ -17,6 +17,7 @@ InnHub usa un modelo PostgreSQL separado por propiedad. El ERD separa reservas p
 | Área | Decisión |
 | --- | --- |
 | Alcance por propiedad | Toda tabla operativa incluye `property_id`. |
+| Aislamiento por tenant | Las policies RLS de PostgreSQL limitan el acceso autenticado a la propiedad del perfil activo. |
 | Identidad de staff | `profiles.id` es la identidad interna de InnHub; `auth_user_id` vincula con el proveedor auth externo. |
 | Categorías de habitación | `room_types` guarda categorías/plantillas, no cantidades de inventario. El inventario real se deriva de `rooms`. |
 | Identificador de habitación | `rooms.identifier` acepta números, letras o etiquetas mixtas como `101`, `A1` o `PB-03`. |
@@ -115,6 +116,18 @@ Reglas importantes:
 | `invoice_status` | `pending`, `partial`, `paid`, `void` |
 | `payment_method` | `cash`, `card`, `bank_transfer`, `other` |
 | `payment_status` | `recorded`, `voided` |
+
+## Row Level Security
+
+RLS se habilita mediante `database/migrations/003_enable_tenant_rls.sql` para las 13 tablas del MVP. El modelo de policies está limitado al tenant:
+
+- `profiles` permite bootstrap de sesión mediante `auth_user_id = auth.uid()` y luego expone perfiles de la misma propiedad a usuarios activos;
+- `properties` solo es visible cuando `properties.id` coincide con el `property_id` del perfil activo;
+- cada tabla operativa asociada a propiedad es visible y mutable solo cuando el `property_id` de la fila coincide con el `property_id` del perfil activo;
+- los clientes no autenticados no reciben policies sobre tablas públicas;
+- la autorización específica por rol queda intencionalmente en los services de aplicación para este slice.
+
+Esto complementa, pero no reemplaza, los filtros `property_id` de la service layer.
 
 ## Notas de implementación
 

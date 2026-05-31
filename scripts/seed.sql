@@ -48,7 +48,9 @@ ON CONFLICT (slug) DO NOTHING;
 
 -- =============================================================================
 -- Section 2: Profiles (10 — 5 per property)
--- auth_user_id values match the UUIDs produced by scripts/setup-demo-users.sh
+-- auth_user_id values must match the UUIDs produced by scripts/setup-demo-users.sh.
+-- Before enabling RLS, compare these UUIDs with scripts/demo-user-uuids.json;
+-- RLS profile bootstrap depends on auth.uid() = profiles.auth_user_id.
 -- =============================================================================
 
 INSERT INTO public.profiles (id, auth_user_id, property_id, email, full_name, role, status)

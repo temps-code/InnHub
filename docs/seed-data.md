@@ -5,8 +5,9 @@ Versioned, idempotent seed data for 2 properties in Tarija-Bolivia with 10 demo 
 ## Prerequisites
 
 - InsForge project with admin API key
-- Schema migration `001_define_core_innhub_schema.sql` applied
+- Schema migrations `001_define_core_innhub_schema.sql` and `002_add_soft_delete.sql` applied
 - `INSFORGE_URL` environment variable set to your InsForge project URL
+- Demo Auth user UUIDs aligned with `profiles.auth_user_id` before enabling RLS
 
 ## Files
 
@@ -31,6 +32,8 @@ bash scripts/setup-demo-users.sh
 ```
 
 This is idempotent — re-running skips existing users and resolves their UUIDs via login.
+
+Before enabling RLS, compare `scripts/demo-user-uuids.json` with the `auth_user_id` values in `scripts/seed.sql`. If they differ, update the profile seed values first; otherwise RLS profile bootstrap will fail because policies depend on `auth.uid() = profiles.auth_user_id`.
 
 ### Step 2: Seed Public Tables
 
@@ -113,7 +116,7 @@ After seeding, verify each demo account can authenticate:
 import { createClient } from '@insforge/sdk'
 
 const client = createClient({
-  url: import.meta.env.VITE_INSFORGE_URL,
+  baseUrl: import.meta.env.VITE_INSFORGE_BASE_URL,
   anonKey: import.meta.env.VITE_INSFORGE_ANON_KEY,
 })
 
@@ -139,11 +142,21 @@ for (const email of accounts) {
 }
 ```
 
-### 2. Idempotency Test
+### 2. Tenant Isolation Smoke Test
+
+After RLS is enabled, use at least one account from each property to confirm isolation:
+
+1. Sign in as `admin+tarija-manager@innhub.dev`. The app should show Hotel Tarija room types and rooms only.
+2. Sign out, then sign in as `admin+loschapacos-manager@innhub.dev`. The app should show Hostal Los Chapacos room types and rooms only.
+3. Refresh a protected route such as `/app/rooms` or `/app/room-types` to confirm the SPA and RLS-protected queries still work after reload.
+
+A failed profile bootstrap, empty same-property data, or cross-property records in either session means the RLS migration must be rolled back or fixed before production evidence is accepted.
+
+### 3. Idempotency Test
 
 Run `setup-demo-users.sh` twice. The second run must resolve UUIDs via login (no creation errors). Then run `seed.sql` twice. The second SQL run must produce 0 new rows and 0 constraint violations.
 
-### 3. Teardown + Re-seed Test
+### 4. Teardown + Re-seed Test
 
 Run `seed-teardown.sql`, then `setup-demo-users.sh`, then `seed.sql`. All data must restore without errors. Verify row counts match the Expected Row Counts table above.
 

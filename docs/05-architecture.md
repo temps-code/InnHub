@@ -79,7 +79,9 @@ Operational services must derive the current property scope from the authenticat
 
 Use `property_id` filters for property-owned operational tables and constrain the `properties` root by `id = session.propertyId`. If a payload includes a different `property_id` than the session scope, services must reject it instead of trusting UI input.
 
-These repository helpers are the required frontend/service pattern, but they are not complete database-level isolation. Remote InsForge/PostgreSQL policies require a separate approved, versioned, and validated slice.
+These repository helpers are the required frontend/service pattern, and PostgreSQL RLS is the database-level enforcement boundary. RLS policies derive the authenticated user's active profile through `auth.uid()`, constrain `properties` by the active profile's `property_id`, and constrain operational tables by matching row `property_id` to that active profile scope.
+
+The current RLS implementation enforces tenant isolation only. Route guards and feature services still own fine-grained role permissions such as who can create, edit, archive, restore, or purge records. Do not remove service-level property filters just because RLS exists; they remain part of the defense-in-depth contract and keep queries explicit.
 
 ## Atomic Design Usage
 
