@@ -125,46 +125,50 @@ describe("SidebarNav grouped section rendering", () => {
 		"maintenance",
 	];
 
-	it.each(ALL_ROLES)(
-		"renders correct sidebar group headings for %s role",
-		(role) => {
-			const visibleRoutes = allRoutes.filter((r) =>
-				canAccess(r.minRole, role),
-			);
+	it.each(
+		ALL_ROLES,
+	)("renders correct sidebar group headings for %s role", (role) => {
+		const visibleRoutes = allRoutes.filter((r) => canAccess(r.minRole, role));
 
-			const groups: GroupedRouteItem[] = [
-				{
-					group: "operations" as const,
-					labelKey: "shell.sidebar.group.operations",
-					items: visibleRoutes.filter((r) => r.group === "operations"),
-				},
-				{
-					group: "reports" as const,
-					labelKey: "shell.sidebar.group.reports",
-					items: visibleRoutes.filter((r) => r.group === "reports"),
-				},
-				{
-					group: "settings" as const,
-					labelKey: "shell.sidebar.group.settings",
-					items: visibleRoutes.filter((r) => r.group === "settings"),
-				},
-			].filter((g) => g.items.length > 0);
+		const groups: GroupedRouteItem[] = [
+			{
+				group: "operations" as const,
+				labelKey: "shell.sidebar.group.operations",
+				items: visibleRoutes.filter((r) => r.group === "operations"),
+			},
+			{
+				group: "reports" as const,
+				labelKey: "shell.sidebar.group.reports",
+				items: visibleRoutes.filter((r) => r.group === "reports"),
+			},
+			{
+				group: "settings" as const,
+				labelKey: "shell.sidebar.group.settings",
+				items: visibleRoutes.filter((r) => r.group === "settings"),
+			},
+		].filter((g) => g.items.length > 0);
 
-			render(
-				<MemoryRouter>
-					<SidebarNav items={groups} />
-				</MemoryRouter>,
-			);
+		render(
+			<MemoryRouter>
+				<SidebarNav items={groups} />
+			</MemoryRouter>,
+		);
 
-			groups.forEach((g) => {
-				expect(screen.getByText(g.labelKey)).toBeTruthy();
-			});
-		},
-	);
+		groups.forEach((g) => {
+			expect(screen.getByText(g.labelKey)).toBeTruthy();
+		});
+	});
 
 	it("renders hamburger button in TopBar on mobile and toggles SidebarNav drawer", () => {
 		const mockAuthUser = { id: "auth-user-1", email: "admin@innhub.test" };
-		const mockProfile = { id: "profile-1", authUserId: "auth-user-1", propertyId: "property-1", role: "administrator" as const, status: "active" as const, fullName: "Administrator" };
+		const mockProfile = {
+			id: "profile-1",
+			authUserId: "auth-user-1",
+			propertyId: "property-1",
+			role: "administrator" as const,
+			status: "active" as const,
+			fullName: "Administrator",
+		};
 		const mockGateway = {
 			getCurrentUser: async () => ({ data: mockAuthUser, error: null }),
 			findProfileByAuthUserId: async () => ({ data: mockProfile, error: null }),
@@ -182,7 +186,9 @@ describe("SidebarNav grouped section rendering", () => {
 			</MemoryRouter>,
 		);
 
-		const toggleButton = screen.getByRole("button", { name: /open navigation menu/i });
+		const toggleButton = screen.getByRole("button", {
+			name: /open navigation menu/i,
+		});
 		expect(toggleButton).toBeTruthy();
 
 		const asideEl = document.querySelector("aside");
@@ -201,7 +207,14 @@ describe("SidebarNav grouped section rendering", () => {
 
 	it("closes SidebarNav drawer automatically when a navigation link is clicked", () => {
 		const mockAuthUser = { id: "auth-user-1", email: "admin@innhub.test" };
-		const mockProfile = { id: "profile-1", authUserId: "auth-user-1", propertyId: "property-1", role: "administrator" as const, status: "active" as const, fullName: "Administrator" };
+		const mockProfile = {
+			id: "profile-1",
+			authUserId: "auth-user-1",
+			propertyId: "property-1",
+			role: "administrator" as const,
+			status: "active" as const,
+			fullName: "Administrator",
+		};
 		const mockGateway = {
 			getCurrentUser: async () => ({ data: mockAuthUser, error: null }),
 			findProfileByAuthUserId: async () => ({ data: mockProfile, error: null }),
@@ -219,7 +232,9 @@ describe("SidebarNav grouped section rendering", () => {
 			</MemoryRouter>,
 		);
 
-		const toggleButton = screen.getByRole("button", { name: /open navigation menu/i });
+		const toggleButton = screen.getByRole("button", {
+			name: /open navigation menu/i,
+		});
 		const asideEl = document.querySelector("aside");
 
 		fireEvent.click(toggleButton);
@@ -235,7 +250,14 @@ describe("SidebarNav grouped section rendering", () => {
 describe("sidebar mobile scroll layout", () => {
 	it("renders aside with flex-col layout and h-full", () => {
 		const mockAuthUser = { id: "auth-user-1", email: "admin@innhub.test" };
-		const mockProfile = { id: "profile-1", authUserId: "auth-user-1", propertyId: "property-1", role: "administrator" as const, status: "active" as const, fullName: "Administrator" };
+		const mockProfile = {
+			id: "profile-1",
+			authUserId: "auth-user-1",
+			propertyId: "property-1",
+			role: "administrator" as const,
+			status: "active" as const,
+			fullName: "Administrator",
+		};
 		const mockGateway = {
 			getCurrentUser: async () => ({ data: mockAuthUser, error: null }),
 			findProfileByAuthUserId: async () => ({ data: mockProfile, error: null }),
@@ -257,11 +279,22 @@ describe("sidebar mobile scroll layout", () => {
 		expect(aside).toHaveClass("flex");
 		expect(aside).toHaveClass("flex-col");
 		expect(aside).toHaveClass("h-full");
+		expect(screen.getByText("InnHub")).toBeInTheDocument();
+		expect(
+			screen.getByRole("navigation", { name: "shell.sidebar.ariaLabel" }),
+		).toBeInTheDocument();
 	});
 
 	it("wraps SidebarNav in a scrollable container with overflow-y-auto", () => {
 		const mockAuthUser = { id: "auth-user-1", email: "admin@innhub.test" };
-		const mockProfile = { id: "profile-1", authUserId: "auth-user-1", propertyId: "property-1", role: "administrator" as const, status: "active" as const, fullName: "Administrator" };
+		const mockProfile = {
+			id: "profile-1",
+			authUserId: "auth-user-1",
+			propertyId: "property-1",
+			role: "administrator" as const,
+			status: "active" as const,
+			fullName: "Administrator",
+		};
 		const mockGateway = {
 			getCurrentUser: async () => ({ data: mockAuthUser, error: null }),
 			findProfileByAuthUserId: async () => ({ data: mockProfile, error: null }),
@@ -279,10 +312,104 @@ describe("sidebar mobile scroll layout", () => {
 			</MemoryRouter>,
 		);
 
-		const nav = screen.getByRole("navigation", { name: "shell.sidebar.ariaLabel" });
+		const nav = screen.getByRole("navigation", {
+			name: "shell.sidebar.ariaLabel",
+		});
 		const wrapper = nav.parentElement;
 		expect(wrapper).toHaveClass("overflow-y-auto");
 		expect(wrapper).toHaveClass("min-h-0");
+	});
+});
+
+describe("prototype shell polish contracts", () => {
+	const mockAuthUser = { id: "auth-user-1", email: "admin@innhub.test" };
+	const mockProfile = {
+		id: "profile-1",
+		authUserId: "auth-user-1",
+		propertyId: "property-1",
+		role: "administrator" as const,
+		status: "active" as const,
+		fullName: "Administrator",
+	};
+	const mockGateway = {
+		getCurrentUser: async () => ({ data: mockAuthUser, error: null }),
+		findProfileByAuthUserId: async () => ({ data: mockProfile, error: null }),
+		signInWithPassword: async () => ({ data: mockAuthUser, error: null }),
+		signOut: async () => ({ data: undefined, error: null }),
+	};
+
+	it("renders property context card in the sidebar footer", () => {
+		render(
+			<MemoryRouter>
+				<AuthSessionProvider gateway={mockGateway}>
+					<AppShell items={groupedRoutes}>
+						<div>Workspace Content</div>
+					</AppShell>
+				</AuthSessionProvider>
+			</MemoryRouter>,
+		);
+
+		expect(screen.getByText("shell.sidebar.property.name")).toBeInTheDocument();
+		expect(
+			screen.getByText("shell.sidebar.property.location"),
+		).toBeInTheDocument();
+		expect(
+			screen.getByLabelText("shell.sidebar.property.ariaLabel"),
+		).toBeInTheDocument();
+	});
+
+	it("shows topbar active route title and description", () => {
+		render(
+			<MemoryRouter>
+				<AuthSessionProvider gateway={mockGateway}>
+					<AppShell activeRoute={allRoutes[0]} items={groupedRoutes}>
+						<div>Workspace Content</div>
+					</AppShell>
+				</AuthSessionProvider>
+			</MemoryRouter>,
+		);
+
+		expect(screen.getByText(allRoutes[0].titleKey)).toBeInTheDocument();
+		expect(screen.getByText(allRoutes[0].descriptionKey)).toBeInTheDocument();
+	});
+
+	it("renders topbar shell action cluster affordances", () => {
+		render(
+			<MemoryRouter>
+				<AuthSessionProvider gateway={mockGateway}>
+					<AppShell activeRoute={allRoutes[0]} items={groupedRoutes}>
+						<div>Workspace Content</div>
+					</AppShell>
+				</AuthSessionProvider>
+			</MemoryRouter>,
+		);
+
+		expect(screen.getByText("shell.topbar.dateLabel")).toBeInTheDocument();
+		expect(
+			screen.getByLabelText("shell.topbar.notificationsLabel"),
+		).toBeInTheDocument();
+		expect(
+			screen.getByLabelText("shell.topbar.avatarAriaLabel"),
+		).toBeInTheDocument();
+		expect(
+			screen.getByLabelText("shell.topbar.propertyAriaLabel"),
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "auth.logout" }),
+		).toBeInTheDocument();
+	});
+
+	it("uses stronger active class treatment for selected route", () => {
+		render(
+			<MemoryRouter initialEntries={["/app/dashboard"]}>
+				<SidebarNav items={groupedRoutes} />
+			</MemoryRouter>,
+		);
+
+		const activeLink = screen.getByRole("link", {
+			name: "routes.protected.dashboard.label",
+		});
+		expect(activeLink).toHaveClass("bg-gradient-to-r");
 	});
 });
 

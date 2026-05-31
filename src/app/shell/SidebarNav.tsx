@@ -10,6 +10,15 @@ export type SidebarNavProps = {
 	pinnedItem?: ProtectedRouteMeta;
 };
 
+const navItemBaseClass =
+	"flex items-center gap-2.5 rounded-2xl border border-transparent px-3.5 py-2.5 text-sm font-semibold no-underline transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-raised)]";
+
+const navItemInactiveClass =
+	"text-[var(--color-muted)] hover:border-[var(--color-border)] hover:bg-[var(--color-primary-soft)] hover:text-[var(--color-heading)]";
+
+const navItemActiveClass =
+	"bg-gradient-to-r from-[#5b3df5] to-[#7c3aed] text-white shadow-[0_10px_24px_rgb(91_61_245_/_35%)]";
+
 export function SidebarNav({ items, onClose, pinnedItem }: SidebarNavProps) {
 	const { t } = useTranslation();
 
@@ -18,62 +27,50 @@ export function SidebarNav({ items, onClose, pinnedItem }: SidebarNavProps) {
 	}
 
 	return (
-		<nav aria-label={t("shell.sidebar.ariaLabel")}>
+		<nav aria-label={t("shell.sidebar.ariaLabel")} className="space-y-5">
 			{items.map((group) => (
-				<section key={group.group}>
-					<h2 className="m-0 mb-2 text-xs font-bold tracking-[0.14em] text-[var(--color-muted)] uppercase">
+				<section key={group.group} className="space-y-2">
+					<h2 className="m-0 text-[11px] font-bold tracking-[0.14em] text-[var(--color-muted)] uppercase">
 						{t(group.labelKey)}
 					</h2>
-					<ul className="m-0 grid list-none gap-2 p-0">
-						{group.items.map(
-							(item: ProtectedRouteMeta) => (
-								<li key={item.id}>
-									<NavLink
-										className={({ isActive }) =>
-											[
-												"flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold no-underline",
-												isActive
-													? "bg-[var(--color-primary-soft)] text-[var(--color-primary)]"
-													: "text-[var(--color-muted)] hover:bg-[var(--color-primary-soft)]",
-											].join(" ")
-										}
-										to={item.href}
-										onClick={onClose}
-									>
-										{item.icon ? (
-											<item.icon
-												aria-hidden="true"
-												size={20}
-											/>
-										) : null}
-										{t(item.labelKey)}
-									</NavLink>
-								</li>
-							),
-						)}
+					<ul className="m-0 grid list-none gap-1.5 p-0">
+						{group.items.map((item: ProtectedRouteMeta) => (
+							<li key={item.id}>
+								<NavLink
+									className={({ isActive }) =>
+										[
+											navItemBaseClass,
+											isActive ? navItemActiveClass : navItemInactiveClass,
+										].join(" ")
+									}
+									to={item.href}
+									onClick={onClose}
+								>
+									{item.icon ? (
+										<item.icon aria-hidden="true" size={20} />
+									) : null}
+									{t(item.labelKey)}
+								</NavLink>
+							</li>
+						))}
 					</ul>
 				</section>
 			))}
 			{pinnedItem ? (
 				<>
-					<hr className="my-3 border-[var(--color-border)]" />
+					<hr className="my-4 border-[var(--color-border)]" />
 					<NavLink
 						className={({ isActive }) =>
 							[
-								"flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold no-underline",
-								isActive
-									? "bg-[var(--color-primary-soft)] text-[var(--color-primary)]"
-									: "text-[var(--color-muted)] hover:bg-[var(--color-primary-soft)]",
+								navItemBaseClass,
+								isActive ? navItemActiveClass : navItemInactiveClass,
 							].join(" ")
 						}
 						to={pinnedItem.href}
 						onClick={onClose}
 					>
 						{pinnedItem.icon ? (
-							<pinnedItem.icon
-								aria-hidden="true"
-								size={20}
-							/>
+							<pinnedItem.icon aria-hidden="true" size={20} />
 						) : null}
 						{t(pinnedItem.labelKey)}
 					</NavLink>
