@@ -44,8 +44,23 @@ export function resolveInsForgeConfig(
 	};
 }
 
+let cachedClient: InsForgeClient | null = null;
+let cachedConfigKey: string | null = null;
+
+function getConfigKey(config: InsForgeConfig): string {
+	return `${config.baseUrl}\n${config.anonKey}`;
+}
+
 export function createInsForgeClient(
 	config: InsForgeConfig = resolveInsForgeConfig(),
 ): InsForgeClient {
-	return createClient(config);
+	const configKey = getConfigKey(config);
+
+	if (cachedClient && cachedConfigKey === configKey) {
+		return cachedClient;
+	}
+
+	cachedClient = createClient(config);
+	cachedConfigKey = configKey;
+	return cachedClient;
 }
