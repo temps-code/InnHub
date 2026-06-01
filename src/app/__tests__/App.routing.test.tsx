@@ -17,11 +17,7 @@ import type {
 	AuthUser,
 } from "../../features/auth/types";
 import { i18n } from "../../shared/i18n/config";
-import {
-	allRoutes,
-	canAccess,
-	settingsRoutes,
-} from "../routes/routeMetadata";
+import { allRoutes, canAccess, settingsRoutes } from "../routes/routeMetadata";
 import { appRoutes } from "../routes/routes";
 
 // PropertyProfilePage depends on useCurrentProperty, so we provide a
@@ -238,6 +234,18 @@ describe("app routing foundation", () => {
 		expect(screen.getByRole("heading", { name: "Dashboard" })).toBeTruthy();
 	});
 
+	it("renders guests module page instead of placeholder for authorized users", async () => {
+		renderRoute(
+			"/app/guests",
+			createGateway({ getCurrentUser: async () => ok(authUser) }),
+		);
+
+		await waitFor(() => {
+			expect(screen.getByRole("heading", { name: "Guests" })).toBeTruthy();
+		});
+		expect(screen.queryByText("Module coming soon")).toBeNull();
+	});
+
 	it("stops rendering protected content after logout", async () => {
 		let signOutCalls = 0;
 		const user = userEvent.setup();
@@ -357,23 +365,18 @@ describe("app routing foundation", () => {
 		["receptionist", "/app/dashboard", "Dashboard"],
 		["housekeeping", "/app/housekeeping", "Housekeeping"],
 		["maintenance", "/app/maintenance", "Maintenance"],
-	] as const)(
-		"renders the sidebar navigation shell for %s role",
-		async (role, path, title) => {
-			renderRoute(path, createRoleGateway(role));
+	] as const)("renders the sidebar navigation shell for %s role", async (role, path, title) => {
+		renderRoute(path, createRoleGateway(role));
 
-			await waitFor(() => {
-				expect(
-					screen.getByRole("navigation", { name: "Application modules" }),
-				).toBeTruthy();
-			});
-
-			expect(screen.getByRole("banner")).toBeTruthy();
+		await waitFor(() => {
 			expect(
-				screen.getByRole("heading", { name: title }),
+				screen.getByRole("navigation", { name: "Application modules" }),
 			).toBeTruthy();
-		},
-	);
+		});
+
+		expect(screen.getByRole("banner")).toBeTruthy();
+		expect(screen.getByRole("heading", { name: title })).toBeTruthy();
+	});
 
 	it.each([
 		["administrator", "/app/dashboard", true, true, true],
@@ -381,38 +384,35 @@ describe("app routing foundation", () => {
 		["receptionist", "/app/dashboard", true, false, false],
 		["housekeeping", "/app/housekeeping", true, false, false],
 		["maintenance", "/app/maintenance", true, false, false],
-	] as const)(
-		"shows correct sidebar groups for %s role",
-		async (role, path, showOperations, showReports, showSettings) => {
-			renderRoute(path, createRoleGateway(role));
+	] as const)("shows correct sidebar groups for %s role", async (role, path, showOperations, showReports, showSettings) => {
+		renderRoute(path, createRoleGateway(role));
 
-			await waitFor(() => {
-				expect(
-					screen.getByRole("navigation", { name: "Application modules" }),
-				).toBeTruthy();
-			});
+		await waitFor(() => {
+			expect(
+				screen.getByRole("navigation", { name: "Application modules" }),
+			).toBeTruthy();
+		});
 
-			if (showOperations) {
-				expect(screen.getByText("Operations")).toBeTruthy();
-			} else {
-				expect(screen.queryByText("Operations")).toBeNull();
-			}
+		if (showOperations) {
+			expect(screen.getByText("Operations")).toBeTruthy();
+		} else {
+			expect(screen.queryByText("Operations")).toBeNull();
+		}
 
-			if (showReports) {
-				// "Reports" appears as both a heading and a nav link — use getAllByText
-				const reportsElements = screen.getAllByText("Reports");
-				expect(reportsElements.length).toBeGreaterThan(0);
-			} else {
-				expect(screen.queryByText("Reports")).toBeNull();
-			}
+		if (showReports) {
+			// "Reports" appears as both a heading and a nav link — use getAllByText
+			const reportsElements = screen.getAllByText("Reports");
+			expect(reportsElements.length).toBeGreaterThan(0);
+		} else {
+			expect(screen.queryByText("Reports")).toBeNull();
+		}
 
-			if (showSettings) {
-				expect(screen.getByText("Settings")).toBeTruthy();
-			} else {
-				expect(screen.queryByText("Settings")).toBeNull();
-			}
-		},
-	);
+		if (showSettings) {
+			expect(screen.getByText("Settings")).toBeTruthy();
+		} else {
+			expect(screen.queryByText("Settings")).toBeNull();
+		}
+	});
 });
 
 describe("settings routing", () => {
@@ -439,10 +439,7 @@ describe("settings routing", () => {
 	});
 
 	it("redirects /app/properties to /app/settings/property for admin", async () => {
-		renderRoute(
-			"/app/properties",
-			createAdminGateway(),
-		);
+		renderRoute("/app/properties", createAdminGateway());
 
 		await waitFor(() => {
 			expect(
@@ -468,28 +465,25 @@ describe("settings routing", () => {
 		["receptionist", false],
 		["housekeeping", false],
 		["maintenance", false],
-	] as const)(
-		"redirects %s role from /app/properties appropriately",
-		async (role, isAdmin) => {
-			renderRoute("/app/properties", createRoleGateway(role));
+	] as const)("redirects %s role from /app/properties appropriately", async (role, isAdmin) => {
+		renderRoute("/app/properties", createRoleGateway(role));
 
-			if (isAdmin) {
-				await waitFor(() => {
-					expect(
-						screen.getByRole("heading", { name: /Property Profile/i }),
-					).toBeTruthy();
-				});
-			} else {
-				await waitFor(() => {
-					// Non-admin roles should NOT see the Property Profile page
-					// (they get redirected through settings guard → dashboard or blank)
-					expect(
-						screen.queryByRole("heading", { name: /Property Profile/i }),
-					).toBeNull();
-				});
-			}
-		},
-	);
+		if (isAdmin) {
+			await waitFor(() => {
+				expect(
+					screen.getByRole("heading", { name: /Property Profile/i }),
+				).toBeTruthy();
+			});
+		} else {
+			await waitFor(() => {
+				// Non-admin roles should NOT see the Property Profile page
+				// (they get redirected through settings guard → dashboard or blank)
+				expect(
+					screen.queryByRole("heading", { name: /Property Profile/i }),
+				).toBeNull();
+			});
+		}
+	});
 
 	it("profile route exists in settingsRoutes with minRole: any", () => {
 		const profileRoute = settingsRoutes.find((r) => r.id === "profile");
@@ -507,14 +501,13 @@ describe("settings routing", () => {
 		"maintenance",
 		"any",
 	] as const)("profile route is accessible to %s role", async (role) => {
-		renderRoute(
-			"/app/settings/profile",
-			createRoleGateway(role),
-		);
+		renderRoute("/app/settings/profile", createRoleGateway(role));
 
 		await waitFor(() => {
 			expect(
-				screen.getByRole("heading", { name: /My Profile|Placeholder|profile/i }),
+				screen.getByRole("heading", {
+					name: /My Profile|Placeholder|profile/i,
+				}),
 			).toBeTruthy();
 		});
 	});

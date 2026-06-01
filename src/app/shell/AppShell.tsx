@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Building2, ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import type { ProtectedRouteMeta } from "../routes/routeMetadata";
 import type { GroupedRouteItem } from "../routes/routeMetadata";
@@ -71,29 +71,6 @@ export function AppShell({
 						pinnedItem={pinnedItem}
 					/>
 				</div>
-				<div
-					aria-label={t("shell.sidebar.property.ariaLabel")}
-					className="mx-4 mb-4 flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3.5 py-3"
-				>
-					<div className="flex items-center gap-2.5">
-						<span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
-							<Building2 aria-hidden="true" size={16} />
-						</span>
-						<div>
-							<p className="m-0 text-sm font-semibold text-[var(--color-heading)]">
-								{t("shell.sidebar.property.name")}
-							</p>
-							<p className="m-0 text-xs text-[var(--color-muted)]">
-								{t("shell.sidebar.property.location")}
-							</p>
-						</div>
-					</div>
-					<ChevronDown
-						aria-hidden="true"
-						className="text-[var(--color-muted)]"
-						size={16}
-					/>
-				</div>
 			</aside>
 
 			<div className="min-w-0">
@@ -103,7 +80,7 @@ export function AppShell({
 				/>
 				<main
 					id="app-workspace"
-					className="mx-auto w-full max-w-[1240px] px-4 py-5 sm:px-5 md:px-8 md:py-7"
+					className="w-full px-4 py-5 sm:px-5 md:px-8 md:py-7"
 					aria-label={workspaceLabel}
 				>
 					{children}
