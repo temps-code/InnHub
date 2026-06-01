@@ -20,12 +20,12 @@ import { useAuthSession } from "../auth";
 import { Button } from "../../shared/components/atoms/Button";
 import { InitialsAvatar } from "../../shared/components/atoms/InitialsAvatar";
 import { StatusBadge } from "../../shared/components/atoms/StatusBadge";
+import { FormField } from "../../shared/components/molecules/FormField";
 import {
-	FormField,
 	inputClasses,
 	inputDefaultClasses,
 	inputErrorClasses,
-} from "../../shared/components/molecules/FormField";
+} from "../../shared/components/molecules/formFieldClasses";
 import { MetricCard } from "../../shared/components/molecules/MetricCard";
 import { PaginationControls } from "../../shared/components/molecules/PaginationControls";
 import { ConfirmDialog } from "../../shared/components/organisms/ConfirmDialog";
