@@ -283,6 +283,9 @@ describe("sidebar mobile scroll layout", () => {
 		expect(
 			screen.getByRole("navigation", { name: "shell.sidebar.ariaLabel" }),
 		).toBeInTheDocument();
+		expect(
+			screen.queryByLabelText("shell.sidebar.property.ariaLabel"),
+		).not.toBeInTheDocument();
 	});
 
 	it("wraps SidebarNav in a scrollable container with overflow-y-auto", () => {
@@ -338,7 +341,7 @@ describe("prototype shell polish contracts", () => {
 		signOut: async () => ({ data: undefined, error: null }),
 	};
 
-	it("renders property context card in the sidebar footer", () => {
+	it("does not render property context card in the sidebar footer", () => {
 		render(
 			<MemoryRouter>
 				<AuthSessionProvider gateway={mockGateway}>
@@ -349,13 +352,11 @@ describe("prototype shell polish contracts", () => {
 			</MemoryRouter>,
 		);
 
-		expect(screen.getByText("shell.sidebar.property.name")).toBeInTheDocument();
+		expect(screen.queryByText("shell.sidebar.property.name")).toBeNull();
+		expect(screen.queryByText("shell.sidebar.property.location")).toBeNull();
 		expect(
-			screen.getByText("shell.sidebar.property.location"),
-		).toBeInTheDocument();
-		expect(
-			screen.getByLabelText("shell.sidebar.property.ariaLabel"),
-		).toBeInTheDocument();
+			screen.queryByLabelText("shell.sidebar.property.ariaLabel"),
+		).not.toBeInTheDocument();
 	});
 
 	it("shows topbar active route title and description", () => {
@@ -371,6 +372,11 @@ describe("prototype shell polish contracts", () => {
 
 		expect(screen.getByText(allRoutes[0].titleKey)).toBeInTheDocument();
 		expect(screen.getByText(allRoutes[0].descriptionKey)).toBeInTheDocument();
+
+		const workspace = document.getElementById("app-workspace");
+		expect(workspace?.className).toContain("w-full");
+		expect(workspace?.className).not.toContain("max-w-[1240px]");
+		expect(workspace?.className).not.toContain("mx-auto");
 	});
 
 	it("renders topbar shell action cluster affordances", () => {
@@ -392,8 +398,8 @@ describe("prototype shell polish contracts", () => {
 			screen.getByLabelText("shell.topbar.avatarAriaLabel"),
 		).toBeInTheDocument();
 		expect(
-			screen.getByLabelText("shell.topbar.propertyAriaLabel"),
-		).toBeInTheDocument();
+			screen.queryByLabelText("shell.topbar.propertyAriaLabel"),
+		).not.toBeInTheDocument();
 		expect(
 			screen.getByRole("button", { name: "auth.logout" }),
 		).toBeInTheDocument();

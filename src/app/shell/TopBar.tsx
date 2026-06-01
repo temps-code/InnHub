@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Bell, Building2, CalendarDays, ChevronDown, Menu } from "lucide-react";
+import { Bell, CalendarDays, Menu } from "lucide-react";
 
 import { useAuthSession } from "../../features/auth";
 import { PreferenceBar } from "../../shared/components";
@@ -28,7 +28,7 @@ export function TopBar({ activeRoute, onToggleSidebar }: TopBarProps) {
 		: "IH";
 
 	return (
-		<header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[rgb(255_255_255_/_90%)] px-4 py-3 backdrop-blur md:px-8 md:py-4 dark:bg-[rgb(15_23_42_/_82%)]">
+		<header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[rgb(255_255_255_/_90%)] px-4 py-3 backdrop-blur md:flex-nowrap md:px-8 md:py-3 dark:bg-[rgb(15_23_42_/_82%)]">
 			<div className="flex items-center gap-3">
 				<Button
 					aria-label="Open navigation menu"
@@ -55,7 +55,7 @@ export function TopBar({ activeRoute, onToggleSidebar }: TopBarProps) {
 					</p>
 				</div>
 			</div>
-			<div className="flex items-center gap-2 sm:gap-2.5">
+			<div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
 				<div className="hidden items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-heading)] lg:flex">
 					<CalendarDays aria-hidden="true" size={15} />
 					<span>{t("shell.topbar.dateLabel")}</span>
@@ -71,14 +71,6 @@ export function TopBar({ activeRoute, onToggleSidebar }: TopBarProps) {
 					className="hidden h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-semibold text-white md:inline-flex"
 				>
 					{avatarText}
-				</span>
-				<span
-					aria-label={t("shell.topbar.propertyAriaLabel")}
-					className="hidden items-center gap-1.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-2 text-sm text-[var(--color-heading)] xl:inline-flex"
-				>
-					<Building2 aria-hidden="true" size={14} />
-					<span>{t("shell.topbar.propertyLabel")}</span>
-					<ChevronDown aria-hidden="true" size={14} />
 				</span>
 				{profileLabel ? (
 					<span className="hidden text-sm font-medium text-[var(--color-muted)] xl:inline">
