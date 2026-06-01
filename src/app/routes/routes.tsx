@@ -9,7 +9,12 @@ import { PropertyProfilePage } from "../../features/properties/PropertyProfilePa
 import { RoomTypesPage } from "../../features/room-types/RoomTypesPage";
 import { RoomsPage } from "../../features/rooms/RoomsPage";
 import { UserProfilePage } from "../../features/profile/UserProfilePage";
-import { APP_BASE_PATH, protectedRoutes, settingsRoutes } from "./routeMetadata";
+import { GuestsPage } from "../../features/guests/GuestsPage";
+import {
+	APP_BASE_PATH,
+	protectedRoutes,
+	settingsRoutes,
+} from "./routeMetadata";
 import { SettingsLayout } from "./SettingsLayout";
 
 export const appRoutes: RouteObject[] = [
@@ -30,6 +35,8 @@ export const appRoutes: RouteObject[] = [
 						<RoomTypesPage />
 					) : route.id === "rooms" ? (
 						<RoomsPage />
+					) : route.id === "guests" ? (
+						<GuestsPage />
 					) : (
 						<ModulePlaceholderPage route={route} />
 					),
@@ -40,17 +47,17 @@ export const appRoutes: RouteObject[] = [
 				element: <SettingsLayout />,
 				children: settingsRoutes.map((route) => ({
 					path: route.path,
-			element:
-				route.id === "propertyProfile" ? (
-					<PropertyProfilePage titleKey={route.titleKey} />
-				) : route.id === "profile" ? (
-					<UserProfilePage titleKey={route.titleKey} />
-				) : (
-					<ModulePlaceholderPage route={route} />
-				),
-		})),
-	},
-	// Old path redirect
+					element:
+						route.id === "propertyProfile" ? (
+							<PropertyProfilePage titleKey={route.titleKey} />
+						) : route.id === "profile" ? (
+							<UserProfilePage titleKey={route.titleKey} />
+						) : (
+							<ModulePlaceholderPage route={route} />
+						),
+				})),
+			},
+			// Old path redirect
 			{ path: "properties", element: <Navigate to="/app/settings/property" /> },
 		],
 	},

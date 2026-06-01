@@ -5,3 +5,5 @@ export type { ModuleCardProps } from "./ModuleCard";
 export { MetricCard } from "./MetricCard";
 export type { MetricCardProps } from "./MetricCard";
 export { PreferenceBar } from "./PreferenceBar";
+export { PaginationControls } from "./PaginationControls";
+export type { PaginationControlsProps } from "./PaginationControls";
