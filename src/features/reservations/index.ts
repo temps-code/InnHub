@@ -29,14 +29,23 @@ export {
 } from "./reservationService";
 
 export {
+	checkInReservationItem,
+	type CheckInServiceDeps,
+} from "./checkInService";
+
+export {
 	reservationCreateSchema,
 	type Reservation,
 	type ReservationCreateData,
 	type ReservationItem,
 	type ReservationListParams,
 	type ReservationListResult,
+	type CheckInReservationItemCommand,
+	type CheckInReservationItemResult,
 	type ReservationPurgeBlockers,
 	type ReservationPurgeResult,
 	type ReservationStatus,
 	type ReservationUpdateData,
+	type Stay,
+	type StayStatus,
 } from "./types";
