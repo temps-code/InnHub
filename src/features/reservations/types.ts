@@ -132,3 +132,35 @@ export type ReservationPurgeResult = {
 	readonly reservation: Reservation;
 	readonly blockers: ReservationPurgeBlockers;
 };
+
+export type StayStatus = "active" | "checked_out" | "cancelled";
+
+export type Stay = {
+	readonly id: string;
+	readonly property_id: string;
+	readonly reservation_item_id: string | null;
+	readonly primary_guest_id: string;
+	readonly room_id: string;
+	readonly actual_check_in_at: string;
+	readonly expected_check_out_date: string;
+	readonly actual_check_out_at?: string | null;
+	readonly status: StayStatus;
+	readonly guest_count: number;
+	readonly notes: string | null;
+	readonly created_at: string;
+	readonly updated_at: string;
+	readonly deleted_at?: string | null;
+};
+
+export type CheckInReservationItemCommand = {
+	readonly reservationItemId: string;
+	readonly roomId?: string | null;
+	readonly actualCheckInAt?: string;
+};
+
+export type CheckInReservationItemResult = {
+	readonly reservation: Reservation;
+	readonly reservationItem: ReservationItem;
+	readonly stay: Stay;
+	readonly room: import("../rooms").Room;
+};
