@@ -408,6 +408,7 @@ export const en = {
 			actions: "Actions",
 		},
 		filters: {
+			searchFieldLabel: "Search",
 			searchLabel: "Search reservations by guest name or reference",
 			searchPlaceholder: "Search by guest name or reservation reference",
 			statusLabel: "Reservation status",

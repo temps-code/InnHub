@@ -179,68 +179,13 @@ export function ReservationsPage() {
 		const departuresToday = reservations.filter(
 			(reservation) => reservation.planned_check_out_date === today,
 		).length;
-		const confirmedCount = reservations.filter(
-			(reservation) => reservation.status === "confirmed",
-		).length;
-		const checkedInCount = reservations.filter(
-			(reservation) =>
-				reservation.status === "checked_in" ||
-				reservation.status === "partially_checked_in",
-		).length;
-		const cancelledCount = reservations.filter(
-			(reservation) => reservation.status === "cancelled",
-		).length;
-		const noShowCount = reservations.filter(
-			(reservation) => reservation.status === "no_show",
-		).length;
-
 		return {
 			visibleCount,
 			pendingCount,
 			arrivalsToday,
 			departuresToday,
-			confirmedCount,
-			checkedInCount,
-			cancelledCount,
-			noShowCount,
 		};
 	}, [reservations]);
-
-	const statusChips = useMemo(
-		() => [
-			{
-				value: "all" as const,
-				label: t("reservations.filters.statusChipAll"),
-				count: summaryMetrics.visibleCount,
-			},
-			{
-				value: "confirmed" as const,
-				label: t("reservations.filters.statusChipConfirmed"),
-				count: summaryMetrics.confirmedCount,
-			},
-			{
-				value: "pending" as const,
-				label: t("reservations.filters.statusChipPending"),
-				count: summaryMetrics.pendingCount,
-			},
-			{
-				value: "checked_in" as const,
-				label: t("reservations.filters.statusChipCheckedIn"),
-				count: summaryMetrics.checkedInCount,
-			},
-			{
-				value: "cancelled" as const,
-				label: t("reservations.filters.statusChipCancelled"),
-				count: summaryMetrics.cancelledCount,
-			},
-			{
-				value: "no_show" as const,
-				label: t("reservations.filters.statusChipNoShow"),
-				count: summaryMetrics.noShowCount,
-			},
-		],
-		[summaryMetrics, t],
-	);
 
 	const guestFilterOptions = useMemo(
 		() =>
@@ -580,49 +525,6 @@ export function ReservationsPage() {
 				</div>
 			</div>
 
-			{!showTrash ? (
-				<div className="mb-4 rounded-3xl border border-[var(--color-border)] bg-[var(--color-background)]/80 p-4 shadow-sm sm:p-5">
-					<div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-						<div>
-							<h3 className="m-0 text-lg font-semibold text-[var(--color-heading)]">
-								{t("reservations.sections.statusViews")}
-							</h3>
-							<p className="mt-1 mb-0 text-sm text-[var(--color-muted)]">
-								{t("reservations.sections.statusViewsHelper")}
-							</p>
-						</div>
-					</div>
-					<div className="flex gap-2 overflow-x-auto pb-1">
-						{statusChips.map((chip) => {
-							const isActive =
-								(params.status ?? "all") === chip.value ||
-								(chip.value === "checked_in" &&
-									params.status === "partially_checked_in");
-							return (
-								<button
-									key={chip.value}
-									type="button"
-									className={joinClasses(
-										"inline-flex min-w-fit items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition",
-										isActive
-											? "border-[var(--color-primary)] bg-[var(--color-primary-soft)] text-[var(--color-primary)]"
-											: "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-heading)] hover:border-[var(--color-primary)]",
-									)}
-									onClick={() => setStatus(chip.value)}
-									aria-pressed={isActive}
-									aria-label={`${chip.label} ${chip.count}`}
-								>
-									<span>{chip.label}</span>
-									<span className="rounded-full bg-[var(--color-background)] px-2 py-0.5 text-xs text-[var(--color-muted)]">
-										{chip.count}
-									</span>
-								</button>
-							);
-						})}
-					</div>
-				</div>
-			) : null}
-
 			<div className="mb-4 rounded-3xl border border-[var(--color-border)] bg-[var(--color-background)]/80 p-4 shadow-sm sm:p-5">
 				<div className="mb-4 flex flex-wrap items-end justify-between gap-3">
 					<div>
@@ -635,130 +537,180 @@ export function ReservationsPage() {
 					</div>
 				</div>
 				<div
-					className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4"
+					className="grid grid-cols-1 gap-x-4 gap-y-5 md:grid-cols-2 xl:grid-cols-4"
 					data-testid="reservations-toolbar"
 				>
-					<div className="relative min-w-[18rem] lg:col-span-2 xl:col-span-1">
-						<Search
-							aria-hidden="true"
-							className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]"
-						/>
-						<input
-							aria-label={t("reservations.filters.searchLabel")}
-							className={joinClasses(
-								inputClasses,
-								inputDefaultClasses,
-								"w-full pl-10",
-							)}
-							placeholder={t("reservations.filters.searchPlaceholder")}
-							value={params.search ?? ""}
-							onChange={(event) => setSearch(event.target.value)}
-						/>
-					</div>
-					{!showTrash ? (
-						<>
-							<select
-								aria-label={t("reservations.filters.statusLabel")}
+					<label className="min-w-0 space-y-2">
+						<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+							{t("reservations.filters.searchFieldLabel")}
+						</span>
+						<span className="relative block">
+							<Search
+								aria-hidden="true"
+								className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]"
+							/>
+							<input
+								aria-label={t("reservations.filters.searchLabel")}
 								className={joinClasses(
 									inputClasses,
 									inputDefaultClasses,
-									"min-w-[12rem]",
+									"h-12 w-full min-w-0 pl-10",
 								)}
-								value={params.status ?? "all"}
-								onChange={(event) =>
-									setStatus(event.target.value as ReservationStatus | "all")
-								}
-							>
-								<option value="all">
-									{t("reservations.filters.statusAll")}
-								</option>
-								<option value="pending">
-									{t("reservations.status.pending")}
-								</option>
-								<option value="confirmed">
-									{t("reservations.status.confirmed")}
-								</option>
-								<option value="partially_checked_in">
-									{t("reservations.status.checkedIn")}
-								</option>
-								<option value="checked_in">
-									{t("reservations.status.checkedIn")}
-								</option>
-								<option value="cancelled">
-									{t("reservations.status.cancelled")}
-								</option>
-								<option value="no_show">
-									{t("reservations.status.noShow")}
-								</option>
-							</select>
-							<div className="space-y-1">
-								<p className="m-0 text-xs font-medium text-[var(--color-muted)]">
-									{t("reservations.table.checkIn")}
-								</p>
-								<div className="grid grid-cols-2 gap-2">
-									<input
-										type="date"
-										aria-label={t("reservations.filters.checkInFrom")}
-										className={joinClasses(inputClasses, inputDefaultClasses)}
-										value={params.checkInFrom ?? ""}
-										onChange={(event) => setCheckInFrom(event.target.value)}
-									/>
-									<input
-										type="date"
-										aria-label={t("reservations.filters.checkInTo")}
-										className={joinClasses(inputClasses, inputDefaultClasses)}
-										value={params.checkInTo ?? ""}
-										onChange={(event) => setCheckInTo(event.target.value)}
-									/>
-								</div>
-							</div>
-							<div className="space-y-1">
-								<p className="m-0 text-xs font-medium text-[var(--color-muted)]">
-									{t("reservations.table.checkOut")}
-								</p>
-								<div className="grid grid-cols-2 gap-2">
-									<input
-										type="date"
-										aria-label={t("reservations.filters.checkOutFrom")}
-										className={joinClasses(inputClasses, inputDefaultClasses)}
-										value={params.checkOutFrom ?? ""}
-										onChange={(event) => setCheckOutFrom(event.target.value)}
-									/>
-									<input
-										type="date"
-										aria-label={t("reservations.filters.checkOutTo")}
-										className={joinClasses(inputClasses, inputDefaultClasses)}
-										value={params.checkOutTo ?? ""}
-										onChange={(event) => setCheckOutTo(event.target.value)}
-									/>
-								</div>
-							</div>
-							<select
-								aria-label={t("reservations.filters.roomLabel")}
-								className={joinClasses(inputClasses, inputDefaultClasses)}
-								value={params.room_id ?? ""}
-								onChange={(event) => setRoomId(event.target.value)}
-							>
-								<option value="">{t("reservations.filters.roomAll")}</option>
-								{roomFilterOptions.map((room) => (
-									<option key={room.id} value={room.id}>
-										{room.label}
+								placeholder={t("reservations.filters.searchPlaceholder")}
+								value={params.search ?? ""}
+								onChange={(event) => setSearch(event.target.value)}
+							/>
+						</span>
+					</label>
+					{!showTrash ? (
+						<>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.statusLabel")}
+								</span>
+								<select
+									aria-label={t("reservations.filters.statusLabel")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.status ?? "all"}
+									onChange={(event) =>
+										setStatus(event.target.value as ReservationStatus | "all")
+									}
+								>
+									<option value="all">
+										{t("reservations.filters.statusAll")}
 									</option>
-								))}
-							</select>
-							<select
-								aria-label={t("reservations.filters.guestLabel")}
-								className={joinClasses(inputClasses, inputDefaultClasses)}
-								value={params.guest_id ?? ""}
-								onChange={(event) => setGuestId(event.target.value)}
-							>
-								<option value="">{t("reservations.filters.guestAll")}</option>
-								{guestFilterOptions.map((guest) => (
-									<option key={guest.id} value={guest.id}>
-										{guest.label}
+									<option value="pending">
+										{t("reservations.status.pending")}
 									</option>
-								))}
-							</select>
+									<option value="confirmed">
+										{t("reservations.status.confirmed")}
+									</option>
+									<option value="partially_checked_in">
+										{t("reservations.status.checkedIn")}
+									</option>
+									<option value="checked_in">
+										{t("reservations.status.checkedIn")}
+									</option>
+									<option value="cancelled">
+										{t("reservations.status.cancelled")}
+									</option>
+									<option value="no_show">
+										{t("reservations.status.noShow")}
+									</option>
+								</select>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.roomLabel")}
+								</span>
+								<select
+									aria-label={t("reservations.filters.roomLabel")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.room_id ?? ""}
+									onChange={(event) => setRoomId(event.target.value)}
+								>
+									<option value="">{t("reservations.filters.roomAll")}</option>
+									{roomFilterOptions.map((room) => (
+										<option key={room.id} value={room.id}>
+											{room.label}
+										</option>
+									))}
+								</select>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.guestLabel")}
+								</span>
+								<select
+									aria-label={t("reservations.filters.guestLabel")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.guest_id ?? ""}
+									onChange={(event) => setGuestId(event.target.value)}
+								>
+									<option value="">{t("reservations.filters.guestAll")}</option>
+									{guestFilterOptions.map((guest) => (
+										<option key={guest.id} value={guest.id}>
+											{guest.label}
+										</option>
+									))}
+								</select>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.checkInFrom")}
+								</span>
+								<input
+									type="date"
+									aria-label={t("reservations.filters.checkInFrom")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.checkInFrom ?? ""}
+									onChange={(event) => setCheckInFrom(event.target.value)}
+								/>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.checkInTo")}
+								</span>
+								<input
+									type="date"
+									aria-label={t("reservations.filters.checkInTo")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.checkInTo ?? ""}
+									onChange={(event) => setCheckInTo(event.target.value)}
+								/>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.checkOutFrom")}
+								</span>
+								<input
+									type="date"
+									aria-label={t("reservations.filters.checkOutFrom")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.checkOutFrom ?? ""}
+									onChange={(event) => setCheckOutFrom(event.target.value)}
+								/>
+							</label>
+							<label className="min-w-0 space-y-2">
+								<span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+									{t("reservations.filters.checkOutTo")}
+								</span>
+								<input
+									type="date"
+									aria-label={t("reservations.filters.checkOutTo")}
+									className={joinClasses(
+										inputClasses,
+										inputDefaultClasses,
+										"h-12 w-full min-w-0",
+									)}
+									value={params.checkOutTo ?? ""}
+									onChange={(event) => setCheckOutTo(event.target.value)}
+								/>
+							</label>
 						</>
 					) : null}
 				</div>

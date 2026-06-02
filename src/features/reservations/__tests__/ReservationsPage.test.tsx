@@ -371,7 +371,7 @@ describe("ReservationsPage", () => {
 		).toBeInTheDocument();
 	});
 
-	it("renders core active UI with overview, status chips, filters, table and pagination", async () => {
+	it("renders core active UI with overview, unified filters, table and pagination", async () => {
 		mockAuth(receptionistAuthState);
 		mockLoaded();
 		await renderPage();
@@ -393,30 +393,20 @@ describe("ReservationsPage", () => {
 		expect(screen.getByText("Arrivals today")).toBeInTheDocument();
 		expect(screen.getByText("Departures today")).toBeInTheDocument();
 		expect(
-			screen.getByRole("heading", { name: "Status views", level: 3 }),
-		).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "All 2" })).toHaveAttribute(
-			"aria-pressed",
-			"true",
-		);
-		expect(
-			screen.getByRole("button", { name: "Confirmed 1" }),
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole("button", { name: "Checked-in 1" }),
-		).toBeInTheDocument();
-		expect(
 			screen.getByRole("heading", { name: "Filters", level: 3 }),
 		).toBeInTheDocument();
+		expect(screen.getByText("Search")).toBeInTheDocument();
 		expect(
 			screen.getByLabelText("Search reservations by guest name or reference"),
 		).toBeInTheDocument();
 		expect(screen.getByLabelText("Reservation status")).toBeInTheDocument();
-		expect(screen.getAllByText("Check-in").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Check-in from").length).toBeGreaterThan(0);
 		expect(screen.getByLabelText("Check-in from")).toBeInTheDocument();
+		expect(screen.getAllByText("Check-in to").length).toBeGreaterThan(0);
 		expect(screen.getByLabelText("Check-in to")).toBeInTheDocument();
-		expect(screen.getAllByText("Check-out").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Check-out from").length).toBeGreaterThan(0);
 		expect(screen.getByLabelText("Check-out from")).toBeInTheDocument();
+		expect(screen.getAllByText("Check-out to").length).toBeGreaterThan(0);
 		expect(screen.getByLabelText("Check-out to")).toBeInTheDocument();
 		expect(screen.getByLabelText("Room")).toBeInTheDocument();
 		expect(screen.getByLabelText("Guest")).toBeInTheDocument();
@@ -438,26 +428,6 @@ describe("ReservationsPage", () => {
 		expect(screen.getAllByText("confirmed").length).toBeGreaterThan(0);
 		expect(
 			screen.getByRole("button", { name: "Next page" }),
-		).toBeInTheDocument();
-	});
-
-	it("renders status chips as accessible shortcuts without hiding filters or table", async () => {
-		const hook = baseHook();
-		mockAuth(receptionistAuthState);
-		mockUseReservations.mockReturnValue(hook);
-		const user = userEvent.setup();
-		await renderPage();
-
-		const confirmedChip = screen.getByRole("button", { name: "Confirmed 1" });
-		expect(confirmedChip).toHaveAttribute("aria-pressed", "false");
-
-		await user.click(confirmedChip);
-		expect(hook.setStatus).toHaveBeenCalledWith("confirmed");
-		expect(
-			screen.getByLabelText("Search reservations by guest name or reference"),
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole("table", { name: "Reservations table" }),
 		).toBeInTheDocument();
 	});
 

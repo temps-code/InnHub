@@ -419,6 +419,7 @@ export const es = {
 			actions: "Acciones",
 		},
 		filters: {
+			searchFieldLabel: "Búsqueda",
 			searchLabel: "Buscar reservas por nombre del huésped o referencia",
 			searchPlaceholder:
 				"Buscar por nombre del huésped o referencia de reserva",
