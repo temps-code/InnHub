@@ -10,6 +10,7 @@ import { RoomTypesPage } from "../../features/room-types/RoomTypesPage";
 import { RoomsPage } from "../../features/rooms/RoomsPage";
 import { UserProfilePage } from "../../features/profile/UserProfilePage";
 import { GuestsPage } from "../../features/guests/GuestsPage";
+import { ReservationsPage } from "../../features/reservations/ReservationsPage";
 import {
 	APP_BASE_PATH,
 	protectedRoutes,
@@ -37,6 +38,8 @@ export const appRoutes: RouteObject[] = [
 						<RoomsPage />
 					) : route.id === "guests" ? (
 						<GuestsPage />
+					) : route.id === "reservations" ? (
+						<ReservationsPage />
 					) : (
 						<ModulePlaceholderPage route={route} />
 					),

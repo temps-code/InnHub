@@ -58,6 +58,29 @@ describe("StrictConfirmDialog", () => {
 		expect(onConfirm).toHaveBeenCalledTimes(1);
 	});
 
+	it("clears the typed phrase after confirm so reopening requires re-entry", async () => {
+		const user = userEvent.setup();
+		const onConfirm = vi.fn();
+
+		render(
+			<StrictConfirmDialog
+				confirmPhrase="PURGE"
+				isOpen={true}
+				onCancel={() => {}}
+				onConfirm={onConfirm}
+				title="Confirm purge"
+			/>,
+		);
+
+		const input = screen.getByLabelText("Confirmation phrase");
+		await user.type(input, "PURGE");
+		await user.click(screen.getByRole("button", { name: "Confirm" }));
+
+		expect(onConfirm).toHaveBeenCalledTimes(1);
+		expect(input).toHaveValue("");
+		expect(screen.getByRole("button", { name: "Confirm" })).toBeDisabled();
+	});
+
 	it("renders provided error message", () => {
 		render(
 			<StrictConfirmDialog

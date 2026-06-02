@@ -47,6 +47,7 @@ export function StrictConfirmDialog({
 
 	function handleConfirm() {
 		if (!isPhraseMatched || isProcessing) return;
+		setTypedValue("");
 		onConfirm();
 	}
 
